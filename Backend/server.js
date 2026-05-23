@@ -3,6 +3,7 @@ import express from "express";
 import cors from "cors";
 import dns from "node:dns/promises";
 import { connectDB } from "./config/dbConfig.js";
+import routes from "./routes/index.js";
 
 dns.setServers(["1.1.1.1", "8.8.8.8"]);
 
@@ -10,6 +11,8 @@ const app = express();
 connectDB();
 app.use(cors());
 app.use(express.json());
+
+app.use("/api", routes);
 
 app.use((err, req, res, next) => {
   const statusCode = err.statusCode || 500;
