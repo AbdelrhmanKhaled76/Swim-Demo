@@ -11,9 +11,9 @@ import orderRoutes from "./order.routes.js";
 
 const router = express.Router();
 
-router.use("/organizations", organizationRoutes);
-router.use("/locations", locationRoutes);
-router.use("/inventories", inventoryRoutes);
+router.use("/organization", organizationRoutes);
+router.use("/location", locationRoutes);
+router.use("/inventor", inventoryRoutes);
 
 router.use("/auth", authRoutes);
 router.use("/users", userRoutes);
