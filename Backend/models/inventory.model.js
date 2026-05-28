@@ -1,10 +1,10 @@
 import mongoose from 'mongoose';
 
 const inventorySchema = new mongoose.Schema({
-  // itemId: {
-  //   type: mongoose.Schema.Types.ObjectId,
-  //   ref: 'Item', 
-  // },
+  itemId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'item', 
+  },
   locationId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Location',
