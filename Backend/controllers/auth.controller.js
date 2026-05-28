@@ -2,6 +2,8 @@ import { registerValidator,loginValidator } from "../utils/validators.js";
 import User from "../models/user.model.js";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcryptjs";
+import crypto from "crypto";
+
 const generateToken = (id, role) => {
   return jwt.sign({ id, role }, process.env.JWT_SECRET, {
     expiresIn: process.env.JWT_EXPIRES_IN,
@@ -92,3 +94,68 @@ const token = generateToken(user._id, user.role);
     next(error);
   }
 }
+
+export const forgotPassword=async(req,res,next)=>{
+    try {
+      const user=await User.findOne({email:req.body.email});
+      if(!user){
+        const error=new Error("No user found with that email");
+        error.statusCode=404;
+        throw error;
+      }
+      const resetToken= user.getResetPasswordToken();
+      await user.save({ validateBeforeSave: false });
+
+      const resetUrl=`http://localhost:3000/api/auth/resetpassword/${resetToken}`;
+      res.status(200).json({
+      success: true,
+      message: 'Token generated (pretend this was sent via email)',
+      data: {
+        resetToken,
+        resetUrl
+      }
+    });
+    }
+      catch (error) {
+        next(error);
+      }
+}
+
+export const resetPassword = async (req, res, next) => {
+  try {
+    const resetPasswordToken = crypto
+      .createHash('sha256')
+      .update(req.params.resettoken)
+      .digest('hex');
+
+   
+    const user = await User.findOne({
+      resetPasswordToken,
+      resetPasswordExpire: { $gt: Date.now() }
+    });
+
+    if (!user) {
+      const error = new Error('Invalid or expired token');
+      error.statusCode = 400;
+      throw error;
+    }
+
+    user.passwordHash = req.body.password;
+
+    user.resetPasswordToken = undefined;
+    user.resetPasswordExpire = undefined;
+
+    await user.save();
+
+    const token = generateToken(user._id, user.role);
+
+    res.status(200).json({
+      success: true,
+      message: 'Password reset successfully',
+      token
+    });
+
+  } catch (error) {
+    next(error);
+  }
+};
