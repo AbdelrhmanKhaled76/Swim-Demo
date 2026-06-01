@@ -45,7 +45,7 @@
     --color-neutral-800: #3E3E3F;
     --color-neutral-900: #2B2B2C;
 
-    --color-light-100: #FFF6E4;
+    --color-light-100: #FFF6E4;   
     --color-light-200: #FFF2D7;
     --color-light-300: #FFEECB;
     --color-light-400: #FFEABF;
@@ -54,6 +54,8 @@
     --color-light-700: #AD9C7A;
     --color-light-800: #85785D;
     --color-light-900: #5C5340;
+
+    --color-Accents-red:#FF383C;
 }
 
 @layer base {

@@ -1,4 +1,4 @@
-import { type Status } from './types';
+import { type Status } from '../types';
 
 function StatusBadge({ status }: { status: Status }) {
   if (status === 'COMPLETED') {
