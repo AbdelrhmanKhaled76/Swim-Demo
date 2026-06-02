@@ -4,22 +4,37 @@
 @theme {
   --spacing-section-mobile: 2rem;
   --spacing-section-desktop: 4rem;
-  --color-primary-100: #a8bacd;
-  --color-primary-200: #819bb7;
-  --color-primary-300: #5a7ca1;
-  --color-primary-400: #335d8b;
-  --color-primary-500: #0c3e75;
-  --color-primary-600: #0a3462;
-  --color-primary-700: #082a50;
-  --color-primary-800: #06203d;
-  --color-primary-900: #04162a;
+  
+  --color-primary-100: #A8BACD;
+  --color-primary-200: #819BB7;
+  --color-primary-300: #5A7CA1;
+  --color-primary-400: #335D8B;
+  --color-primary-500: #0C3E75;
+  --color-primary-600: #0A3462;
+  --color-primary-700: #082A50;
+  --color-primary-800: #06203D;
+  --color-primary-900: #04162A;
 
-  --color-secondary-100: #ffcab6;
-  --color-secondary-200: #ffb296;
-  --color-secondary-300: #ff9a76;
-  --color-secondary-400: #ff8355;
-  --color-secondary-500: #ff6b35;
-  --color-secondary-600: #d65a2d;
+  --color-tertiary-50: #D4D8DF;
+  --color-tertiary-100: #C7CDD5;
+  --color-tertiary-200: #AEB7C3;
+  --color-tertiary-300: #96A0B0;
+  --color-tertiary-400: #7D8A9E;
+  --color-tertiary-500: #64748B;
+  --color-tertiary-600: #546175;
+  --color-tertiary-700: #444F5F;
+  --color-tertiary-800: #343C48;
+  --color-tertiary-900: #242A32;
+
+  --color-secondary-100: #FFCAB6;
+  --color-secondary-200: #FFB296;
+  --color-secondary-300: #FF9A76;
+  --color-secondary-400: #FF8355;
+  --color-secondary-500: #FF6B35;
+  --color-secondary-600: #D65A2D;
+  --color-secondary-700: #B34A26;
+  --color-secondary-800: #903A1F;
+  --color-secondary-900: #6D2A18;
 
   --color-neutral-100: #cececf;
   --color-neutral-200: #b8b8b9;
@@ -31,15 +46,17 @@
   --color-neutral-800: #3e3e3f;
   --color-neutral-900: #2b2b2c;
 
-  --color-light-100: #fff6e4;
-  --color-light-200: #fff2d7;
-  --color-light-300: #ffeecb;
-  --color-light-400: #ffeabf;
-  --color-light-500: #ffe6b3;
-  --color-light-600: #d6c196;
-  --color-light-700: #ad9c7a;
-  --color-light-800: #85785d;
-  --color-light-900: #5c5340;
+  --color-light-100: #FFF6E4;
+  --color-light-200: #FFF2D7;
+  --color-light-300: #FFEECB;
+  --color-light-400: #FFEABF;
+  --color-light-500: #FFE6B3;
+  --color-light-600: #D6C196;
+  --color-light-700: #AD9C7A;
+  --color-light-800: #85785D;
+  --color-light-900: #5C5340;
+
+  --color-Accents-red:#FF383C;
 }
 
 @layer base {
@@ -79,8 +96,17 @@
 }
 
 .regular {
-  font-family: "JetBrains Mono", monospace;
-  font-optical-sizing: auto;
-  font-weight: 500;
-  font-style: normal;
+    font-family: "JetBrains Mono", monospace;
+    font-optical-sizing: auto;
+    font-weight: 500;
+    font-style: normal;
+}
+
+.no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+
+.no-scrollbar::-webkit-scrollbar {
+    display: none;
 }

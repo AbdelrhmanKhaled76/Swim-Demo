@@ -5,7 +5,7 @@ const createCustomer = async (req, res) => {
   try {
     const customer = await customerModel.create(req.body);
 
-    res.status(200).json({
+    res.status(201).json({ // 201 Created
       data: customer,
     });
   } catch (error) {
@@ -31,7 +31,7 @@ const getCustomerById = async (req, res) => {
 
     return customer
       ? res.status(200).json({ data: customer })
-      : res.status(400).json({
+      : res.status(404).json({ // 404 Not Found
           message: "customer not found",
         });
   } catch (error) {

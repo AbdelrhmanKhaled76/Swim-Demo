@@ -3,7 +3,7 @@ import itemModel from "../models/item.model.js";
 const createItem = async (req, res) => {
   try {
     const item = await itemModel.create(req.body);
-    res.status(200).json({ data: item });
+    res.status(201).json({ data: item }); // 201 Created
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -24,7 +24,7 @@ const getItemById = async (req, res) => {
 
     return item
       ? res.status(200).json({ data: item })
-      : res.status(400).json({ message: "item not found" });
+      : res.status(404).json({ message: "item not found" }); // 404 Not Found
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
