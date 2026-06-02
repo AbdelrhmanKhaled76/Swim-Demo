@@ -12,6 +12,13 @@ import {
 
 const router = express.Router();
 
+/**
+ * @swagger
+ * tags:
+ *   name: Transactions
+ *   description: Financial transaction management (Sale, Transfer, Restock, Dump) with Stripe integration
+ */
+
 router.post('/sale', createSale);
 router.post('/sale/:id/confirm', confirmSale);
 router.post('/transfer', createTransfer);

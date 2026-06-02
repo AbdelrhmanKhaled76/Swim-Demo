@@ -1,6 +1,6 @@
-import { type Order, gridClass } from './types';
-import StatusBadge from './StatusBadge';
-import ActionButton from './ActionButton';
+import { type Order, gridClass } from '../types';
+import StatusBadge from '../StatusBadge/StatusBadge';
+import ActionButton from '../ActionButton/ActionButton';
 
 function HistoryRow({ order }: { order: Order }) {
   const [prefix, num] = order.id.split('-');
