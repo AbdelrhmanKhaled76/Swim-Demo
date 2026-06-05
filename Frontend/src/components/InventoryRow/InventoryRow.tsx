@@ -1,10 +1,17 @@
-export interface InventoryItem {
-  id: string;
-  company: string;
-  quantity: number;
-  unit: string;
+export interface ItemDetails {
+  _id: string;
+  name: string;
+  description?: string;
+  category: string;
   price: number;
-  currency: string;
+  imageUrl?: string;
+}
+
+export interface InventoryItem {
+  _id: string;
+  itemId: ItemDetails | null;
+  locationId: string;
+  quantity: number;
 }
 
 interface InventoryRowProps {
@@ -12,26 +19,30 @@ interface InventoryRowProps {
 }
 
 function InventoryRow({ item }: InventoryRowProps) {
+  const name = item.itemId?.name || 'Unknown Item';
+  const category = item.itemId?.category || 'General';
+  const price = item.itemId?.price || 0;
+
   return (
     <div className="grid grid-cols-[1.5fr_1fr_1fr] py-4 border-b border-neutral-200 items-center">
       <div className="flex flex-col text-left">
         <span className="regular text-[11px] font-bold text-primary-500 uppercase tracking-wide">
-          {item.id}
+          {name}
         </span>
         <span className="regular text-[10px] text-neutral-500 tracking-wider">
-          {item.company}
+          {category}
         </span>
       </div>
 
       <div className="text-center md:text-right">
         <span className="regular text-[10px] tracking-widest text-secondary-500 font-bold uppercase">
-          {item.quantity} {item.unit}
+          {item.quantity} ITEMS
         </span>
       </div>
 
       <div className="text-right">
         <span className="regular text-[10px] tracking-widest text-secondary-500 font-bold uppercase">
-          {item.price.toFixed(2)}{item.currency}
+          {price.toFixed(2)} EGP
         </span>
       </div>
     </div>
