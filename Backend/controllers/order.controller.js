@@ -14,8 +14,9 @@ const createOrder = async (req, res) => {
 
 const getAllOrders = async (req, res) => {
   try {
+    const storeId = req.params.id;
     const orders = await orderModel
-      .find()
+      .find({ storeId })
       .populate("customerId")
       .populate("storeId")
       .populate("items.itemId");

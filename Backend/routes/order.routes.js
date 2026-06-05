@@ -57,7 +57,7 @@ const orderRouter = express.Router();
  *                     $ref: '#/components/schemas/Order'
  */
 orderRouter.post("/", createOrder);
-orderRouter.get("/", getAllOrders);
+orderRouter.get("/:id/orders", getAllOrders);
 
 /**
  * @swagger
