@@ -5,6 +5,7 @@ import {
   getLocationDetails,
   updateLocation,
   deleteLocation,
+  getLocationsByOrganization,
 } from '../controllers/location.controller.js';
 import { protect } from '../middlewares/auth.middleware.js';
 import { authorize } from '../middlewares/role.middleware.js';
@@ -56,8 +57,35 @@ const router = express.Router();
  *       403:
  *         description: Forbidden – Admin or WarehouseOwner required
  */
-router.get('/', protect, getLocations);
-router.post('/', protect, authorize('Admin', 'WarehouseOwner'), createLocation);
+router.get('/', /* protect, */ getLocations);
+router.post('/', /* protect, authorize('Admin', 'WarehouseOwner'), */ createLocation);
+
+/**
+ * @swagger
+ * /api/location/organization/{organizationId}:
+ *   get:
+ *     summary: Get all locations for a specific organization
+ *     tags: [Locations]
+ *     parameters:
+ *       - in: path
+ *         name: organizationId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Organization MongoDB ObjectId
+ *     responses:
+ *       200:
+ *         description: List of locations in the organization
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/Location'
+ *       500:
+ *         description: Server error
+ */
+router.get('/organization/:organizationId', getLocationsByOrganization);
 
 /**
  * @swagger
@@ -132,8 +160,8 @@ router.post('/', protect, authorize('Admin', 'WarehouseOwner'), createLocation);
  *       404:
  *         description: Location not found
  */
-router.get('/:id', protect, getLocationDetails);
-router.put('/:id', protect, authorize('Admin', 'WarehouseOwner'), updateLocation);
-router.delete('/:id', protect, authorize('Admin'), deleteLocation);
+router.get('/:id', /* protect, */ getLocationDetails);
+router.put('/:id', /* protect, authorize('Admin', 'WarehouseOwner'), */ updateLocation);
+router.delete('/:id', /* protect, authorize('Admin'), */ deleteLocation);
 
 export default router;

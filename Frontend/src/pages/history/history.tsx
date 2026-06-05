@@ -33,13 +33,12 @@ function History() {
       if (sortBy === 'Sort By Quantity') {
         const qtyA = parseInt(a.quantity.replace(/,/g, ''), 10) || 0;
         const qtyB = parseInt(b.quantity.replace(/,/g, ''), 10) || 0;
-        return qtyB - qtyA; // Descending
+        return qtyB - qtyA; 
       }
       if (sortBy === 'Sort By Status') {
         return a.status.localeCompare(b.status);
       }
       if (sortBy === 'Sort By Date') {
-        // Sort by ID as a fallback for date
         return b.id.localeCompare(a.id);
       }
       return 0;
