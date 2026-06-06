@@ -14,8 +14,8 @@ function AddNewItemPopup({ isOpen, onClose }: props) {
   if (!isOpen) return null;
   return (
     <>
-      <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-neutral-900/40">
-        <div className="w-[560px] bg-neutral-900 shadow-2xl rounded-t-[30px] max-h-[80vh] overflow-y-auto">
+      <div className="fixed inset-0 z-9999 flex items-center justify-center bg-neutral-900/40">
+        <div className="`w-140 bg-neutral-900 shadow-2xl rounded-t-[30px] max-h-[80vh] overflow-y-auto">
           <div className="flex h-[52px] items-center justify-between bg-light-800 px-[18px] text-[14px] tracking-[1.5px] regular text-light-100 rounded-t-[30px]">
             <span className="font-semibold uppercase">add new item</span>
             <Button

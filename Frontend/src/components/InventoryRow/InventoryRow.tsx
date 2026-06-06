@@ -1,18 +1,5 @@
-export interface ItemDetails {
-  _id: string;
-  name: string;
-  description?: string;
-  category: string;
-  price: number;
-  imageUrl?: string;
-}
+import { type InventoryItem } from "../../interfaces/InventoryTypes/inventory";
 
-export interface InventoryItem {
-  _id: string;
-  itemId: ItemDetails | null;
-  locationId: string;
-  quantity: number;
-}
 
 interface InventoryRowProps {
   item: InventoryItem;

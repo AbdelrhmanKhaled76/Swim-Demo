@@ -1,11 +1,13 @@
-import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+import { createSlice, createAsyncThunk, type PayloadAction } from "@reduxjs/toolkit";
 import axios from 'axios';
-import { type InventoryItem } from "../../components/InventoryRow/InventoryRow";
+import { type InventoryItem, type Location } from "../../interfaces/InventoryTypes/inventory";
+import { API_BASE_URL } from "../../core/api.constants";
+import type { RootState } from "../index";
 
 const orgId: string = "6a21e93d947a50040cd0b35e";
 
 export interface InventoryState {
-    locations: any[];
+    locations: Location[];
     status: 'idle' | 'loading' | 'succeeded' | 'failed';
     currentView: boolean;
     inventoryItems: InventoryItem[];
@@ -13,18 +15,18 @@ export interface InventoryState {
     inventoryError: string | null;
 }
 
-export const fetchAllLocations = createAsyncThunk(
+export const fetchAllLocations = createAsyncThunk<Location[]>(
     'inventory/fetchAllLocations',
     async () => {
-        const response = await axios.get(`http://localhost:3000/api/location/organization/${orgId}`);
+        const response = await axios.get<Location[]>(`${API_BASE_URL}location/organization/${orgId}`);
         return response.data;
     }
 );
 
-export const fetchInventoryForLocation = createAsyncThunk(
+export const fetchInventoryForLocation = createAsyncThunk<InventoryItem[], string>(
     'inventory/fetchInventoryForLocation',
     async (locationId: string) => {
-        const response = await axios.get(`http://localhost:3000/api/inventory/${locationId}`);
+        const response = await axios.get<{ inventory: InventoryItem[] }>(`${API_BASE_URL}inventory/${locationId}`);
         return response.data.inventory;
     }
 );
@@ -42,7 +44,7 @@ const inventorySlice = createSlice({
     name: 'inventory',
     initialState,
     reducers: {
-        setCurrentView(state, action) {
+        setCurrentView(state, action: PayloadAction<boolean>) {
             state.currentView = action.payload;
         }
     },
@@ -74,27 +76,27 @@ const inventorySlice = createSlice({
 
 export const { setCurrentView } = inventorySlice.actions;
 
-export const selectTotalWarehouses = (state: any) => {
-    return state.inventory.locations.filter((loc: any) => loc.type === 'Warehouse');
+export const selectTotalWarehouses = (state: RootState) => {
+    return state.inventory.locations.filter((loc: Location) => loc.type === 'Warehouse');
 };
 
-export const selectTotalStores = (state: any) => {
-    return state.inventory.locations.filter((loc: any) => loc.type === 'Store');
+export const selectTotalStores = (state: RootState) => {
+    return state.inventory.locations.filter((loc: Location) => loc.type === 'Store');
 };
 
-export const selectCurrentView = (state: any) => {
+export const selectCurrentView = (state: RootState) => {
     return state.inventory.currentView;
 };
 
-export const selectInventoryItems = (state: any) => {
+export const selectInventoryItems = (state: RootState) => {
     return state.inventory.inventoryItems;
 };
 
-export const selectInventoryStatus = (state: any) => {
+export const selectInventoryStatus = (state: RootState) => {
     return state.inventory.inventoryStatus;
 };
 
-export const selectInventoryError = (state: any) => {
+export const selectInventoryError = (state: RootState) => {
     return state.inventory.inventoryError;
 };
 

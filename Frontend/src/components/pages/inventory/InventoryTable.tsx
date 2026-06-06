@@ -1,4 +1,5 @@
-import InventoryRow, { type InventoryItem } from "../../InventoryRow/InventoryRow";
+import InventoryRow from "../../InventoryRow/InventoryRow";
+import { type InventoryItem } from "../../../interfaces/InventoryTypes/inventory";
 
 interface InventoryTableProps {
   filteredItems: InventoryItem[];

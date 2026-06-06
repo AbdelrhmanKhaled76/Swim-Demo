@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import PageTitle from "../../components/PageTitle/PageTitle";
 import SearchInput from "../../components/SearchInput/SearchInput";
 import SortDropdown from "../../components/SortDropdown/SortDropdown";
-import { type InventoryItem } from "../../components/InventoryRow/InventoryRow";
+import { type InventoryItem, type Location } from "../../interfaces/InventoryTypes/inventory";
 import { useSelector, useDispatch } from 'react-redux';
 import { 
   fetchAllLocations, 
@@ -17,9 +17,10 @@ import {
 } from '../../store/slices/InventorySclice';
 import InventoryStats from '../../components/pages/inventory/InventoryStats';
 import InventoryTable from '../../components/pages/inventory/InventoryTable';
+import type { AppDispatch } from '../../store';
 
 function Inventory() {
-  const dispatch = useDispatch();
+  const dispatch = useDispatch<AppDispatch>();
 
   const [selectedLocationId, setSelectedLocationId] = useState<string>('');
   const [searchQuery, setSearchQuery] = useState('');
@@ -35,14 +36,14 @@ function Inventory() {
   const inventoryError = useSelector(selectInventoryError);
 
   const activeList = currentView ? totalWarehouses : totalStores;
-  const selectedLocation = activeList.find((loc: any) => loc._id === selectedLocationId);
+  const selectedLocation = activeList.find((loc: Location) => loc._id === selectedLocationId);
 
   const changeCurrentView = () => {
     dispatch(setCurrentView(!currentView));
   };
 
   useEffect(() => {
-    dispatch(fetchAllLocations() as any);
+    dispatch(fetchAllLocations());
   }, [dispatch]);
 
   useEffect(() => {
@@ -58,7 +59,7 @@ function Inventory() {
 
   useEffect(() => {
     if (activeList.length > 0) {
-      const exists = activeList.some((loc: any) => loc._id === selectedLocationId);
+      const exists = activeList.some((loc: Location) => loc._id === selectedLocationId);
       if (!exists) {
         setSelectedLocationId(activeList[0]._id);
       }
@@ -69,7 +70,7 @@ function Inventory() {
 
   useEffect(() => {
     if (selectedLocationId) {
-      dispatch(fetchInventoryForLocation(selectedLocationId) as any);
+      dispatch(fetchInventoryForLocation(selectedLocationId));
     }
   }, [dispatch, selectedLocationId]);
 
@@ -145,7 +146,7 @@ function Inventory() {
           {isDropdownOpen && (
             <div className="absolute left-0 z-50 w-full mt-1 bg-white border border-neutral-300 shadow-xl overflow-hidden animate-slide-down">
               <div className="max-h-60 overflow-y-auto no-scrollbar">
-                {activeList.map((item: any) => {
+                {activeList.map((item: Location) => {
                   const isSelected = item._id === selectedLocationId;
                   return (
                     <button
