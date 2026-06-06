@@ -36,7 +36,12 @@ function Inventory() {
   const inventoryError = useSelector(selectInventoryError);
 
   const activeList = currentView ? totalWarehouses : totalStores;
-  const selectedLocation = activeList.find((loc: Location) => loc._id === selectedLocationId);
+
+  const activeLocationId = selectedLocationId && activeList.some((loc: Location) => loc._id === selectedLocationId)
+    ? selectedLocationId
+    : (activeList[0]?._id || '');
+
+  const selectedLocation = activeList.find((loc: Location) => loc._id === activeLocationId);
 
   const changeCurrentView = () => {
     dispatch(setCurrentView(!currentView));
@@ -58,21 +63,10 @@ function Inventory() {
   }, []);
 
   useEffect(() => {
-    if (activeList.length > 0) {
-      const exists = activeList.some((loc: Location) => loc._id === selectedLocationId);
-      if (!exists) {
-        setSelectedLocationId(activeList[0]._id);
-      }
-    } else {
-      setSelectedLocationId('');
+    if (activeLocationId) {
+      dispatch(fetchInventoryForLocation(activeLocationId));
     }
-  }, [activeList, selectedLocationId]);
-
-  useEffect(() => {
-    if (selectedLocationId) {
-      dispatch(fetchInventoryForLocation(selectedLocationId));
-    }
-  }, [dispatch, selectedLocationId]);
+  }, [dispatch, activeLocationId]);
 
   const filteredItems = inventoryItems
     .filter((item: InventoryItem) => {
@@ -147,7 +141,7 @@ function Inventory() {
             <div className="absolute left-0 z-50 w-full mt-1 bg-white border border-neutral-300 shadow-xl overflow-hidden animate-slide-down">
               <div className="max-h-60 overflow-y-auto no-scrollbar">
                 {activeList.map((item: Location) => {
-                  const isSelected = item._id === selectedLocationId;
+                  const isSelected = item._id === activeLocationId;
                   return (
                     <button
                       key={item._id}
