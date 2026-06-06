@@ -18,6 +18,10 @@ import {
 import InventoryStats from '../../components/pages/inventory/InventoryStats';
 import InventoryTable from '../../components/pages/inventory/InventoryTable';
 import type { AppDispatch } from '../../store';
+import FloatingActionButton from '../../components/floatingActionButton/floatingActionButton';
+import WarehouseOperationsPopup from '../../components/warehouseOperationsPopup/warehouseOperationsPopup';
+import AddNewItemPopup from '../../components/addNewItemPopup/addNewItemPopup';
+import ExportToStorePopup from '../../components/exportToStorePopup/exportToStorePopup';
 
 function Inventory() {
   const dispatch = useDispatch<AppDispatch>();
@@ -35,6 +39,10 @@ function Inventory() {
   const inventoryStatus = useSelector(selectInventoryStatus);
   const inventoryError = useSelector(selectInventoryError);
 
+  const [isWarehousePopupOpen, setIsWarehousePopupOpen] = useState(false);
+  const [isAddNewItemPopupOpen, setIsAddNewItemPopupOpen] = useState(false);
+  const [isExportToStorePopupOpen, setIsExportToStorePopupOpen] = useState(false);
+  
   const activeList = currentView ? totalWarehouses : totalStores;
 
   const activeLocationId = selectedLocationId && activeList.some((loc: Location) => loc._id === selectedLocationId)
@@ -200,6 +208,31 @@ function Inventory() {
         inventoryError={inventoryError}
         onClearSearch={() => setSearchQuery('')}
       />
+      
+      <FloatingActionButton onClick={() => setIsWarehousePopupOpen(true)} />
+      
+      <WarehouseOperationsPopup
+        isOpen={isWarehousePopupOpen}
+        onClose={() => setIsWarehousePopupOpen(false)}
+        onAddNewItem={() => {
+          setIsWarehousePopupOpen(false);
+          setIsAddNewItemPopupOpen(true);
+        }}
+        onExportToStore={()=>{
+          setIsWarehousePopupOpen(false);
+          setIsExportToStorePopupOpen(true);
+        }}
+      />
+
+      <AddNewItemPopup
+        isOpen={isAddNewItemPopupOpen}
+        onClose={() => setIsAddNewItemPopupOpen(false)}
+      ></AddNewItemPopup>
+
+      <ExportToStorePopup
+        isOpen={isExportToStorePopupOpen}
+        onClose={()=>setIsExportToStorePopupOpen(false)}
+      ></ExportToStorePopup>
     </div>
   );
 }

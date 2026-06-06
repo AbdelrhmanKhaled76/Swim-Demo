@@ -8,9 +8,16 @@ import rightArrowIcon from "../../assets/icons/right-arrow-icon.svg";
 interface props {
   isOpen: boolean;
   onClose: () => void;
+  onAddNewItem: () => void;
+  onExportToStore: () => void;
 }
 
-function WarehouseOperationsPopup({ isOpen, onClose }: props) {
+function WarehouseOperationsPopup({
+  isOpen,
+  onClose,
+  onAddNewItem,
+  onExportToStore,
+}: props) {
   if (!isOpen) return null;
 
   return (
@@ -31,6 +38,7 @@ function WarehouseOperationsPopup({ isOpen, onClose }: props) {
           <Button
             icon={plusIcon}
             className="flex items-center justify-between h-[60px]"
+            onClick={onAddNewItem}
           >
             <>
               <span>ADD NEW ITEM</span>
@@ -41,6 +49,7 @@ function WarehouseOperationsPopup({ isOpen, onClose }: props) {
           <Button
             icon={uploadIcon}
             className="flex items-center justify-between h-[60px]"
+            onClick={onExportToStore}
           >
             <>
               <span>EXPORT TO STORE</span>
