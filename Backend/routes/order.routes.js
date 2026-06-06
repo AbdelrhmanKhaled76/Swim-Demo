@@ -4,6 +4,8 @@ import {
   getAllOrders,
   getOrderById,
 } from "../controllers/order.controller.js";
+import { protect } from "../middlewares/auth.middleware.js";
+import { authorize } from "../middlewares/role.middleware.js";
 
 const orderRouter = express.Router();
 
@@ -56,8 +58,8 @@ const orderRouter = express.Router();
  *                   items:
  *                     $ref: '#/components/schemas/Order'
  */
-orderRouter.post("/", createOrder);
-orderRouter.get("/:id/orders", getAllOrders);
+orderRouter.post("/", protect, authorize("Admin", "StoreManager"), createOrder);
+orderRouter.get("/", protect, getAllOrders);
 
 /**
  * @swagger
@@ -87,6 +89,6 @@ orderRouter.get("/:id/orders", getAllOrders);
  *       404:
  *         description: Order not found
  */
-orderRouter.get("/:id", getOrderById);
+orderRouter.get("/:id", protect, getOrderById);
 
 export default orderRouter;

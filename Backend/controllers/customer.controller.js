@@ -1,33 +1,39 @@
 import customerModel from "../models/customer.model.js";
 import orderModel from "../models/order.model.js";
+import { createCustomerValidator } from "../utils/validators.js";
 
-const createCustomer = async (req, res) => {
+const createCustomer = async (req, res, next) => {
   try {
+    const { error } = createCustomerValidator.validate(req.body);
+    if (error) {
+      return res.status(400).json({ message: error.details[0].message });
+    }
+
     const customer = await customerModel.create(req.body);
 
     res.status(201).json({ // 201 Created
       data: customer,
     });
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    next(error);
   }
 };
 
-const getAllCustomers = async (req, res) => {
+const getAllCustomers = async (req, res, next) => {
   try {
-    const customers = await customerModel.find();
+    const customers = await customerModel.find({ isActive: true });
 
     res.status(200).json({
       data: customers,
     });
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    next(error);
   }
 };
 
-const getCustomerById = async (req, res) => {
+const getCustomerById = async (req, res, next) => {
   try {
-    const customer = await customerModel.findById(req.params.id);
+    const customer = await customerModel.findOne({ _id: req.params.id, isActive: true });
 
     return customer
       ? res.status(200).json({ data: customer })
@@ -35,13 +41,11 @@ const getCustomerById = async (req, res) => {
           message: "customer not found",
         });
   } catch (error) {
-    res.status(500).json({
-      message: error.message,
-    });
+    next(error);
   }
 };
 
-const getCustomerOrders = async (req, res) => {
+const getCustomerOrders = async (req, res, next) => {
   try {
     const orders = await orderModel
       .find({ customerId: req.params.id })
@@ -51,9 +55,7 @@ const getCustomerOrders = async (req, res) => {
       data: orders,
     });
   } catch (error) {
-    res.status(500).json({
-      message: error.message,
-    });
+    next(error);
   }
 };
 

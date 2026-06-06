@@ -11,6 +11,10 @@ const customerSchema = new mongoose.Schema(
     email: {
       type: String,
     },
+    isActive: {
+      type: Boolean,
+      default: true,
+    },
   },
   { timestamps: true },
 );

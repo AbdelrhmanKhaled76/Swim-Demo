@@ -20,6 +20,10 @@ const itemSchema = new mongoose.Schema(
     imageUrl: {
       type: String,
     },
+    isActive: {
+      type: Boolean,
+      default: true,
+    },
   },
   { timestamps: true },
 );

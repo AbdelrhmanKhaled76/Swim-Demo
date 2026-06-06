@@ -126,16 +126,18 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
  *       500:
  *         description: Server error
  */
-export const createSale = async (req, res) => {
+export const createSale = async (req, res, next) => {
   try {
-    const { amount, currency, userId, locationId, relatedOrderId, items, notes, metadata } = req.body;
+    const { amount, currency, locationId, relatedOrderId, items, notes, metadata } = req.body;
+    // userId is taken from the verified JWT token — cannot be spoofed from the request body
+    const userId = req.user._id;
 
     // Create a Stripe PaymentIntent
     const paymentIntent = await stripe.paymentIntents.create({
       amount: amount || 0,
       currency: currency || 'usd',
       metadata: {
-        userId: userId || '',
+        userId: userId.toString(),
         locationId: locationId || '',
         relatedOrderId: relatedOrderId || ''
       }
@@ -148,7 +150,7 @@ export const createSale = async (req, res) => {
       amount: amount || 0,
       currency: currency || 'usd',
       stripePaymentIntentId: paymentIntent.id,
-      userId: userId || null,
+      userId,
       locationId: locationId || null,
       relatedOrderId: relatedOrderId || null,
       items: items || [],
@@ -165,10 +167,7 @@ export const createSale = async (req, res) => {
       message: 'Sale transaction created, Stripe PaymentIntent ready'
     });
   } catch (error) {
-    return res.status(500).json({
-      success: false,
-      message: error.message || 'Error creating sale transaction'
-    });
+    next(error);
   }
 };
 
@@ -204,7 +203,7 @@ export const createSale = async (req, res) => {
  *       500:
  *         description: Server error
  */
-export const confirmSale = async (req, res) => {
+export const confirmSale = async (req, res, next) => {
   try {
     const { id } = req.params;
 
@@ -225,10 +224,7 @@ export const confirmSale = async (req, res) => {
       message: 'Sale transaction completed'
     });
   } catch (error) {
-    return res.status(500).json({
-      success: false,
-      message: error.message || 'Error confirming sale transaction'
-    });
+    next(error);
   }
 };
 
@@ -279,9 +275,11 @@ export const confirmSale = async (req, res) => {
  *       500:
  *         description: Server error
  */
-export const createTransfer = async (req, res) => {
+export const createTransfer = async (req, res, next) => {
   try {
-    const { fromLocationId, toLocationId, items, userId, notes, metadata } = req.body;
+    const { fromLocationId, toLocationId, items, notes, metadata } = req.body;
+    // userId is taken from the verified JWT token — cannot be spoofed from the request body
+    const userId = req.user._id;
 
     const transaction = await Transaction.create({
       type: 'transfer',
@@ -289,7 +287,7 @@ export const createTransfer = async (req, res) => {
       fromLocationId: fromLocationId || null,
       toLocationId: toLocationId || null,
       items: items || [],
-      userId: userId || null,
+      userId,
       notes: notes || '',
       metadata: metadata || {}
     });
@@ -300,10 +298,7 @@ export const createTransfer = async (req, res) => {
       message: 'Transfer transaction completed'
     });
   } catch (error) {
-    return res.status(500).json({
-      success: false,
-      message: error.message || 'Error creating transfer transaction'
-    });
+    next(error);
   }
 };
 
@@ -351,16 +346,18 @@ export const createTransfer = async (req, res) => {
  *       500:
  *         description: Server error
  */
-export const createRestock = async (req, res) => {
+export const createRestock = async (req, res, next) => {
   try {
-    const { locationId, items, userId, notes, metadata } = req.body;
+    const { locationId, items, notes, metadata } = req.body;
+    // userId is taken from the verified JWT token — cannot be spoofed from the request body
+    const userId = req.user._id;
 
     const transaction = await Transaction.create({
       type: 'restock',
       status: 'completed',
       locationId: locationId || null,
       items: items || [],
-      userId: userId || null,
+      userId,
       notes: notes || '',
       metadata: metadata || {}
     });
@@ -371,10 +368,7 @@ export const createRestock = async (req, res) => {
       message: 'Restock transaction completed'
     });
   } catch (error) {
-    return res.status(500).json({
-      success: false,
-      message: error.message || 'Error creating restock transaction'
-    });
+    next(error);
   }
 };
 
@@ -427,9 +421,11 @@ export const createRestock = async (req, res) => {
  *       500:
  *         description: Server error
  */
-export const createDump = async (req, res) => {
+export const createDump = async (req, res, next) => {
   try {
-    const { locationId, items, userId, notes, reason, stripePaymentIntentId, amount } = req.body;
+    const { locationId, items, notes, reason, stripePaymentIntentId, amount } = req.body;
+    // userId is taken from the verified JWT token — cannot be spoofed from the request body
+    const userId = req.user._id;
 
     let stripeRefundId = null;
     let refundIssued = false;
@@ -453,7 +449,7 @@ export const createDump = async (req, res) => {
       stripeRefundId: stripeRefundId,
       locationId: locationId || null,
       items: items || [],
-      userId: userId || null,
+      userId,
       notes: notes || '',
       metadata: { reason: reason || '', refundIssued }
     });
@@ -464,10 +460,7 @@ export const createDump = async (req, res) => {
       message: refundIssued ? 'Dump transaction created and Stripe refund completed' : 'Dump transaction completed'
     });
   } catch (error) {
-    return res.status(500).json({
-      success: false,
-      message: error.message || 'Error creating dump/refund transaction'
-    });
+    next(error);
   }
 };
 
@@ -496,7 +489,7 @@ export const createDump = async (req, res) => {
  *       500:
  *         description: Server error
  */
-export const getAllTransactions = async (req, res) => {
+export const getAllTransactions = async (req, res, next) => {
   try {
     let transactions;
     try {
@@ -513,10 +506,7 @@ export const getAllTransactions = async (req, res) => {
       message: 'All transactions retrieved successfully'
     });
   } catch (error) {
-    return res.status(500).json({
-      success: false,
-      message: error.message || 'Error fetching transactions'
-    });
+    next(error);
   }
 };
 
@@ -574,7 +564,7 @@ export const getAllTransactions = async (req, res) => {
  *       500:
  *         description: Server error
  */
-export const getTransactionHistory = async (req, res) => {
+export const getTransactionHistory = async (req, res, next) => {
   try {
     const { startDate, endDate, locationId, userId, type } = req.query;
     const filter = {};
@@ -623,10 +613,7 @@ export const getTransactionHistory = async (req, res) => {
       message: 'Transaction history retrieved successfully'
     });
   } catch (error) {
-    return res.status(500).json({
-      success: false,
-      message: error.message || 'Error fetching transaction history'
-    });
+    next(error);
   }
 };
 
@@ -662,7 +649,7 @@ export const getTransactionHistory = async (req, res) => {
  *       500:
  *         description: Server error
  */
-export const getTransactionById = async (req, res) => {
+export const getTransactionById = async (req, res, next) => {
   try {
     const { id } = req.params;
 
@@ -687,9 +674,6 @@ export const getTransactionById = async (req, res) => {
       message: 'Transaction retrieved successfully'
     });
   } catch (error) {
-    return res.status(500).json({
-      success: false,
-      message: error.message || 'Error fetching transaction'
-    });
+    next(error);
   }
 };
