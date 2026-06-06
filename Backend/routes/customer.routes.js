@@ -5,6 +5,8 @@ import {
   getCustomerById,
   getCustomerOrders,
 } from "../controllers/customer.controller.js";
+import { protect } from '../middlewares/auth.middleware.js';
+import { authorize } from '../middlewares/role.middleware.js';
 
 const customerRouter = express.Router();
 
@@ -57,8 +59,8 @@ const customerRouter = express.Router();
  *                   items:
  *                     $ref: '#/components/schemas/Customer'
  */
-customerRouter.post("/", createCustomer);
-customerRouter.get("/", getAllCustomers);
+customerRouter.post("/", protect, authorize('Admin', 'StoreManager'), createCustomer);
+customerRouter.get("/", protect, getAllCustomers);
 
 /**
  * @swagger
@@ -89,7 +91,7 @@ customerRouter.get("/", getAllCustomers);
  *                     $ref: '#/components/schemas/Order'
  */
 // ⚠️ Must be defined BEFORE /:id to avoid route shadowing
-customerRouter.get("/customer-orders/:id", getCustomerOrders);
+customerRouter.get("/customer-orders/:id", protect, getCustomerOrders);
 
 /**
  * @swagger
@@ -119,6 +121,6 @@ customerRouter.get("/customer-orders/:id", getCustomerOrders);
  *       404:
  *         description: Customer not found
  */
-customerRouter.get("/:id", getCustomerById);
+customerRouter.get("/:id", protect, getCustomerById);
 
 export default customerRouter;

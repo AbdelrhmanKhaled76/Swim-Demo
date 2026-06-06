@@ -6,6 +6,8 @@ import {
   getItemById,
   updateItem,
 } from "../controllers/item.controller.js";
+import { protect } from '../middlewares/auth.middleware.js';
+import { authorize } from '../middlewares/role.middleware.js';
 
 const itemRouter = express.Router();
 
@@ -58,8 +60,8 @@ const itemRouter = express.Router();
  *                   items:
  *                     $ref: '#/components/schemas/Item'
  */
-itemRouter.post("/", createItem);
-itemRouter.get("/", getAllItems);
+itemRouter.post("/", protect, authorize('Admin', 'WarehouseOwner'), createItem);
+itemRouter.get("/", protect, getAllItems);
 
 /**
  * @swagger
@@ -130,8 +132,8 @@ itemRouter.get("/", getAllItems);
  *       200:
  *         description: Item deleted successfully
  */
-itemRouter.get("/:id", getItemById);
-itemRouter.put("/:id", updateItem);
-itemRouter.delete("/:id", deleteItem);
+itemRouter.get("/:id", protect, getItemById);
+itemRouter.put("/:id", protect, authorize('Admin', 'WarehouseOwner'), updateItem);
+itemRouter.delete("/:id", protect, authorize('Admin'), deleteItem);
 
 export default itemRouter;

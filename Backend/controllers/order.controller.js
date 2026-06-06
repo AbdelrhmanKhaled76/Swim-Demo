@@ -1,18 +1,22 @@
 import orderModel from "../models/order.model.js";
+import { createOrderValidator } from "../utils/validators.js";
 
-const createOrder = async (req, res) => {
+const createOrder = async (req, res, next) => {
   try {
+    const { error } = createOrderValidator.validate(req.body);
+    if (error) {
+      return res.status(400).json({ message: error.details[0].message });
+    }
+
     const order = await orderModel.create(req.body);
 
     res.status(201).json({ data: order }); // 201 Created
   } catch (error) {
-    res.status(500).json({
-      message: error.message,
-    });
+    next(error);
   }
 };
 
-const getAllOrders = async (req, res) => {
+const getAllOrders = async (req, res, next) => {
   try {
     const orders = await orderModel
       .find()
@@ -22,13 +26,11 @@ const getAllOrders = async (req, res) => {
 
     res.status(200).json({ data: orders });
   } catch (error) {
-    res.status(500).json({
-      message: error.message,
-    });
+    next(error);
   }
 };
 
-const getOrderById = async (req, res) => {
+const getOrderById = async (req, res, next) => {
   try {
     const order = await orderModel
       .findById(req.params.id)
@@ -40,9 +42,7 @@ const getOrderById = async (req, res) => {
       ? res.status(200).json({ data: order })
       : res.status(404).json({ message: "order not found" }); // 404 Not Found
   } catch (error) {
-    res.status(500).json({
-      message: error.message,
-    });
+    next(error);
   }
 };
 

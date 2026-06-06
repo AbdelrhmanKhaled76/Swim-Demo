@@ -9,6 +9,8 @@ import {
   getTransactionHistory,
   getTransactionById
 } from '../controllers/transaction.controller.js';
+import { protect } from '../middlewares/auth.middleware.js';
+import { authorize } from '../middlewares/role.middleware.js';
 
 const router = express.Router();
 
@@ -19,13 +21,13 @@ const router = express.Router();
  *   description: Financial transaction management (Sale, Transfer, Restock, Dump) with Stripe integration
  */
 
-router.post('/sale', createSale);
-router.post('/sale/:id/confirm', confirmSale);
-router.post('/transfer', createTransfer);
-router.post('/restock', createRestock);
-router.post('/dump', createDump);
-router.get('/', getAllTransactions);
-router.get('/history', getTransactionHistory);
-router.get('/:id', getTransactionById);
+router.post('/sale', protect, authorize('Admin', 'WarehouseOwner', 'StoreManager'), createSale);
+router.post('/sale/:id/confirm', protect, authorize('Admin', 'WarehouseOwner', 'StoreManager'), confirmSale);
+router.post('/transfer', protect, authorize('Admin', 'WarehouseOwner'), createTransfer);
+router.post('/restock', protect, authorize('Admin', 'WarehouseOwner'), createRestock);
+router.post('/dump', protect, authorize('Admin', 'WarehouseOwner'), createDump);
+router.get('/', protect, getAllTransactions);
+router.get('/history', protect, getTransactionHistory);
+router.get('/:id', protect, getTransactionById);
 
 export default router;
