@@ -1,105 +1,178 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import PageTitle from "../../components/PageTitle/PageTitle";
 import SearchInput from "../../components/SearchInput/SearchInput";
 import SortDropdown from "../../components/SortDropdown/SortDropdown";
-import StatsCard from "../../components/StatsCard/StatsCard";
-import InventoryRow, { type InventoryItem } from "../../components/InventoryRow/InventoryRow";
-import arrowInventoryIcon from '../../assets/icons/arrow inventory.svg';
-import moneyInventoryIcon from '../../assets/icons/money inventory.svg';
-
-const mockInventoryItems: InventoryItem[] = [
-  { id: 'IN-7492', company: 'Logistics Corp', quantity: 32, unit: 'REMAINING', price: 20.00, currency: 'EGP' },
-  { id: 'IN-7492', company: 'Logistics Corp', quantity: 32, unit: 'REMAINING', price: 20.00, currency: 'EGP' },
-  { id: 'IN-7492', company: 'Logistics Corp', quantity: 32, unit: 'REMAINING', price: 20.00, currency: 'EGP' },
-  { id: 'IN-8831', company: 'Global Transport', quantity: 15, unit: 'REMAINING', price: 45.99, currency: 'EGP' },
-  { id: 'IN-6215', company: 'Oceanic Trade', quantity: 120, unit: 'REMAINING', price: 12.50, currency: 'EGP' },
-];
+import { type InventoryItem, type Location } from "../../interfaces/InventoryTypes/inventory";
+import { useSelector, useDispatch } from 'react-redux';
+import { 
+  fetchAllLocations, 
+  selectTotalWarehouses, 
+  selectTotalStores, 
+  selectCurrentView, 
+  setCurrentView,
+  selectInventoryItems,
+  selectInventoryStatus,
+  selectInventoryError,
+  fetchInventoryForLocation
+} from '../../store/slices/InventorySclice';
+import InventoryStats from '../../components/pages/inventory/InventoryStats';
+import InventoryTable from '../../components/pages/inventory/InventoryTable';
+import type { AppDispatch } from '../../store';
 
 function Inventory() {
-  const [selectedWarehouse, setSelectedWarehouse] = useState('warehouse 1');
+  const dispatch = useDispatch<AppDispatch>();
+
+  const [selectedLocationId, setSelectedLocationId] = useState<string>('');
   const [searchQuery, setSearchQuery] = useState('');
   const [sortBy, setSortBy] = useState('Sort By Quantity');
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
-  const filteredItems = mockInventoryItems
-    .filter((item) => {
+  const currentView = useSelector(selectCurrentView);
+
+  const totalWarehouses = useSelector(selectTotalWarehouses);
+  const totalStores = useSelector(selectTotalStores);
+  const inventoryItems = useSelector(selectInventoryItems);
+  const inventoryStatus = useSelector(selectInventoryStatus);
+  const inventoryError = useSelector(selectInventoryError);
+
+  const activeList = currentView ? totalWarehouses : totalStores;
+  const selectedLocation = activeList.find((loc: Location) => loc._id === selectedLocationId);
+
+  const changeCurrentView = () => {
+    dispatch(setCurrentView(!currentView));
+  };
+
+  useEffect(() => {
+    dispatch(fetchAllLocations());
+  }, [dispatch]);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      const target = event.target as HTMLElement;
+      if (!target.closest('.custom-dropdown-container')) {
+        setIsDropdownOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  useEffect(() => {
+    if (activeList.length > 0) {
+      const exists = activeList.some((loc: Location) => loc._id === selectedLocationId);
+      if (!exists) {
+        setSelectedLocationId(activeList[0]._id);
+      }
+    } else {
+      setSelectedLocationId('');
+    }
+  }, [activeList, selectedLocationId]);
+
+  useEffect(() => {
+    if (selectedLocationId) {
+      dispatch(fetchInventoryForLocation(selectedLocationId));
+    }
+  }, [dispatch, selectedLocationId]);
+
+  const filteredItems = inventoryItems
+    .filter((item: InventoryItem) => {
+      if (!item.itemId) return false;
       const q = searchQuery.toLowerCase();
       return (
-        item.id.toLowerCase().includes(q) ||
-        item.company.toLowerCase().includes(q)
+        item.itemId.name.toLowerCase().includes(q) ||
+        item.itemId.category.toLowerCase().includes(q)
       );
     })
-    .sort((a, b) => {
+    .sort((a: InventoryItem, b: InventoryItem) => {
       if (sortBy === 'Sort By Quantity') {
         return b.quantity - a.quantity;
       }
       if (sortBy === 'Sort By Price') {
-        return b.price - a.price;
+        const priceA = a.itemId?.price || 0;
+        const priceB = b.itemId?.price || 0;
+        return priceB - priceA;
       }
       if (sortBy === 'Sort By ID') {
-        return a.id.localeCompare(b.id);
+        const nameA = a.itemId?.name || '';
+        const nameB = b.itemId?.name || '';
+        return nameA.localeCompare(nameB);
       }
       return 0;
     });
+
+  const totalValue = filteredItems.reduce((acc: number, item: InventoryItem) => {
+    const price = item.itemId?.price || 0;
+    return acc + (item.quantity * price);
+  }, 0);
 
   return (
     <div className="p-section-mobile md:p-section-desktop ">
       <PageTitle title="Swim Inventory" />
 
       <div className="regular flex flex-col gap-4 justify-between md:flex-row md:justify-between text-[14px] md:text-[18px] text-center md:text-left text-tertiary-500 tracking-widest uppercase mb-6 leading-relaxed">
-          <span className="block md:inline ">switch to store →</span>
-          <button className="regular text-[14px] w-full md:w-auto tracking-widest bg-primary-700 text-white px-16 py-[6px] uppercase">
-            store
+          <span className="block md:inline ">switch to  {currentView?"store":"WareHouse"}  →</span>
+          <button className="regular text-[14px] w-full md:w-auto tracking-widest bg-primary-700 text-white px-16 py-1.5 uppercase"
+          onClick={changeCurrentView}>
+           {currentView?"Store":"WareHouse"}
           </button>
       </div>
 
-      <div className="flex flex-col gap-4 mb-8">
-        <StatsCard
-          title="Total Inventory Value"
-          value="$14.2M"
-          subtext={
-            <span className="flex items-center justify-center md:justify-start gap-1.5">
-              <img src={arrowInventoryIcon} alt="Arrow Up" className="w-3 h-2" />
-              <span>+2.4% VS LAST QUARTER</span>
-            </span>
-          }
-          variant="dark"
-          icon={<img src={moneyInventoryIcon} alt="Money Icon" className="w-8 h-8" />}
-        />
-        <div className="grid grid-cols-2 gap-4">
-          <StatsCard
-            title="Total Warehouses"
-            value="2"
-            subtext="Remaining 1"
-            variant="light"
-          />
-          <StatsCard
-            title="Total Stores"
-            value="5"
-            subtext="Remaining 2"
-            variant="light"
-          />
-        </div>
-      </div>
+      <InventoryStats 
+        totalValue={totalValue} 
+        totalWarehousesCount={totalWarehouses.length} 
+        totalStoresCount={totalStores.length} 
+      />
 
-      <div className="mb-6">
+      <div className="mb-6 custom-dropdown-container relative">
         <h2 className="header font-bold text-[20px] md:text-[40px] tracking-widest uppercase mb-3 text-left">
-          Warehouse Management
+         {currentView?"WareHouse":"Store"} Management
         </h2>
         <div className="relative w-full">
-          <select
-            value={selectedWarehouse}
-            onChange={(e) => setSelectedWarehouse(e.target.value)}
-            className="header font-bold text-[24px] md:text-[36px] tracking-wide text-neutral-900 border border-neutral-300 bg-white px-6 py-4 pr-12 appearance-none cursor-pointer uppercase w-full outline-none focus:border-neutral-500 transition-colors"
+          <button
+            onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+            className="flex justify-between items-center w-full header font-bold text-[20px] md:text-[36px] tracking-wide text-neutral-900 border border-neutral-300 bg-white px-6 py-4 cursor-pointer uppercase outline-none focus:border-neutral-500 hover:border-primary-500 transition-colors"
           >
-            <option value="warehouse 1">warehouse 1</option>
-            <option value="warehouse 2">warehouse 2</option>
-            <option value="warehouse 3">warehouse 3</option>
-          </select>
-          <div className="absolute right-6 top-1/2 -translate-y-1/2 pointer-events-none">
-            <svg className="w-6 h-6 text-neutral-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+            <span>{selectedLocation?.name || `Select ${currentView ? 'Warehouse' : 'Store'}`}</span>
+            <svg 
+              className={`w-6 h-6 text-neutral-600 transition-transform duration-300 ${isDropdownOpen ? 'rotate-180' : 'rotate-0'}`} 
+              fill="none" 
+              stroke="currentColor" 
+              viewBox="0 0 24 24"
+            >
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M19 9l-7 7-7-7" />
             </svg>
-          </div>
+          </button>
+          
+          {isDropdownOpen && (
+            <div className="absolute left-0 z-50 w-full mt-1 bg-white border border-neutral-300 shadow-xl overflow-hidden animate-slide-down">
+              <div className="max-h-60 overflow-y-auto no-scrollbar">
+                {activeList.map((item: Location) => {
+                  const isSelected = item._id === selectedLocationId;
+                  return (
+                    <button
+                      key={item._id}
+                      onClick={() => {
+                        setSelectedLocationId(item._id);
+                        setIsDropdownOpen(false);
+                      }}
+                      className={`flex items-center justify-between w-full px-6 py-4 text-left header font-bold text-[18px] md:text-[24px] tracking-wide uppercase transition-all duration-200 cursor-pointer ${
+                        isSelected 
+                          ? 'bg-neutral-100 text-primary-700 font-extrabold' 
+                          : 'text-neutral-700 hover:bg-neutral-50 hover:text-primary-700'
+                      }`}
+                    >
+                      <span>{item.name}</span>
+                      {isSelected && (
+                        <svg className="w-5 h-5 text-primary-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                        </svg>
+                      )}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          )}
         </div>
       </div>
 
@@ -120,35 +193,13 @@ function Inventory() {
         />
       </div>
 
-      <div className="flex justify-between items-center mb-4">
-        <span className="regular text-[11px] md:text-[12px] tracking-widest text-neutral-500 uppercase font-bold">
-          {filteredItems.length} of {mockInventoryItems.length} Items
-        </span>
-        <button className="regular text-[11px] md:text-[12px] tracking-widest text-neutral-900 font-bold uppercase cursor-pointer hover:text-primary-500 transition-colors flex items-center gap-1">
-          See All
-          <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 6H5.25A2.25 2.25 0 0 0 3 8.25v10.5A2.25 2.25 0 0 0 5.25 21h10.5A2.25 2.25 0 0 0 18 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25" />
-          </svg>
-        </button>
-      </div>
-
-      <div className="flex flex-col">
-        <div className="grid grid-cols-[1.5fr_1fr_1fr] pb-3 border-b-2 border-neutral-300">
-          <div className="text-left">
-            <span className="regular text-[14px] tracking-widest   uppercase ">Item</span>
-          </div>
-          <div className="text-center md:text-right">
-            <span className="regular text-[14px] tracking-widest text-tertiary-500 uppercase ">Quantity</span>
-          </div>
-          <div className="text-right">
-            <span className="regular text-[14px] tracking-widest text-tertiary-500 uppercase ">Price</span>
-          </div>
-        </div>
-
-        {filteredItems.map((item, index) => (
-          <InventoryRow key={`${item.id}-${index}`} item={item} />
-        ))}
-      </div>
+      <InventoryTable
+        filteredItems={filteredItems}
+        inventoryItemsCount={inventoryItems.length}
+        inventoryStatus={inventoryStatus}
+        inventoryError={inventoryError}
+        onClearSearch={() => setSearchQuery('')}
+      />
     </div>
   );
 }

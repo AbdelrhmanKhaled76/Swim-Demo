@@ -60,8 +60,8 @@ const router = express.Router();
  *       403:
  *         description: Forbidden – Admin role required
  */
-router.get('/', protect, getOrganizations);
-router.post('/', protect, authorize('Admin'), createOrganization);
+router.get('/', /* protect, */ getOrganizations);
+router.post('/', /* protect, authorize('Admin'), */ createOrganization);
 
 /**
  * @swagger
@@ -132,8 +132,8 @@ router.post('/', protect, authorize('Admin'), createOrganization);
  *       404:
  *         description: Organization not found
  */
-router.get('/:id', protect, getOrganizationById);
-router.put('/:id', protect, authorize('Admin'), updateOrganization);
-router.delete('/:id', protect, authorize('Admin'), deleteOrganization);
+router.get('/:id', /* protect, */ getOrganizationById);
+router.put('/:id', /* protect, authorize('Admin'), */ updateOrganization);
+router.delete('/:id', /* protect, authorize('Admin'), */ deleteOrganization);
 
 export default router;

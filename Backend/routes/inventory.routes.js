@@ -91,8 +91,8 @@ const router = express.Router();
  *       409:
  *         description: Inventory record already exists – use updateStock instead
  */
-router.get('/:locationId', protect, getStoreInventory);
-router.post('/:locationId', protect, authorize('Admin', 'WarehouseOwner', 'StoreManager'), addInventory);
+router.get('/:locationId', /* protect, */ getStoreInventory);
+router.post('/:locationId', /* protect, authorize('Admin', 'WarehouseOwner', 'StoreManager'), */ addInventory);
 
 /**
  * @swagger
@@ -144,7 +144,7 @@ router.post('/:locationId', protect, authorize('Admin', 'WarehouseOwner', 'Store
  *       404:
  *         description: Location not found
  */
-router.get('/:locationId/check/:itemId', protect, checkItemAvailability);
+router.get('/:locationId/check/:itemId', /* protect, */ checkItemAvailability);
 
 /**
  * @swagger
@@ -187,7 +187,7 @@ router.get('/:locationId/check/:itemId', protect, checkItemAvailability);
  *       404:
  *         description: Location not found
  */
-router.get('/:locationId/low-stock', protect, getLowStockReport);
+router.get('/:locationId/low-stock', /* protect, */ getLowStockReport);
 
 /**
  * @swagger
@@ -224,7 +224,7 @@ router.get('/:locationId/low-stock', protect, getLowStockReport);
  *       404:
  *         description: Location or inventory record not found
  */
-router.put('/:locationId/stock', protect, authorize('Admin', 'WarehouseOwner', 'StoreManager'), updateStock);
+router.put('/:locationId/stock', /* protect, authorize('Admin', 'WarehouseOwner', 'StoreManager'), */ updateStock);
 
 /**
  * @swagger
@@ -283,6 +283,6 @@ router.put('/:locationId/stock', protect, authorize('Admin', 'WarehouseOwner', '
  *       404:
  *         description: Source or destination location not found
  */
-router.post('/:locationId/transfer', protect, authorize('Admin', 'WarehouseOwner', 'StoreManager'), transferStock);
+router.post('/:locationId/transfer', /* protect, authorize('Admin', 'WarehouseOwner', 'StoreManager'), */ transferStock);
 
 export default router;

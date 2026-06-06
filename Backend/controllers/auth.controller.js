@@ -4,8 +4,8 @@ import jwt from "jsonwebtoken";
 import bcrypt from "bcryptjs";
 import crypto from "crypto";
 
-const generateToken = (id, role) => {
-  return jwt.sign({ id, role }, process.env.JWT_SECRET, {
+const generateToken = (id, role,organizationID) => {
+  return jwt.sign({ id, role, organizationID }, process.env.JWT_SECRET, {
     expiresIn: process.env.JWT_EXPIRES_IN,
   });
 };
@@ -36,7 +36,7 @@ export const register = async (req, res, next) => {
       role,
       organizationID,
     });
-    const token = generateToken(user._id, user.role);
+    const token = generateToken(user._id, user.role,user.organizationID);
     res.status(201).json({
       success: true,
       token,
@@ -45,6 +45,7 @@ export const register = async (req, res, next) => {
         username: user.username,
         email: user.email,
         role: user.role,
+        organizationID: user.organizationID,
       },
       message: "User registered successfully",
     });
@@ -76,7 +77,7 @@ try {
       throw authError;
     }
 
-const token = generateToken(user._id, user.role);
+const token = generateToken(user._id, user.role,user.organizationID);
 
     res.status(200).json({
       success: true,
@@ -85,7 +86,8 @@ const token = generateToken(user._id, user.role);
         _id: user._id,
         username: user.username,
         email: user.email,
-        role: user.role
+        role: user.role,
+        organizationID: user.organizationID
       },
       message: 'Logged in successfully'
     });
@@ -147,7 +149,7 @@ export const resetPassword = async (req, res, next) => {
 
     await user.save();
 
-    const token = generateToken(user._id, user.role);
+    const token = generateToken(user._id, user.role,user.organizationID);
 
     res.status(200).json({
       success: true,

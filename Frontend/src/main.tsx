@@ -1,17 +1,18 @@
 // import { StrictMode } from 'react'
-import { createRoot } from "react-dom/client";
-import "./index.css";
-import App from "./App";
-import Home from "./pages/home/home";
-import History from "./pages/history/history";
-import Inventory from "./pages/inventory/inventory";
-import Order from "./pages/order/order";
-import Profile from "./pages/profile/profile";
-import Reciept from "./pages/reciept/reciept";
-import SignIn from "./pages/signin/signin";
-import SignUp from "./pages/signup/signup";
-import Statistics from "./pages/statistics/statistics";
-import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import { createRoot } from 'react-dom/client'
+import './index.css'
+import App from './App'
+import Home from './pages/home/home'
+import History from './pages/history/history'
+import Inventory from './pages/inventory/inventory'
+import Order from './pages/order/order'
+import Profile from './pages/profile/profile'
+import Reciept from './pages/reciept/reciept'
+import SignIn from './pages/signin/signin'
+import SignUp from './pages/signup/signup'
+import Statistics from './pages/statistics/statistics'
+import { createBrowserRouter, RouterProvider } from 'react-router-dom';
+import Popups from './pages/popups/popups'
 import { Provider } from "react-redux";
 import { store } from "./store";
 import { Toaster } from "react-hot-toast";
@@ -59,7 +60,11 @@ const router = createBrowserRouter([
       },
       {
         path: "statistics",
-        element: <Statistics />,
+        element: <Statistics />
+      },
+      {
+        path: "popups",
+        element: <Popups/>
       },
     ],
   },
