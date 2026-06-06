@@ -74,7 +74,8 @@ function Inventory() {
       const q = searchQuery.toLowerCase();
       return (
         item.itemId.name.toLowerCase().includes(q) ||
-        item.itemId.category.toLowerCase().includes(q)
+        item.itemId.category.toLowerCase().includes(q) ||
+        (item.itemId._id || '').toLowerCase().includes(q)
       );
     })
     .sort((a: InventoryItem, b: InventoryItem) => {
@@ -87,6 +88,11 @@ function Inventory() {
         return priceB - priceA;
       }
       if (sortBy === 'Sort By ID') {
+        const idA = a.itemId?._id || '';
+        const idB = b.itemId?._id || '';
+        return idA.localeCompare(idB);
+      }
+      if (sortBy === 'Sort By Name') {
         const nameA = a.itemId?.name || '';
         const nameB = b.itemId?.name || '';
         return nameA.localeCompare(nameB);
@@ -176,14 +182,14 @@ function Inventory() {
             id="search-inventory"
             value={searchQuery}
             onChange={setSearchQuery}
-            placeholder="Search With Item Name"
+            placeholder="Search With Item Name, Category, or ID"
           />
         </div>
         <SortDropdown
           id="sort-inventory"
           value={sortBy}
           onChange={setSortBy}
-          options={['Sort By Quantity', 'Sort By Price', 'Sort By ID']}
+          options={['Sort By Quantity', 'Sort By Price', 'Sort By Name', 'Sort By ID']}
         />
       </div>
 
