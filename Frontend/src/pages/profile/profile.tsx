@@ -4,6 +4,7 @@ import PageTitle from '../../components/PageTitle/PageTitle';
 import FormSection from '../../components/FormSection/FormSection';
 import FormField from '../../components/FormField/FormField';
 import ToggleSwitch from '../../components/ToggleSwitch/ToggleSwitch';
+import LocationManager from './LocationManager';
 
 function UserIcon() {
   return (
@@ -294,6 +295,8 @@ function Profile() {
           </span>
         </button>
       </form>
+
+      <LocationManager />
 
       <div className="mt-5 relative overflow-hidden" style={{ height: '160px' }}>
         <img
