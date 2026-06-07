@@ -16,7 +16,7 @@ function App() {
         <Outlet />
       </main>
       <Footer variant={variant} />
-      <MobileNav />
+      <MobileNav variant={variant} />
     </div>
   )
 }
