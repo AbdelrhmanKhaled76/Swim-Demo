@@ -22,6 +22,7 @@ import FloatingActionButton from '../../components/floatingActionButton/floating
 import WarehouseOperationsPopup from '../../components/warehouseOperationsPopup/warehouseOperationsPopup';
 import AddNewItemPopup from '../../components/addNewItemPopup/addNewItemPopup';
 import ExportToStorePopup from '../../components/exportToStorePopup/exportToStorePopup';
+import MoveBetweenWarehousesPopup from '../../components/moveBetweenWarehousesPopup/moveBetweenWarehousesPopup';
 
 function Inventory() {
   const dispatch = useDispatch<AppDispatch>();
@@ -42,6 +43,7 @@ function Inventory() {
   const [isWarehousePopupOpen, setIsWarehousePopupOpen] = useState(false);
   const [isAddNewItemPopupOpen, setIsAddNewItemPopupOpen] = useState(false);
   const [isExportToStorePopupOpen, setIsExportToStorePopupOpen] = useState(false);
+  const [isMoveBetweenWarehousesPopupOpen, setIsMoveBetweenWarehousesPopupOpen] = useState(false);
   
   const activeList = currentView ? totalWarehouses : totalStores;
 
@@ -222,6 +224,10 @@ function Inventory() {
           setIsWarehousePopupOpen(false);
           setIsExportToStorePopupOpen(true);
         }}
+        onMoveBetweenWarehouses={()=>{
+          setIsWarehousePopupOpen(false);
+          setIsMoveBetweenWarehousesPopupOpen(true);
+        }}
       />
 
       <AddNewItemPopup
@@ -233,6 +239,11 @@ function Inventory() {
         isOpen={isExportToStorePopupOpen}
         onClose={()=>setIsExportToStorePopupOpen(false)}
       ></ExportToStorePopup>
+
+      <MoveBetweenWarehousesPopup
+        isOpen={isMoveBetweenWarehousesPopupOpen}
+        onClose={()=>setIsMoveBetweenWarehousesPopupOpen(false)}
+      ></MoveBetweenWarehousesPopup>
     </div>
   );
 }

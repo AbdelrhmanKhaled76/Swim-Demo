@@ -2,6 +2,8 @@ import { gridClass } from '../types';
 import StatusBadge from '../StatusBadge/StatusBadge';
 import ActionButton from '../ActionButton/ActionButton';
 import type { FetchedOrder } from '../../interfaces/historyTypes/history';
+import { useState } from 'react';
+import OrderConfirmationPopup from '../orderConfirmationPopup/orderConfirmationPopup';
 
 const getOrderStatus = (createdAt: string) => {
   if (!createdAt) return 'PENDING';
@@ -19,6 +21,8 @@ function HistoryRow({ order }: { order: FetchedOrder }) {
   const totalQty = order.items?.reduce((sum, item: any) => sum + (item.quantity || 1), 0) || 0;
   const status = getOrderStatus(order.createdAt);
 
+  const [isOrderConfirmationPopupOpen, setIsOrderConfirmationPopupOpen] = useState(false);
+  
   return (
     <div className={`${gridClass} py-5 border-b border-neutral-200 items-center`}>
 
@@ -61,9 +65,17 @@ function HistoryRow({ order }: { order: FetchedOrder }) {
         {status === 'PENDING' && (
           <ActionButton variant="secondary">{'EDIT\nORDER'}</ActionButton>
         )}
-        <ActionButton variant="primary">{'CREATE\nRECEIPT'}</ActionButton>
+        <ActionButton variant="primary" onClick={()=>setIsOrderConfirmationPopupOpen(true)}>{'CREATE\nRECEIPT'}</ActionButton>
       </div>
 
+      <OrderConfirmationPopup
+        isOpen={isOrderConfirmationPopupOpen}
+        onClose={() =>setIsOrderConfirmationPopupOpen(false)}
+        idPrefix={prefix}
+        idNum={num}
+        customerName={order.customerId?.name || 'Unknown Customer'}
+        itemCount={totalQty}
+        />
     </div>
   );
 }
