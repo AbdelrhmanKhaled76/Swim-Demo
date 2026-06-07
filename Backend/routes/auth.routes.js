@@ -1,5 +1,7 @@
 import express from 'express';
-import { register, login, forgotPassword, resetPassword } from '../controllers/auth.controller.js';
+import { register, login, forgotPassword, resetPassword, inviteUser } from '../controllers/auth.controller.js';
+import { protect } from '../middlewares/auth.middleware.js';
+import { authorize } from '../middlewares/role.middleware.js';
 
 const router = express.Router();
 
@@ -164,4 +166,41 @@ router.post('/forgotpassword', forgotPassword);
  */
 router.put('/resetpassword/:resettoken', resetPassword);
 
-export default router;
+/**
+ * @swagger
+ * /api/auth/invite:
+ *   post:
+ *     summary: Admin invites a new WarehouseOwner or StoreManager to their organization
+ *     tags: [Auth]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [username, email, password, role]
+ *             properties:
+ *               username:
+ *                 type: string
+ *               email:
+ *                 type: string
+ *                 format: email
+ *               password:
+ *                 type: string
+ *                 minLength: 6
+ *               role:
+ *                 type: string
+ *                 enum: [WarehouseOwner, StoreManager]
+ *     responses:
+ *       201:
+ *         description: User invited successfully
+ *       400:
+ *         description: Validation error or email already registered
+ *       403:
+ *         description: Admin role required
+ */
+router.post('/invite', protect, authorize('Admin'), inviteUser);
+
+export default router;

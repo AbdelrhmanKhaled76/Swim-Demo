@@ -52,6 +52,11 @@ const transactionSchema = new mongoose.Schema({
     ref: 'User',
     default: null
   },
+  organizationId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Organization',
+    default: null
+  },
   locationId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Location',
