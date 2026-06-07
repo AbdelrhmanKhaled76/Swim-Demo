@@ -59,7 +59,7 @@ const orderRouter = express.Router();
  *                     $ref: '#/components/schemas/Order'
  */
 orderRouter.post("/", protect, authorize("Admin", "StoreManager"), createOrder);
-orderRouter.get("/", protect, getAllOrders);
+orderRouter.get("/store/:id",  /*protect,*/ getAllOrders);
 
 /**
  * @swagger

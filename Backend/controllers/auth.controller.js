@@ -1,9 +1,11 @@
 import { registerValidator, loginValidator } from "../utils/validators.js";
 import User from "../models/user.model.js";
 import Organization from "../models/organization.model.js";
+import Location from "../models/location.model.js";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcryptjs";
 import crypto from "crypto";
+import Joi from "joi";
 
 const generateToken = (id, role, organizationID) => {
   return jwt.sign({ id, role, organizationID }, process.env.JWT_SECRET, {
@@ -12,9 +14,11 @@ const generateToken = (id, role, organizationID) => {
 };
 
 // ── Register (public) ─────────────────────────────────────────────────────────
-// A fresh registration ALWAYS creates a new Organization and assigns role=Admin.
-// To add sub-users (WarehouseOwner / StoreManager), use POST /api/auth/invite (Admin only).
+// A fresh registration creates a new Organization, Location, and assigns role=Owner.
 export const register = async (req, res, next) => {
+  let createdUserId = null;
+  let createdOrgId = null;
+
   try {
     const { error, value } = registerValidator.validate(req.body);
     if (error) {
@@ -23,9 +27,9 @@ export const register = async (req, res, next) => {
       throw validationError;
     }
 
-    const { username, email, password, organizationName } = value;
+    // Blended schema: fullName/warehouse from main, combined with organization features
+    const { fullName, email, password, orgName, warehouse, industry } = value;
 
-    // Check email uniqueness
     const userExists = await User.findOne({ email });
     if (userExists) {
       const emailError = new Error("Email is already registered, try logging in");
@@ -33,38 +37,43 @@ export const register = async (req, res, next) => {
       throw emailError;
     }
 
-    // Create the user first (without org) so we have an _id for ownerId
+    // Create the user first
     const user = await User.create({
-      username,
-      email,
+      fullName: fullName,
+      email: email,
       passwordHash: password,
-      role: "Admin",        // First registration → always Admin
+      role: "Owner", 
     });
+    createdUserId = user._id;
 
-    // Auto-create Organization with the new user as owner
-    const orgName = organizationName || `${username}'s Organization`;
-    let organization;
+    // Auto-create Organization
+    let newOrganization;
     try {
-      organization = await Organization.create({
-        name: orgName,
+      newOrganization = await Organization.create({
+        name: orgName || `${fullName}'s Organization`,
+        industry: industry || "Not Specified",
         ownerId: user._id,
-        tier: "free",
+        tier: "free", // Kept from feature branch
       });
+      createdOrgId = newOrganization._id;
     } catch (orgErr) {
-      // If org name is taken, clean up the user and throw
-      await User.findByIdAndDelete(user._id);
       if (orgErr.code === 11000) {
-        const dupError = new Error(
-          `Organization name '${orgName}' is already taken. Please provide a unique organizationName.`
-        );
+        const dupError = new Error(`Organization name is already taken. Please provide a unique organizationName.`);
         dupError.statusCode = 409;
         throw dupError;
       }
       throw orgErr;
     }
 
+    // Create Location (from main branch)
+    const newLocation = await Location.create({
+      name: warehouse,
+      organizationId: newOrganization._id,
+      type: "Warehouse",
+    });
+
     // Link user to org
-    user.organizationID = organization._id;
+    user.organizationID = newOrganization._id;
     await user.save({ validateBeforeSave: false });
 
     const token = generateToken(user._id, user.role, user.organizationID);
@@ -74,27 +83,63 @@ export const register = async (req, res, next) => {
       token,
       data: {
         _id: user._id,
-        username: user.username,
+        fullName: user.fullName,
         email: user.email,
         role: user.role,
         organizationID: user.organizationID,
         organization: {
-          _id: organization._id,
-          name: organization.name,
-          tier: organization.tier,
+          _id: newOrganization._id,
+          name: newOrganization.name,
+          tier: newOrganization.tier,
         },
       },
-      message: "User registered successfully and organization created",
+      message: "Account, Organization, and Location created successfully",
     });
   } catch (err) {
+    // Rollback logic from main branch
+    if (createdUserId) await User.findByIdAndDelete(createdUserId);
+    if (createdOrgId) await Organization.findByIdAndDelete(createdOrgId);
     next(err);
   }
 };
 
-// ── Invite Sub-User (Admin only – protected route) ────────────────────────────
-// Admin creates a WarehouseOwner or StoreManager under their own organization.
+// ── Invite validator ──────────────────────────────────────────────────────────
+const inviteValidator = Joi.object({
+  fullName: Joi.string().min(3).max(50).required().messages({
+    "string.empty": "Full Name is required",
+    "string.min": "Full Name must be at least 3 characters",
+    "any.required": "Full Name is a mandatory field",
+  }),
+  email: Joi.string().email().required().messages({
+    "string.empty": "Email can not be empty",
+    "string.email": "Email must be a valid email address",
+    "any.required": "Email is a mandatory field",
+  }),
+  password: Joi.string().min(6).required().messages({
+    "string.empty": "Password can not be empty",
+    "string.min": "Password must be at least 6 characters",
+    "any.required": "Password is required",
+  }),
+  role: Joi.string()
+    .valid("WarehouseOwner", "StoreManager")
+    .required()
+    .messages({
+      "any.only": "Role must be either WarehouseOwner or StoreManager",
+      "any.required": "Role is required",
+    }),
+});
+
+// ── Invite Sub-User (Protected route) ─────────────────────────────────────────
+// Blends the feature branch's generic invite with main branch's addStoreManager concept.
 export const inviteUser = async (req, res, next) => {
   try {
+    // Ensuring only Owners can invite
+    if (req.user.role !== 'Owner') {
+      const error = new Error("Access Denied: Only Owners can invite team members.");
+      error.statusCode = 403; 
+      throw error;
+    }
+
     const { error, value } = inviteValidator.validate(req.body);
     if (error) {
       const validationError = new Error(error.details[0].message);
@@ -102,40 +147,33 @@ export const inviteUser = async (req, res, next) => {
       throw validationError;
     }
 
-    const { username, email, password, role } = value;
-
-    // Only WarehouseOwner / StoreManager can be created via invite
-    if (role === "Admin") {
-      const roleError = new Error("Cannot invite another Admin. Use register instead.");
-      roleError.statusCode = 400;
-      throw roleError;
-    }
+    const { fullName, email, password, role } = value;
 
     const userExists = await User.findOne({ email });
     if (userExists) {
-      const emailError = new Error("Email is already registered");
+      const emailError = new Error("Email is already registered in the system.");
       emailError.statusCode = 400;
       throw emailError;
     }
 
-    const user = await User.create({
-      username,
-      email,
+    const newUser = await User.create({
+      fullName: fullName,
+      email: email,
       passwordHash: password,
-      role,
-      organizationID: req.user.organizationID, // inherit from calling Admin's org
+      role: role,
+      organizationID: req.user.organizationID, // inherit from calling Owner's org
     });
 
     res.status(201).json({
       success: true,
       data: {
-        _id: user._id,
-        username: user.username,
-        email: user.email,
-        role: user.role,
-        organizationID: user.organizationID,
+        _id: newUser._id,
+        fullName: newUser.fullName,
+        email: newUser.email,
+        role: newUser.role,
+        organizationID: newUser.organizationID,
       },
-      message: `${role} invited successfully`,
+      message: `${role} added successfully to your organization.`,
     });
   } catch (err) {
     next(err);
@@ -174,7 +212,7 @@ export const login = async (req, res, next) => {
       token,
       data: {
         _id: user._id,
-        username: user.username,
+        fullName: user.fullName,
         email: user.email,
         role: user.role,
         organizationID: user.organizationID,
@@ -202,7 +240,10 @@ export const forgotPassword = async (req, res, next) => {
     res.status(200).json({
       success: true,
       message: "Token generated (pretend this was sent via email)",
-      data: { resetToken, resetUrl },
+      data: {
+        resetToken,
+        resetUrl,
+      },
     });
   } catch (error) {
     next(error);
@@ -244,30 +285,3 @@ export const resetPassword = async (req, res, next) => {
     next(error);
   }
 };
-
-// ── Invite validator (defined locally to keep validators.js clean) ────────────
-import Joi from "joi";
-const inviteValidator = Joi.object({
-  username: Joi.string().min(3).max(30).required().messages({
-    "string.empty": "Username is required",
-    "string.min": "Username must be at least 3 characters",
-    "any.required": "Username is a mandatory field",
-  }),
-  email: Joi.string().email().required().messages({
-    "string.empty": "Email can not be empty",
-    "string.email": "Email must be a valid email address",
-    "any.required": "Email is a mandatory field",
-  }),
-  password: Joi.string().min(6).required().messages({
-    "string.empty": "Password can not be empty",
-    "string.min": "Password must be at least 6 characters",
-    "any.required": "Password is required",
-  }),
-  role: Joi.string()
-    .valid("WarehouseOwner", "StoreManager")
-    .required()
-    .messages({
-      "any.only": "Role must be either WarehouseOwner or StoreManager",
-      "any.required": "Role is required",
-    }),
-});

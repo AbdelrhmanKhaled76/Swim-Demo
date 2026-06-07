@@ -7,7 +7,7 @@ const variants: Record<"primary" | "secondary", string> = {
 function IntroductionCard(Props: IntroductionCard) {
   return (
     <div
-      className={`p-6 mx-3 md:w-full h-96 ${variants[Props.type]}  flex flex-col items-center justify-center transition-transform hover:-translate-y-2  duration-300 rounded-sm`}
+      className={`mx-4 p-6 md:w-full h-96 ${variants[Props.type]} flex flex-col items-center justify-center transition-transform hover:-translate-y-2 duration-300 rounded-sm`}
     >
       {Props.icon ? (
         typeof Props.icon === "string" ? (

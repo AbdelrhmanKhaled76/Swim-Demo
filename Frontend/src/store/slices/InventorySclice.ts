@@ -31,6 +31,17 @@ export const fetchInventoryForLocation = createAsyncThunk<InventoryItem[], strin
     }
 );
 
+export const createLocation = createAsyncThunk<Location, { name: string; type: 'Store' | 'Warehouse'; locationDetails?: string }>(
+    'inventory/createLocation',
+    async (locationData) => {
+        const response = await axios.post<Location>(`${API_BASE_URL}location`, {
+            ...locationData,
+            organizationId: orgId
+        });
+        return response.data;
+    }
+);
+
 const initialState: InventoryState = {
     locations: [],
     status: 'idle',
@@ -70,6 +81,9 @@ const inventorySlice = createSlice({
             .addCase(fetchInventoryForLocation.rejected, (state, action) => {
                 state.inventoryStatus = 'failed';
                 state.inventoryError = action.error.message || 'Failed to fetch inventory';
+            })
+            .addCase(createLocation.fulfilled, (state, action) => {
+                state.locations.push(action.payload);
             });
     },
 }); 
