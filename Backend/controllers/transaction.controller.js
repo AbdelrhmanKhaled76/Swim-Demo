@@ -131,6 +131,7 @@ export const createSale = async (req, res, next) => {
     const { amount, currency, locationId, relatedOrderId, items, notes, metadata } = req.body;
     // userId is taken from the verified JWT token — cannot be spoofed from the request body
     const userId = req.user._id;
+    const organizationId = req.user.organizationID;
 
     // Create a Stripe PaymentIntent
     const paymentIntent = await stripe.paymentIntents.create({
@@ -151,6 +152,7 @@ export const createSale = async (req, res, next) => {
       currency: currency || 'usd',
       stripePaymentIntentId: paymentIntent.id,
       userId,
+      organizationId,
       locationId: locationId || null,
       relatedOrderId: relatedOrderId || null,
       items: items || [],
@@ -170,6 +172,7 @@ export const createSale = async (req, res, next) => {
     next(error);
   }
 };
+
 
 /**
  * @swagger
@@ -278,8 +281,8 @@ export const confirmSale = async (req, res, next) => {
 export const createTransfer = async (req, res, next) => {
   try {
     const { fromLocationId, toLocationId, items, notes, metadata } = req.body;
-    // userId is taken from the verified JWT token — cannot be spoofed from the request body
     const userId = req.user._id;
+    const organizationId = req.user.organizationID;
 
     const transaction = await Transaction.create({
       type: 'transfer',
@@ -288,6 +291,7 @@ export const createTransfer = async (req, res, next) => {
       toLocationId: toLocationId || null,
       items: items || [],
       userId,
+      organizationId,
       notes: notes || '',
       metadata: metadata || {}
     });
@@ -349,8 +353,8 @@ export const createTransfer = async (req, res, next) => {
 export const createRestock = async (req, res, next) => {
   try {
     const { locationId, items, notes, metadata } = req.body;
-    // userId is taken from the verified JWT token — cannot be spoofed from the request body
     const userId = req.user._id;
+    const organizationId = req.user.organizationID;
 
     const transaction = await Transaction.create({
       type: 'restock',
@@ -358,6 +362,7 @@ export const createRestock = async (req, res, next) => {
       locationId: locationId || null,
       items: items || [],
       userId,
+      organizationId,
       notes: notes || '',
       metadata: metadata || {}
     });
@@ -424,14 +429,13 @@ export const createRestock = async (req, res, next) => {
 export const createDump = async (req, res, next) => {
   try {
     const { locationId, items, notes, reason, stripePaymentIntentId, amount } = req.body;
-    // userId is taken from the verified JWT token — cannot be spoofed from the request body
     const userId = req.user._id;
+    const organizationId = req.user.organizationID;
 
     let stripeRefundId = null;
     let refundIssued = false;
     const refundAmount = amount || 0;
 
-    // Issue Stripe refund if stripePaymentIntentId is provided and amount > 0
     if (stripePaymentIntentId && refundAmount > 0) {
       const refund = await stripe.refunds.create({
         payment_intent: stripePaymentIntentId,
@@ -450,6 +454,7 @@ export const createDump = async (req, res, next) => {
       locationId: locationId || null,
       items: items || [],
       userId,
+      organizationId,
       notes: notes || '',
       metadata: { reason: reason || '', refundIssued }
     });
@@ -491,13 +496,15 @@ export const createDump = async (req, res, next) => {
  */
 export const getAllTransactions = async (req, res, next) => {
   try {
+    // Scope to the calling user's organization
+    const filter = { organizationId: req.user.organizationID };
     let transactions;
     try {
-      transactions = await Transaction.find()
+      transactions = await Transaction.find(filter)
         .sort({ createdAt: -1 })
         .populate('userId', 'username email name');
     } catch (populateError) {
-      transactions = await Transaction.find().sort({ createdAt: -1 });
+      transactions = await Transaction.find(filter).sort({ createdAt: -1 });
     }
 
     return res.status(200).json({
@@ -567,7 +574,8 @@ export const getAllTransactions = async (req, res, next) => {
 export const getTransactionHistory = async (req, res, next) => {
   try {
     const { startDate, endDate, locationId, userId, type } = req.query;
-    const filter = {};
+    // Always scope to calling user's organization
+    const filter = { organizationId: req.user.organizationID };
 
     if (locationId) {
       filter.$or = [

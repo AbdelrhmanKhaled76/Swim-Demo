@@ -8,6 +8,7 @@ import transactionRoutes from "./transaction.routes.js";
 import itemRoutes from "./item.routes.js";
 import customerRoutes from "./customer.routes.js";
 import orderRoutes from "./order.routes.js";
+import stockRequestRoutes from "./stockRequest.routes.js";
 
 const router = express.Router();
 
@@ -22,5 +23,6 @@ router.use("/transactions", transactionRoutes);
 router.use("/item", itemRoutes);
 router.use("/customer", customerRoutes);
 router.use("/order", orderRoutes);
+router.use("/stock-requests", stockRequestRoutes);
 
 export default router;
