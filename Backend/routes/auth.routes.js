@@ -1,7 +1,13 @@
-import express from 'express';
-import { register, login, forgotPassword, resetPassword } from '../controllers/auth.controller.js';
+import express from "express";
+import {
+  register,
+  login,
+  forgotPassword,
+  resetPassword,
+  addStoreManager,
+} from "../controllers/auth.controller.js";
 
-const router = express.Router();
+import { protect } from "../middlewares/auth.middleware.js";
 
 /**
  * @swagger
@@ -37,7 +43,7 @@ const router = express.Router();
  *             schema:
  *               $ref: '#/components/schemas/ErrorResponse'
  */
-router.post('/register', register);
+router.post("/register", register);
 
 /**
  * @swagger
@@ -66,7 +72,7 @@ router.post('/register', register);
  *             schema:
  *               $ref: '#/components/schemas/ErrorResponse'
  */
-router.post('/login', login);
+router.post("/login", login);
 
 /**
  * @swagger
@@ -113,7 +119,7 @@ router.post('/login', login);
  *             schema:
  *               $ref: '#/components/schemas/ErrorResponse'
  */
-router.post('/forgotpassword', forgotPassword);
+router.post("/forgotpassword", forgotPassword);
 
 /**
  * @swagger
@@ -162,6 +168,8 @@ router.post('/forgotpassword', forgotPassword);
  *             schema:
  *               $ref: '#/components/schemas/ErrorResponse'
  */
-router.put('/resetpassword/:resettoken', resetPassword);
+router.put("/resetpassword/:resettoken", resetPassword);
+
+router.post("/add-manager", protect, addStoreManager);
 
 export default router;
