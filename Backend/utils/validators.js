@@ -96,7 +96,7 @@ export const createOrderValidator = Joi.object({
       Joi.object({
         itemId: Joi.string().hex().length(24).required(),
         quantity: Joi.number().integer().positive().required(),
-      })
+      }),
     )
     .min(1)
     .required()
@@ -104,10 +104,6 @@ export const createOrderValidator = Joi.object({
       "array.min": "Order must contain at least one item",
       "any.required": "Items are required",
     }),
-    totalPrice: Joi.number().min(0).optional(),
-    status: Joi.string().valid('pending', 'confirmed', 'shipped', 'delivered', 'cancelled').optional(),
-    notes: Joi.string().max(500).optional(),
-});
   totalPrice: Joi.number().min(0).optional(),
   status: Joi.string()
     .valid("pending", "confirmed", "shipped", "delivered", "cancelled")
