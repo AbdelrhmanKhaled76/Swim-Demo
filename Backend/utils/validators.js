@@ -39,18 +39,7 @@ export const registerValidator = Joi.object({
   industry: Joi.string().optional().allow(""),
 });
 
-<<<<<<< HEAD
-export const loginValidator = Joi.object({
-  email: Joi.string().email().required().messages({
-    "string.empty": "Email can not be empty",
-    "string.email": "Email must be a valid email address",
-  }),
-  password: Joi.string().min(6).required().messages({
-    "string.empty": "Password can not be empty",
-  }),
-});
-=======
-})
+
 
 export const loginValidator=Joi.object({
     email:Joi.string().email().required().messages({
@@ -125,4 +114,3 @@ export const createOrderValidator = Joi.object({
     status: Joi.string().valid('pending', 'confirmed', 'shipped', 'delivered', 'cancelled').optional(),
     notes: Joi.string().max(500).optional(),
 });
->>>>>>> cdd467f944743246aa280120dfdc7e7c3516c74b

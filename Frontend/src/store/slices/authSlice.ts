@@ -22,8 +22,8 @@ interface AuthState {
 const storedToken = localStorage.getItem("token");
 
 const initialState: AuthState = {
-  user: null,
   token: storedToken ? storedToken : null,
+  user: JSON.parse(localStorage.getItem("user") || "null"),
   isLoading: false,
   error: null,
 };
@@ -81,15 +81,22 @@ const authSlice = createSlice({
         state.isLoading = true;
         state.error = null;
       })
-      .addCase(
-        loginUser.fulfilled,
-        (state, action: PayloadAction<{ user: User; token: string }>) => {
-          state.isLoading = false;
-          state.user = action.payload.user;
-          state.token = action.payload.token;
-          localStorage.setItem("token", action.payload.token);
-        },
-      )
+      // .addCase(
+      //   loginUser.fulfilled,
+      //   (state, action: PayloadAction<{ user: User; token: string }>) => {
+      //     state.isLoading = false;
+      //     state.user = action.payload.user;
+      //     state.token = action.payload.token;
+      //     localStorage.setItem("token", action.payload.token);
+      //   },
+      // )
+      .addCase(loginUser.fulfilled, (state, action) => {
+  state.isLoading = false;
+  state.token = action.payload.token;
+  state.user = action.payload.data;
+  localStorage.setItem("token", action.payload.token);
+  localStorage.setItem("user", JSON.stringify(action.payload.data));
+})
       .addCase(loginUser.rejected, (state, action) => {
         state.isLoading = false;
         state.error = action.payload as string;

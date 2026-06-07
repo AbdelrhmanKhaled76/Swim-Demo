@@ -4,7 +4,6 @@ import { useNavigate } from "react-router-dom";
 import { registerUser } from "../../store/slices/authSlice";
 import type { AppDispatch, RootState } from "../../store";
 import toast from "react-hot-toast";
-
 import octopusImg from "../../assets/images/octupus.svg";
 import Button from "../../components/button/button";
 
@@ -123,7 +122,7 @@ function SignUp() {
 
   return (
     <div className="min-h-screen flex flex-col bg-white">
-      <main className="flex-grow flex justify-center pt-16 px-6 md:px-12 pb-12">
+      <main className="flex-grow flex justify-center container mx-auto py-12">
         <div className="w-full max-w-6xl flex flex-col">
           
           {step === 1 && (
@@ -210,7 +209,6 @@ function SignUp() {
 
           {step === 2 && (
             <div className="w-full flex flex-col animate-fade-in relative">
-              
               <button 
                 type="button" 
                 onClick={() => setStep(1)} 
