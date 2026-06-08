@@ -1,14 +1,8 @@
-import {
-  createSlice,
-  createAsyncThunk,
-  type PayloadAction,
-} from "@reduxjs/toolkit";
-import axios from "axios";
+import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import type {
   StockRequest,
   ApproveRequestPayload,
 } from "../../interfaces/RequestTypes/request";
-import { API_BASE_URL } from "../../core/api.constants";
 import type { RootState } from "../index";
 
 // ─── Mock Data (swap for real endpoint) ──────────────────────────────────────
