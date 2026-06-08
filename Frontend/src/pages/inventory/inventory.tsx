@@ -266,7 +266,6 @@ function Inventory() {
           setIsAddNewItemPopupOpen(true);
         }}
         onExportToStore={() => {
-        onExportToStore={() => {
           setIsWarehousePopupOpen(false);
           setIsExportToStorePopupOpen(true);
         }}
