@@ -1,4 +1,4 @@
-import express from 'express';
+import express from "express";
 import {
   createStockRequest,
   getAllStockRequests,
@@ -6,9 +6,9 @@ import {
   getStockRequestById,
   approveStockRequest,
   rejectStockRequest,
-} from '../controllers/stockRequest.controller.js';
-import { protect } from '../middlewares/auth.middleware.js';
-import { authorize } from '../middlewares/role.middleware.js';
+} from "../controllers/stockRequest.controller.js";
+import { protect } from "../middlewares/auth.middleware.js";
+import { authorize } from "../middlewares/role.middleware.js";
 
 const router = express.Router();
 
@@ -76,8 +76,8 @@ const router = express.Router();
  *       200:
  *         description: List of stock requests
  */
-router.post('/', protect, authorize('StoreManager'), createStockRequest);
-router.get('/', protect, authorize('Admin'), getAllStockRequests);
+router.post("/", protect, authorize("StoreManager"), createStockRequest);
+router.get("/", protect, authorize("Owner"), getAllStockRequests);
 
 /**
  * @swagger
@@ -97,13 +97,13 @@ router.get('/', protect, authorize('Admin'), getAllStockRequests);
  *       200:
  *         description: List of the calling user's stock requests
  */
-router.get('/my', protect, authorize('StoreManager'), getMyStockRequests);
+router.get("/my", protect, authorize("StoreManager"), getMyStockRequests);
 
 /**
  * @swagger
  * /api/stock-requests/{id}:
  *   get:
- *     summary: Get a single stock request by ID (Admin sees all, StoreManager sees own)
+ *     summary: Get a single stock request by ID (Owner sees all, StoreManager sees own)
  *     tags: [StockRequests]
  *     security:
  *       - bearerAuth: []
@@ -121,7 +121,12 @@ router.get('/my', protect, authorize('StoreManager'), getMyStockRequests);
  *       404:
  *         description: Not found
  */
-router.get('/:id', protect, authorize('Admin', 'StoreManager'), getStockRequestById);
+router.get(
+  "/:id",
+  protect,
+  authorize("Owner", "StoreManager"),
+  getStockRequestById,
+);
 
 /**
  * @swagger
@@ -155,7 +160,7 @@ router.get('/:id', protect, authorize('Admin', 'StoreManager'), getStockRequestB
  *       404:
  *         description: Not found
  */
-router.patch('/:id/approve', protect, authorize('Admin'), approveStockRequest);
+router.patch("/:id/approve", protect, authorize("Owner"), approveStockRequest);
 
 /**
  * @swagger
@@ -190,6 +195,6 @@ router.patch('/:id/approve', protect, authorize('Admin'), approveStockRequest);
  *       404:
  *         description: Not found
  */
-router.patch('/:id/reject', protect, authorize('Admin'), rejectStockRequest);
+router.patch("/:id/reject", protect, authorize("Owner"), rejectStockRequest);
 
 export default router;

@@ -1,21 +1,23 @@
-export type RequestStatus = 'Pending' | 'Approved' | 'Declined';
+import type { User } from "../User/user";
+
+export type RequestStatus = "pending" | "approved" | "rejected";
 
 export interface StockRequest {
   _id: string;
-  storeManagerId: string;
-  storeManagerName?: string;
+  warehouseId: string;
   storeId: string;
   storeName?: string;
-  itemId: string;
-  itemName?: string;
-  requestedQuantity: number;
-  approvedQuantity?: number;
+  organizationId: string;
+  items: ApproveRequestPayload[];
   status: RequestStatus;
-  note?: string;
-  createdAt: string;
+  notes?: string;
+  resolvedAt: string;
+  adminNote?: string;
+  requestedBy: User;
+  resolvedBy: User;
 }
 
 export interface ApproveRequestPayload {
-  id: string;
-  approvedQuantity?: number;
+  itemId: string;
+  quantity: number;
 }
