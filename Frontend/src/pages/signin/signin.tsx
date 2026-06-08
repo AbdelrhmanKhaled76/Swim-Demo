@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { loginUser } from "../../store/slices/authSlice";
 import type { AppDispatch, RootState } from "../../store";
 import Button from "../../components/button/button";
-import toast from "react-hot-toast"; 
+import toast from "react-hot-toast";
 
 function SignIn() {
   const [email, setEmail] = useState<string>("");
@@ -28,17 +28,17 @@ function SignIn() {
           color: '#fff',
           fontFamily: '"Inter", sans-serif',
           letterSpacing: '0.5px',
-          padding: '20px 40px', 
-          fontSize: '18px',    
+          padding: '20px 40px',
+          fontSize: '18px',
           fontWeight: 'bold',
-          borderRadius: '10px'  
+          borderRadius: '10px'
         },
         iconTheme: {
-          primary: '#22c55e', 
+          primary: '#22c55e',
           secondary: '#04162A',
         },
       });
-      navigate("/home");
+      navigate("/statistics");
       
     } else {
       toast.error(resultAction.payload as string, {
@@ -49,7 +49,7 @@ function SignIn() {
           border: '2px solid #FF383C',
           fontFamily: '"Inter", sans-serif',
           letterSpacing: '0.5px',
-          padding: '20px 40px', 
+          padding: '20px 40px',
           fontSize: '18px',     
           fontWeight: 'bold',
           borderRadius: '10px',
@@ -61,7 +61,7 @@ function SignIn() {
 
   return (
     <div className="min-h-screen flex flex-col bg-white">
-      <main className="flex-grow flex justify-center pt-16 px-6 md:px-12 pb-12">
+      <main className="flex-grow flex justify-center container mx-auto py-12">
         <div className="w-full max-w-5xl flex flex-col">
           <div className="mb-10">
             <h1 className="header text-6xl md:text-8xl text-primary-900 tracking-tight mb-4">
@@ -89,7 +89,6 @@ function SignIn() {
             </div>
 
             <form onSubmit={handleLogin} className="flex flex-col gap-6">
-
               <div className="flex flex-col gap-2">
                 <label className="regular text-xs text-neutral-700 uppercase tracking-widest">
                   Email

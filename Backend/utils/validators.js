@@ -96,7 +96,7 @@ export const createOrderValidator = Joi.object({
       Joi.object({
         itemId: Joi.string().hex().length(24).required(),
         quantity: Joi.number().integer().positive().required(),
-      })
+      }),
     )
     .min(1)
     .required()

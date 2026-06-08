@@ -1,4 +1,9 @@
 import { Link, useLocation } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { logout } from "../../store/slices/authSlice";
+import type { AppDispatch, RootState } from "../../store";
+import toast from "react-hot-toast";
 
 export default function MobileNav({
   variant = "public",
@@ -7,6 +12,19 @@ export default function MobileNav({
 }) {
   const location = useLocation();
   const path = location.pathname.toLowerCase();
+  const navigate = useNavigate();
+  const dispatch = useDispatch<AppDispatch>();
+  const { token } = useSelector((state: RootState) => state.auth);
+
+  const handleLogout = () => {
+    dispatch(logout());
+    toast.success("Logged out securely.", {
+      duration: 3000,
+      style: { background: "#04162A", color: "#fff", fontWeight: "bold" },
+      iconTheme: { primary: "#22c55e", secondary: "#04162A" },
+    });
+    navigate("/signin");
+  };
 
   if (variant === "auth") {
     return (
@@ -189,9 +207,30 @@ export default function MobileNav({
             <polyline points="16 17 21 12 16 7" />
             <line x1="21" y1="12" x2="9" y2="12" />
           </svg>
-          <span className="text-[0.55rem] font-bold tracking-widest uppercase inter">
-            LOGOUT
-          </span>
+          <button
+            onClick={handleLogout}
+            className="flex-1 flex flex-col items-center justify-center text-red-400 hover:bg-red-900/30 hover:text-red-300 transition-colors cursor-pointer"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="20"
+              height="20"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              className="mb-1"
+            >
+              <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+              <polyline points="16 17 21 12 16 7" />
+              <line x1="21" y1="12" x2="9" y2="12" />
+            </svg>
+            <span className="text-[0.55rem] font-bold tracking-widest uppercase inter">
+              LOGOUT
+            </span>
+          </button>
         </Link>
       </nav>
     );
@@ -255,7 +294,7 @@ export default function MobileNav({
         </span>
       </a>
 
-      {/* SIGN UP */}
+     {/* SIGN UP */}
       <Link
         to="/signup"
         className={`flex-1 flex flex-col items-center justify-center transition-colors border-r border-gray-200 ${

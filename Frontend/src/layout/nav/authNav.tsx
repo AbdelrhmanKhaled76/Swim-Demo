@@ -1,7 +1,23 @@
 import Button from "../../components/button/button";
 import { Link } from "react-router-dom";
-
+import { useNavigate } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { logout } from "../../store/slices/authSlice";
+import type { AppDispatch } from "../../store";
+import toast from "react-hot-toast";
 export default function AuthNav() {
+ const navigate = useNavigate();
+  const dispatch = useDispatch<AppDispatch>();
+
+  const handleLogout = () => {
+    dispatch(logout());
+    toast.success("Logged out securely.", {
+      duration: 3000,
+      style: { background: "#04162A", color: "#fff", fontWeight: "bold" },
+      iconTheme: { primary: "#22c55e", secondary: "#04162A" },
+    });
+    navigate("/signin");
+  };
   return (
     <nav className="hidden md:flex w-full h-[90px] bg-neutral-900 items-center justify-center sticky top-0 z-[100] shadow-sm">
       <div className="container mx-auto flex items-center justify-between">
@@ -237,6 +253,7 @@ export default function AuthNav() {
 
           <Link to="/signin">
             <Button
+              onClick={handleLogout}
               variant="primary"
               className="!bg-white !text-neutral-900 hover:!bg-gray-200 !px-8 text-sm font-bold border-none"
             >
