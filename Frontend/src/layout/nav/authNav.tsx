@@ -16,7 +16,7 @@ export default function AuthNav() {
   };
 
   return (
-    <nav className="hidden md:flex w-full h-[90px] bg-neutral-900 items-center justify-center sticky top-0 z-[100] shadow-sm">
+    <nav className="hidden lg:flex w-full h-[90px] bg-neutral-900 items-center justify-center sticky top-0 z-[100] shadow-sm">
       <div className="container mx-auto px-4 md:px-6 lg:px-8 flex items-center justify-between">
         <div className="h-[45px] flex items-center justify-start">
           <svg
@@ -134,7 +134,7 @@ export default function AuthNav() {
         </div>
 
         {/* Center: Navigation Links */}
-        <div className="hidden md:flex gap-4">
+        <div className="hidden lg:flex gap-4">
           <Link to="/statistics">
             <Button
               variant="outline"

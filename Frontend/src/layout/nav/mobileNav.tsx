@@ -24,7 +24,7 @@ export default function MobileNav({
 
   if (token) {
     return (
-      <nav className="flex md:hidden fixed bottom-0 left-0 w-full h-[70px] bg-neutral-900 border-t border-neutral-800 z-[100] shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.3)]">
+      <nav className="flex lg:hidden fixed bottom-0 left-0 w-full h-[70px] bg-neutral-900 border-t border-neutral-800 z-[100] shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.3)]">
         {/* STATISTICS */}
         <Link
           to="/statistics"

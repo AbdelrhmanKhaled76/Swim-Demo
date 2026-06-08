@@ -2,7 +2,7 @@ const noiseBg = `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='htt
 
 export default function AuthFooter() {
   return (
-    <footer className="hidden md:block relative w-full bg-neutral-900 overflow-hidden py-8 md:py-12">
+    <footer className="hidden lg:block relative w-full bg-neutral-900 overflow-hidden py-8 md:py-12">
       {/* Background Noise overlay */}
       <div
         className="absolute inset-0 opacity-40 mix-blend-overlay pointer-events-none"
