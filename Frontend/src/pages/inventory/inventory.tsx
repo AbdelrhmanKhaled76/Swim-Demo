@@ -4,11 +4,11 @@ import SearchInput from "../../components/SearchInput/SearchInput";
 import SortDropdown from "../../components/SortDropdown/SortDropdown";
 import { type InventoryItem, type Location } from "../../interfaces/InventoryTypes/inventory";
 import { useSelector, useDispatch } from 'react-redux';
-import { 
-  fetchAllLocations, 
-  selectTotalWarehouses, 
-  selectTotalStores, 
-  selectCurrentView, 
+import {
+  fetchAllLocations,
+  selectTotalWarehouses,
+  selectTotalStores,
+  selectCurrentView,
   setCurrentView,
   selectInventoryItems,
   selectInventoryStatus,
@@ -17,14 +17,36 @@ import {
 } from '../../store/slices/InventorySclice';
 import InventoryStats from '../../components/pages/inventory/InventoryStats';
 import InventoryTable from '../../components/pages/inventory/InventoryTable';
-import type { AppDispatch } from '../../store';
+import type { AppDispatch, RootState } from '../../store';
 import FloatingActionButton from '../../components/floatingActionButton/floatingActionButton';
 import WarehouseOperationsPopup from '../../components/warehouseOperationsPopup/warehouseOperationsPopup';
 import AddNewItemPopup from '../../components/addNewItemPopup/addNewItemPopup';
 import ExportToStorePopup from '../../components/exportToStorePopup/exportToStorePopup';
 
+const getRoleFromToken = (token: string | null): string | null => {
+  if (!token) return null;
+  try {
+    const base64Url = token.split('.')[1];
+    const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+    const jsonPayload = decodeURIComponent(
+      window.atob(base64)
+        .split('')
+        .map((c) => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2))
+        .join('')
+    );
+    const decoded = JSON.parse(jsonPayload);
+    return decoded.role || null;
+  } catch (error) {
+    return null;
+  }
+};
+
 function Inventory() {
   const dispatch = useDispatch<AppDispatch>();
+
+  const token = useSelector((state: RootState) => state.auth.token);
+  const userRole = getRoleFromToken(token);
+  const isOwner = userRole === 'Owner';
 
   const [selectedLocationId, setSelectedLocationId] = useState<string>('');
   const [searchQuery, setSearchQuery] = useState('');
@@ -42,7 +64,7 @@ function Inventory() {
   const [isWarehousePopupOpen, setIsWarehousePopupOpen] = useState(false);
   const [isAddNewItemPopupOpen, setIsAddNewItemPopupOpen] = useState(false);
   const [isExportToStorePopupOpen, setIsExportToStorePopupOpen] = useState(false);
-  
+
   const activeList = currentView ? totalWarehouses : totalStores;
 
   const activeLocationId = selectedLocationId && activeList.some((loc: Location) => loc._id === selectedLocationId)
@@ -58,6 +80,12 @@ function Inventory() {
   useEffect(() => {
     dispatch(fetchAllLocations());
   }, [dispatch]);
+
+  useEffect(() => {
+    if (!isOwner && currentView) {
+      dispatch(setCurrentView(false));
+    }
+  }, [isOwner, currentView, dispatch]);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -117,72 +145,77 @@ function Inventory() {
     <div className="p-section-mobile md:p-section-desktop ">
       <PageTitle title="Swim Inventory" />
 
-      <div className="regular flex flex-col gap-4 justify-between md:flex-row md:justify-between text-[14px] md:text-[18px] text-center md:text-left text-tertiary-500 tracking-widest uppercase mb-6 leading-relaxed">
-          <span className="block md:inline ">switch to  {currentView?"store":"WareHouse"}  →</span>
+      {isOwner && (
+        <div className="regular flex flex-col gap-4 justify-between md:flex-row md:justify-between text-[14px] md:text-[18px] text-center md:text-left text-tertiary-500 tracking-widest uppercase mb-6 leading-relaxed">
+          <span className="block md:inline ">switch to  {currentView ? "store" : "WareHouse"}  →</span>
           <button className="regular text-[14px] w-full md:w-auto tracking-widest bg-primary-700 text-white px-16 py-1.5 uppercase"
-          onClick={changeCurrentView}>
-           {currentView?"Store":"WareHouse"}
+            onClick={changeCurrentView}>
+            {currentView ? "Store" : "WareHouse"}
           </button>
-      </div>
-
-      <InventoryStats 
-        totalValue={totalValue} 
-        totalWarehousesCount={totalWarehouses.length} 
-        totalStoresCount={totalStores.length} 
-      />
-
-      <div className="mb-6 custom-dropdown-container relative">
-        <h2 className="header font-bold text-[20px] md:text-[40px] tracking-widest uppercase mb-3 text-left">
-         {currentView?"WareHouse":"Store"} Management
-        </h2>
-        <div className="relative w-full">
-          <button
-            onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-            className="flex justify-between items-center w-full header font-bold text-[20px] md:text-[36px] tracking-wide text-neutral-900 border border-neutral-300 bg-white px-6 py-4 cursor-pointer uppercase outline-none focus:border-neutral-500 hover:border-primary-500 transition-colors"
-          >
-            <span>{selectedLocation?.name || `Select ${currentView ? 'Warehouse' : 'Store'}`}</span>
-            <svg 
-              className={`w-6 h-6 text-neutral-600 transition-transform duration-300 ${isDropdownOpen ? 'rotate-180' : 'rotate-0'}`} 
-              fill="none" 
-              stroke="currentColor" 
-              viewBox="0 0 24 24"
-            >
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M19 9l-7 7-7-7" />
-            </svg>
-          </button>
-          
-          {isDropdownOpen && (
-            <div className="absolute left-0 z-50 w-full mt-1 bg-white border border-neutral-300 shadow-xl overflow-hidden animate-slide-down">
-              <div className="max-h-60 overflow-y-auto no-scrollbar">
-                {activeList.map((item: Location) => {
-                  const isSelected = item._id === activeLocationId;
-                  return (
-                    <button
-                      key={item._id}
-                      onClick={() => {
-                        setSelectedLocationId(item._id);
-                        setIsDropdownOpen(false);
-                      }}
-                      className={`flex items-center justify-between w-full px-6 py-4 text-left header font-bold text-[18px] md:text-[24px] tracking-wide uppercase transition-all duration-200 cursor-pointer ${
-                        isSelected 
-                          ? 'bg-neutral-100 text-primary-700 font-extrabold' 
-                          : 'text-neutral-700 hover:bg-neutral-50 hover:text-primary-700'
-                      }`}
-                    >
-                      <span>{item.name}</span>
-                      {isSelected && (
-                        <svg className="w-5 h-5 text-primary-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
-                        </svg>
-                      )}
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
-          )}
         </div>
-      </div>
+      )}
+
+      <InventoryStats
+        totalValue={totalValue}
+        totalWarehousesCount={totalWarehouses.length}
+        totalStoresCount={totalStores.length}
+        userRole={userRole}
+        selectedLocationName={selectedLocation?.name}
+        totalItemsCount={filteredItems.length}
+      />
+      {isOwner && (
+        <div className="mb-6 custom-dropdown-container relative">
+          <h2 className="header font-bold text-[20px] md:text-[40px] tracking-widest uppercase mb-3 text-left">
+            {currentView ? "WareHouse" : "Store"} Management
+          </h2>
+          <div className="relative w-full">
+            <button
+              onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+              className="flex justify-between items-center w-full header font-bold text-[20px] md:text-[36px] tracking-wide text-neutral-900 border border-neutral-300 bg-white px-6 py-4 cursor-pointer uppercase outline-none focus:border-neutral-500 hover:border-primary-500 transition-colors"
+            >
+              <span>{selectedLocation?.name || `Select ${currentView ? 'Warehouse' : 'Store'}`}</span>
+              <svg
+                className={`w-6 h-6 text-neutral-600 transition-transform duration-300 ${isDropdownOpen ? 'rotate-180' : 'rotate-0'}`}
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M19 9l-7 7-7-7" />
+              </svg>
+            </button>
+
+            {isDropdownOpen && (
+              <div className="absolute left-0 z-50 w-full mt-1 bg-white border border-neutral-300 shadow-xl overflow-hidden animate-slide-down">
+                <div className="max-h-60 overflow-y-auto no-scrollbar">
+                  {activeList.map((item: Location) => {
+                    const isSelected = item._id === activeLocationId;
+                    return (
+                      <button
+                        key={item._id}
+                        onClick={() => {
+                          setSelectedLocationId(item._id);
+                          setIsDropdownOpen(false);
+                        }}
+                        className={`flex items-center justify-between w-full px-6 py-4 text-left header font-bold text-[18px] md:text-[24px] tracking-wide uppercase transition-all duration-200 cursor-pointer ${isSelected
+                            ? 'bg-neutral-100 text-primary-700 font-extrabold'
+                            : 'text-neutral-700 hover:bg-neutral-50 hover:text-primary-700'
+                          }`}
+                      >
+                        <span>{item.name}</span>
+                        {isSelected && (
+                          <svg className="w-5 h-5 text-primary-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                          </svg>
+                        )}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
 
       <div className="flex flex-col md:flex-row gap-3 mb-6">
         <div className="flex-1">
@@ -208,9 +241,9 @@ function Inventory() {
         inventoryError={inventoryError}
         onClearSearch={() => setSearchQuery('')}
       />
-      
+
       <FloatingActionButton onClick={() => setIsWarehousePopupOpen(true)} />
-      
+
       <WarehouseOperationsPopup
         isOpen={isWarehousePopupOpen}
         onClose={() => setIsWarehousePopupOpen(false)}
@@ -218,7 +251,7 @@ function Inventory() {
           setIsWarehousePopupOpen(false);
           setIsAddNewItemPopupOpen(true);
         }}
-        onExportToStore={()=>{
+        onExportToStore={() => {
           setIsWarehousePopupOpen(false);
           setIsExportToStorePopupOpen(true);
         }}
@@ -231,7 +264,7 @@ function Inventory() {
 
       <ExportToStorePopup
         isOpen={isExportToStorePopupOpen}
-        onClose={()=>setIsExportToStorePopupOpen(false)}
+        onClose={() => setIsExportToStorePopupOpen(false)}
       ></ExportToStorePopup>
     </div>
   );

@@ -6,13 +6,21 @@ interface InventoryStatsProps {
   totalValue: number;
   totalWarehousesCount: number;
   totalStoresCount: number;
+  userRole: string | null;
+  selectedLocationName?: string;
+  totalItemsCount?: number;
 }
 
 export default function InventoryStats({
   totalValue,
   totalWarehousesCount,
   totalStoresCount,
+  userRole,
+  selectedLocationName,
+  totalItemsCount = 0,
 }: InventoryStatsProps) {
+  const isOwner = userRole === 'Owner';
+
   return (
     <div className="flex flex-col gap-4 mb-8">
       <StatsCard
@@ -27,20 +35,29 @@ export default function InventoryStats({
         variant="dark"
         icon={<img src={moneyInventoryIcon} alt="Money Icon" className="w-8 h-8" />}
       />
-      <div className="grid grid-cols-2 gap-4">
+      {isOwner ? (
+        <div className="grid grid-cols-2 gap-4">
+          <StatsCard
+            title="Total Warehouses"
+            value={totalWarehousesCount.toString()}
+            subtext="Remaining 1"
+            variant="light"
+          />
+          <StatsCard
+            title="Total Stores"
+            value={totalStoresCount.toString()}
+            subtext="Remaining 2"
+            variant="light"
+          />
+        </div>
+      ) : (
         <StatsCard
-          title="Total Warehouses"
-          value={totalWarehousesCount.toString()}
-          subtext="Remaining 1"
+          title="Active Store Details"
+          value={selectedLocationName || "No Store Selected"}
+          subtext={`Total Items In Store: ${totalItemsCount} | Total Stores Available: ${totalStoresCount}`}
           variant="light"
         />
-        <StatsCard
-          title="Total Stores"
-          value={totalStoresCount.toString()}
-          subtext="Remaining 2"
-          variant="light"
-        />
-      </div>
+      )}
     </div>
   );
 }
