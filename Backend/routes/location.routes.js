@@ -1,4 +1,4 @@
-import express from 'express';
+import express from "express";
 import {
   getLocations,
   createLocation,
@@ -6,9 +6,9 @@ import {
   updateLocation,
   deleteLocation,
   getLocationsByOrganization,
-} from '../controllers/location.controller.js';
-import { protect } from '../middlewares/auth.middleware.js';
-import { authorize } from '../middlewares/role.middleware.js';
+} from "../controllers/location.controller.js";
+import { protect } from "../middlewares/auth.middleware.js";
+import { authorize } from "../middlewares/role.middleware.js";
 
 const router = express.Router();
 
@@ -31,7 +31,7 @@ const router = express.Router();
  *       200:
  *         description: List of locations in the organization
  *   post:
- *     summary: Create a new location (Admin only). Free tier allows 1 Warehouse + 2 Stores.
+ *     summary: Create a new location (Owner only). Free tier allows 1 Warehouse + 2 Stores.
  *     tags: [Locations]
  *     security:
  *       - bearerAuth: []
@@ -56,14 +56,14 @@ const router = express.Router();
  *       403:
  *         description: Forbidden – tier limit exceeded or insufficient role
  */
-router.get('/', protect, getLocations);
-router.post('/', protect, authorize('Admin'), createLocation);
+router.get("/", protect, getLocations);
+router.post("/", protect, authorize("Owner"), createLocation);
 
 /**
  * @swagger
  * /api/location/organization/{organizationId}:
  *   get:
- *     summary: Get all locations for a specific organization (Admin only – own org)
+ *     summary: Get all locations for a specific organization (Owner only – own org)
  *     tags: [Locations]
  *     security:
  *       - bearerAuth: []
@@ -74,7 +74,12 @@ router.post('/', protect, authorize('Admin'), createLocation);
  *         schema:
  *           type: string
  */
-router.get('/organization/:organizationId', protect, authorize('Admin'), getLocationsByOrganization);
+router.get(
+  "/organization/:organizationId",
+  protect,
+  authorize("Owner"),
+  getLocationsByOrganization,
+);
 
 /**
  * @swagger
@@ -85,18 +90,18 @@ router.get('/organization/:organizationId', protect, authorize('Admin'), getLoca
  *     security:
  *       - bearerAuth: []
  *   put:
- *     summary: Update a location (Admin only)
+ *     summary: Update a location (Owner only)
  *     tags: [Locations]
  *     security:
  *       - bearerAuth: []
  *   delete:
- *     summary: Delete a location (Admin only) – fails if stock exists
+ *     summary: Delete a location (Owner only) – fails if stock exists
  *     tags: [Locations]
  *     security:
  *       - bearerAuth: []
  */
-router.get('/:id', protect, getLocationDetails);
-router.put('/:id', protect, authorize('Admin'), updateLocation);
-router.delete('/:id', protect, authorize('Admin'), deleteLocation);
+router.get("/:id", protect, getLocationDetails);
+router.put("/:id", protect, authorize("Owner"), updateLocation);
+router.delete("/:id", protect, authorize("Owner"), deleteLocation);
 
 export default router;

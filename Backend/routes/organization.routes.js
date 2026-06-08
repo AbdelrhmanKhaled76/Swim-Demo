@@ -1,4 +1,4 @@
-import express from 'express';
+import express from "express";
 import {
   getOrganizations,
   getOrganizationById,
@@ -8,9 +8,9 @@ import {
   deleteOrganization,
   upgradeToPro,
   downgradeToFree,
-} from '../controllers/organization.controller.js';
-import { protect } from '../middlewares/auth.middleware.js';
-import { authorize } from '../middlewares/role.middleware.js';
+} from "../controllers/organization.controller.js";
+import { protect } from "../middlewares/auth.middleware.js";
+import { authorize } from "../middlewares/role.middleware.js";
 
 const router = express.Router();
 
@@ -25,7 +25,7 @@ const router = express.Router();
  * @swagger
  * /api/organization/my:
  *   get:
- *     summary: Get the calling Admin's own organization with location stats and tier info
+ *     summary: Get the calling Owner's own organization with location stats and tier info
  *     tags: [Organizations]
  *     security:
  *       - bearerAuth: []
@@ -33,30 +33,30 @@ const router = express.Router();
  *       200:
  *         description: Organization details with location counts vs tier limits
  */
-router.get('/my', protect, authorize('Admin'), getMyOrganization);
+router.get("/my", protect, authorize("Owner"), getMyOrganization);
 
 /**
  * @swagger
  * /api/organization:
  *   get:
- *     summary: Get all organizations (Admin only)
+ *     summary: Get all organizations (Owner only)
  *     tags: [Organizations]
  *     security:
  *       - bearerAuth: []
  *   post:
- *     summary: Create a new organization (Admin only — normally auto-created on register)
+ *     summary: Create a new organization (Owner only — normally auto-created on register)
  *     tags: [Organizations]
  *     security:
  *       - bearerAuth: []
  */
-router.get('/', protect, authorize('Admin'), getOrganizations);
-router.post('/', protect, authorize('Admin'), createOrganization);
+router.get("/", protect, authorize("Owner"), getOrganizations);
+router.post("/", protect, authorize("Owner"), createOrganization);
 
 /**
  * @swagger
  * /api/organization/{id}:
  *   get:
- *     summary: Get a single organization by ID (Admin only)
+ *     summary: Get a single organization by ID (Owner only)
  *     tags: [Organizations]
  *     security:
  *       - bearerAuth: []
@@ -67,25 +67,25 @@ router.post('/', protect, authorize('Admin'), createOrganization);
  *         schema:
  *           type: string
  *   put:
- *     summary: Update an organization (Admin only)
+ *     summary: Update an organization (Owner only)
  *     tags: [Organizations]
  *     security:
  *       - bearerAuth: []
  *   delete:
- *     summary: Delete an organization (Admin only)
+ *     summary: Delete an organization (Owner only)
  *     tags: [Organizations]
  *     security:
  *       - bearerAuth: []
  */
-router.get('/:id', protect, authorize('Admin'), getOrganizationById);
-router.put('/:id', protect, authorize('Admin'), updateOrganization);
-router.delete('/:id', protect, authorize('Admin'), deleteOrganization);
+router.get("/:id", protect, authorize("Owner"), getOrganizationById);
+router.put("/:id", protect, authorize("Owner"), updateOrganization);
+router.delete("/:id", protect, authorize("Owner"), deleteOrganization);
 
 /**
  * @swagger
  * /api/organization/{id}/upgrade:
  *   patch:
- *     summary: Upgrade organization from Free to Pro tier (Admin only)
+ *     summary: Upgrade organization from Free to Pro tier (Owner only)
  *     tags: [Organizations]
  *     security:
  *       - bearerAuth: []
@@ -105,13 +105,13 @@ router.delete('/:id', protect, authorize('Admin'), deleteOrganization);
  *       404:
  *         description: Organization not found
  */
-router.patch('/:id/upgrade', protect, authorize('Admin'), upgradeToPro);
+router.patch("/:id/upgrade", protect, authorize("Owner"), upgradeToPro);
 
 /**
  * @swagger
  * /api/organization/{id}/downgrade:
  *   patch:
- *     summary: Downgrade organization from Pro to Free tier (Admin only). Fails if over free-tier limits.
+ *     summary: Downgrade organization from Pro to Free tier (Owner only). Fails if over free-tier limits.
  *     tags: [Organizations]
  *     security:
  *       - bearerAuth: []
@@ -129,6 +129,6 @@ router.patch('/:id/upgrade', protect, authorize('Admin'), upgradeToPro);
  *       403:
  *         description: Can only manage your own organization
  */
-router.patch('/:id/downgrade', protect, authorize('Admin'), downgradeToFree);
+router.patch("/:id/downgrade", protect, authorize("Owner"), downgradeToFree);
 
 export default router;
