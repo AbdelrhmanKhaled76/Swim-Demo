@@ -6,7 +6,7 @@ const noiseBg = `url("../../../assets/images/noise.jpg")`;
 
 function SolutionSec2() {
   return (
-    <div className="relative w-full bg-[#0a2342] overflow-hidden py-16 md:py-24 min-h-[800px]">
+    <div className="relative w-full bg-[#0a2342] overflow-hidden py-16 md:py-24 px-4 md:px-6 lg:px-8 min-h-[800px]">
       {/* Background Noise overlay */}
       <div
         className="absolute inset-0 opacity-40 mix-blend-overlay pointer-events-none"

@@ -24,7 +24,7 @@ export default function Footer() {
         </span>
       </div>
 
-      <div className="container mx-auto px-8 md:px-16 relative z-10 flex flex-col md:flex-row justify-between items-start gap-8 md:gap-4">
+      <div className="container mx-auto px-4 md:px-6 lg:px-8 relative z-10 flex flex-col md:flex-row justify-between items-start gap-8 md:gap-4">
         {/* Left Side: Logo & Socials */}
         <div className="flex flex-col gap-4 w-full md:w-1/2">
           {/* Logo Placeholder */}

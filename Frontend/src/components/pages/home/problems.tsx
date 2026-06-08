@@ -5,7 +5,7 @@ import visibilityIcon from "../../../assets/icons/tv-01.svg";
 
 function Problems() {
   return (
-    <div className="container mx-auto px-4 md:px-8 py-16 overflow-hidden">
+    <div className="container mx-auto px-4 md:px-6 lg:px-8 py-16 overflow-hidden">
       <div className="mb-8">
         <h2 className="uppercase text-center md:text-left inline text-3xl md:text-4xl lg:text-5xl xl:text-7xl text-primary-900 mb-10 md:mb-[60px] tracking-[1px] header transition-transform hover:scale-105 duration-500 relative z-20">
           Inventory mistakes cost businesses money.

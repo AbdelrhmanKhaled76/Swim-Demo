@@ -3,7 +3,7 @@ import whalePic from "../../../assets/images/whale-pic 1.png";
 
 function Welcome() {
   return (
-    <div className="container mx-auto overflow-hidden">
+    <div className="container mx-auto px-4 md:px-6 lg:px-8 overflow-hidden">
       <div className="w-full mx-auto px-4 md:px-8 py-10  relative">
         <style>{`
         .whale-mask {
