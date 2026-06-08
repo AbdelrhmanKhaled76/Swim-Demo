@@ -127,6 +127,11 @@ const inviteValidator = Joi.object({
       "any.only": "Role must be StoreManager",
       "any.required": "Role is required",
     }),
+    assignedLocation: Joi.string().hex().length(24).when("role", {
+  is: "StoreManager",
+  then: Joi.required(),
+  otherwise: Joi.optional().allow(null, "")
+})
 });
 
 // ── Invite Sub-User (Protected route, Owner only via middleware) ───────────────
@@ -139,7 +144,7 @@ export const inviteUser = async (req, res, next) => {
       throw validationError;
     }
 
-    const { fullName, email, password, role } = value;
+    const { fullName, email, password, role, assignedLocation } = value;
 
     const userExists = await User.findOne({ email });
     if (userExists) {
@@ -148,12 +153,41 @@ export const inviteUser = async (req, res, next) => {
       throw emailError;
     }
 
+    if (role === "StoreManager") {
+      if (!assignedLocation) {
+        const locReqError = new Error("StoreManager must be assigned to a location.");
+        locReqError.statusCode = 400;
+        throw locReqError;
+      }
+
+      const location = await Location.findById(assignedLocation);
+
+      if (!location) {
+        const locNotFoundError = new Error("Assigned location not found.");
+        locNotFoundError.statusCode = 404;
+        throw locNotFoundError;
+      }
+
+      if (location.organizationId.toString() !== req.user.organizationID.toString()) {
+        const orgError = new Error("Location does not belong to your organization.");
+        orgError.statusCode = 403;
+        throw orgError;
+      }
+
+      if (location.type !== "Store") {
+        const typeError = new Error("A StoreManager can only be assigned to a Store, not a Warehouse.");
+        typeError.statusCode = 400;
+        throw typeError;
+      }
+    }
+
     const newUser = await User.create({
       fullName: fullName,
       email: email,
       passwordHash: password,
       role: role,
-      organizationID: req.user.organizationID, // inherit from calling Owner's org
+      organizationID: req.user.organizationID,
+      assignedLocation: role === "StoreManager" ? assignedLocation : null,
     });
 
     res.status(201).json({
@@ -164,6 +198,7 @@ export const inviteUser = async (req, res, next) => {
         email: newUser.email,
         role: newUser.role,
         organizationID: newUser.organizationID,
+        assignedLocation: newUser.assignedLocation,
       },
       message: `${role} added successfully to your organization.`,
     });

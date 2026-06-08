@@ -29,6 +29,11 @@ const userSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: "Organization",
     },
+    assignedLocation: {
+     type: mongoose.Schema.Types.ObjectId,
+     ref: "Location",
+     default: null,
+    },
     resetPasswordToken: String,
     resetPasswordExpire: Date,
   },

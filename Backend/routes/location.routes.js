@@ -77,7 +77,7 @@ router.post("/", protect, authorize("Owner"), createLocation);
 router.get(
   "/organization/:organizationId",
   protect,
-  authorize("Owner"),
+  authorize("Owner","StoreManager"),
   getLocationsByOrganization,
 );
 

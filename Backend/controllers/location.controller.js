@@ -130,11 +130,18 @@ export const deleteLocation = async (req, res) => {
 export const getLocationsByOrganization = async (req, res) => {
   try {
     const { organizationId } = req.params;
-    // Admins can only see their own org's locations
+
     if (organizationId !== req.user.organizationID.toString()) {
       return res.status(403).json({ message: 'Access denied' });
     }
-    const locations = await Location.find({ organizationId });
+
+    let query = { organizationId: organizationId };
+
+    if (req.user.role === 'StoreManager') {
+      query._id = req.user.assignedLocation;
+    }
+
+    const locations = await Location.find(query);
     res.status(200).json(locations);
   } catch (error) {
     res.status(500).json({ message: error.message });
