@@ -121,25 +121,17 @@ const inviteValidator = Joi.object({
     "any.required": "Password is required",
   }),
   role: Joi.string()
-    .valid("WarehouseOwner", "StoreManager")
+    .valid("StoreManager")
     .required()
     .messages({
-      "any.only": "Role must be either WarehouseOwner or StoreManager",
+      "any.only": "Role must be StoreManager",
       "any.required": "Role is required",
     }),
 });
 
-// ── Invite Sub-User (Protected route) ─────────────────────────────────────────
-// Blends the feature branch's generic invite with main branch's addStoreManager concept.
+// ── Invite Sub-User (Protected route, Owner only via middleware) ───────────────
 export const inviteUser = async (req, res, next) => {
   try {
-    // Ensuring only Owners can invite
-    if (req.user.role !== 'Owner') {
-      const error = new Error("Access Denied: Only Owners can invite team members.");
-      error.statusCode = 403; 
-      throw error;
-    }
-
     const { error, value } = inviteValidator.validate(req.body);
     if (error) {
       const validationError = new Error(error.details[0].message);

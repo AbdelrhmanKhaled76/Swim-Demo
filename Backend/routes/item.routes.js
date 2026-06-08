@@ -60,7 +60,7 @@ const itemRouter = express.Router();
  *                   items:
  *                     $ref: '#/components/schemas/Item'
  */
-itemRouter.post("/", protect, authorize('Admin', 'WarehouseOwner'), createItem);
+itemRouter.post("/", protect, authorize('Owner'), createItem);
 itemRouter.get("/", protect, getAllItems);
 
 /**
@@ -133,7 +133,7 @@ itemRouter.get("/", protect, getAllItems);
  *         description: Item deleted successfully
  */
 itemRouter.get("/:id", protect, getItemById);
-itemRouter.put("/:id", protect, authorize('Admin', 'WarehouseOwner'), updateItem);
-itemRouter.delete("/:id", protect, authorize('Admin'), deleteItem);
+itemRouter.put("/:id", protect, authorize('Owner'), updateItem);
+itemRouter.delete("/:id", protect, authorize('Owner'), deleteItem);
 
 export default itemRouter;

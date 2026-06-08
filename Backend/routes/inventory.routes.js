@@ -59,7 +59,7 @@ const router = express.Router();
  *                 minimum: 0
  */
 router.get('/:locationId', protect, getStoreInventory);
-router.post('/:locationId', protect, authorize('Admin', 'WarehouseOwner'), addInventory);
+router.post('/:locationId', protect, authorize('Owner'), addInventory);
 
 /**
  * @swagger
@@ -103,7 +103,7 @@ router.get('/:locationId/low-stock', protect, getLowStockReport);
  *     security:
  *       - bearerAuth: []
  */
-router.put('/:locationId/stock', protect, authorize('Admin', 'WarehouseOwner'), updateStock);
+router.put('/:locationId/stock', protect, authorize('Owner'), updateStock);
 
 /**
  * @swagger
@@ -114,6 +114,6 @@ router.put('/:locationId/stock', protect, authorize('Admin', 'WarehouseOwner'), 
  *     security:
  *       - bearerAuth: []
  */
-router.post('/:locationId/transfer', protect, authorize('Admin', 'WarehouseOwner'), transferStock);
+router.post('/:locationId/transfer', protect, authorize('Owner'), transferStock);
 
 export default router;

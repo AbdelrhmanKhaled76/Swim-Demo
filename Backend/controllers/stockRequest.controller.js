@@ -48,7 +48,7 @@ export const createStockRequest = async (req, res) => {
     const populated = await stockRequest.populate([
       { path: 'storeId', select: 'name type' },
       { path: 'warehouseId', select: 'name type' },
-      { path: 'requestedBy', select: 'username email' },
+      { path: 'requestedBy', select: 'fullName email' },
       { path: 'items.itemId', select: 'name category price' },
     ]);
 
@@ -79,8 +79,8 @@ export const getAllStockRequests = async (req, res) => {
       .sort({ createdAt: -1 })
       .populate('storeId', 'name type')
       .populate('warehouseId', 'name type')
-      .populate('requestedBy', 'username email')
-      .populate('resolvedBy', 'username email')
+      .populate('requestedBy', 'fullName email')
+      .populate('resolvedBy', 'fullName email')
       .populate('items.itemId', 'name category price');
 
     res.status(200).json({
@@ -113,7 +113,7 @@ export const getMyStockRequests = async (req, res) => {
       .sort({ createdAt: -1 })
       .populate('storeId', 'name type')
       .populate('warehouseId', 'name type')
-      .populate('resolvedBy', 'username email')
+      .populate('resolvedBy', 'fullName email')
       .populate('items.itemId', 'name category price');
 
     res.status(200).json({
@@ -135,8 +135,8 @@ export const getStockRequestById = async (req, res) => {
     const stockRequest = await StockRequest.findById(req.params.id)
       .populate('storeId', 'name type')
       .populate('warehouseId', 'name type')
-      .populate('requestedBy', 'username email')
-      .populate('resolvedBy', 'username email')
+      .populate('requestedBy', 'fullName email')
+      .populate('resolvedBy', 'fullName email')
       .populate('items.itemId', 'name category price');
 
     if (!stockRequest) {
@@ -252,8 +252,8 @@ export const approveStockRequest = async (req, res) => {
     const populated = await StockRequest.findById(stockRequest._id)
       .populate('storeId', 'name type')
       .populate('warehouseId', 'name type')
-      .populate('requestedBy', 'username email')
-      .populate('resolvedBy', 'username email')
+      .populate('requestedBy', 'fullName email')
+      .populate('resolvedBy', 'fullName email')
       .populate('items.itemId', 'name category price');
 
     res.status(200).json({
@@ -294,8 +294,8 @@ export const rejectStockRequest = async (req, res) => {
     const populated = await StockRequest.findById(stockRequest._id)
       .populate('storeId', 'name type')
       .populate('warehouseId', 'name type')
-      .populate('requestedBy', 'username email')
-      .populate('resolvedBy', 'username email')
+      .populate('requestedBy', 'fullName email')
+      .populate('resolvedBy', 'fullName email')
       .populate('items.itemId', 'name category price');
 
     res.status(200).json({

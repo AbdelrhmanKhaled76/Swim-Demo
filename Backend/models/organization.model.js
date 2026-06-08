@@ -12,6 +12,10 @@ const organizationSchema = new mongoose.Schema(
       ref: 'User',
       required: true,
     },
+    industry: {
+      type: String,
+      default: 'Not Specified',
+    },
     tier: {
       type: String,
       enum: ['free', 'pro'],

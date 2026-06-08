@@ -59,7 +59,7 @@ const customerRouter = express.Router();
  *                   items:
  *                     $ref: '#/components/schemas/Customer'
  */
-customerRouter.post("/", protect, authorize('Admin', 'StoreManager'), createCustomer);
+customerRouter.post("/", protect, authorize('Owner', 'StoreManager'), createCustomer);
 customerRouter.get("/", protect, getAllCustomers);
 
 /**

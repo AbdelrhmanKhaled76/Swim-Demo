@@ -33,7 +33,7 @@ const router = express.Router();
  *       200:
  *         description: Organization details with location counts vs tier limits
  */
-router.get('/my', protect, authorize('Admin'), getMyOrganization);
+router.get('/my', protect, authorize('Owner'), getMyOrganization);
 
 /**
  * @swagger
@@ -49,8 +49,8 @@ router.get('/my', protect, authorize('Admin'), getMyOrganization);
  *     security:
  *       - bearerAuth: []
  */
-router.get('/', protect, authorize('Admin'), getOrganizations);
-router.post('/', protect, authorize('Admin'), createOrganization);
+router.get('/', protect, authorize('Owner'), getOrganizations);
+router.post('/', protect, authorize('Owner'), createOrganization);
 
 /**
  * @swagger
@@ -77,9 +77,9 @@ router.post('/', protect, authorize('Admin'), createOrganization);
  *     security:
  *       - bearerAuth: []
  */
-router.get('/:id', protect, authorize('Admin'), getOrganizationById);
-router.put('/:id', protect, authorize('Admin'), updateOrganization);
-router.delete('/:id', protect, authorize('Admin'), deleteOrganization);
+router.get('/:id', protect, authorize('Owner'), getOrganizationById);
+router.put('/:id', protect, authorize('Owner'), updateOrganization);
+router.delete('/:id', protect, authorize('Owner'), deleteOrganization);
 
 /**
  * @swagger
@@ -105,7 +105,7 @@ router.delete('/:id', protect, authorize('Admin'), deleteOrganization);
  *       404:
  *         description: Organization not found
  */
-router.patch('/:id/upgrade', protect, authorize('Admin'), upgradeToPro);
+router.patch('/:id/upgrade', protect, authorize('Owner'), upgradeToPro);
 
 /**
  * @swagger
@@ -129,6 +129,6 @@ router.patch('/:id/upgrade', protect, authorize('Admin'), upgradeToPro);
  *       403:
  *         description: Can only manage your own organization
  */
-router.patch('/:id/downgrade', protect, authorize('Admin'), downgradeToFree);
+router.patch('/:id/downgrade', protect, authorize('Owner'), downgradeToFree);
 
 export default router;

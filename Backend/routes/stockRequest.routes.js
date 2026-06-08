@@ -77,7 +77,7 @@ const router = express.Router();
  *         description: List of stock requests
  */
 router.post('/', protect, authorize('StoreManager'), createStockRequest);
-router.get('/', protect, authorize('Admin'), getAllStockRequests);
+router.get('/', protect, authorize('Owner'), getAllStockRequests);
 
 /**
  * @swagger
@@ -121,7 +121,7 @@ router.get('/my', protect, authorize('StoreManager'), getMyStockRequests);
  *       404:
  *         description: Not found
  */
-router.get('/:id', protect, authorize('Admin', 'StoreManager'), getStockRequestById);
+router.get('/:id', protect, authorize('Owner', 'StoreManager'), getStockRequestById);
 
 /**
  * @swagger
@@ -155,7 +155,7 @@ router.get('/:id', protect, authorize('Admin', 'StoreManager'), getStockRequestB
  *       404:
  *         description: Not found
  */
-router.patch('/:id/approve', protect, authorize('Admin'), approveStockRequest);
+router.patch('/:id/approve', protect, authorize('Owner'), approveStockRequest);
 
 /**
  * @swagger
@@ -190,6 +190,6 @@ router.patch('/:id/approve', protect, authorize('Admin'), approveStockRequest);
  *       404:
  *         description: Not found
  */
-router.patch('/:id/reject', protect, authorize('Admin'), rejectStockRequest);
+router.patch('/:id/reject', protect, authorize('Owner'), rejectStockRequest);
 
 export default router;

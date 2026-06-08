@@ -4,7 +4,7 @@ import User from '../models/user.model.js';
 
 export const getOrganizations = async (req, res) => {
   try {
-    const organizations = await Organization.find().populate('ownerId', 'username email');
+    const organizations = await Organization.find().populate('ownerId', 'fullName email');
     res.status(200).json(organizations);
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -13,7 +13,7 @@ export const getOrganizations = async (req, res) => {
 
 export const getOrganizationById = async (req, res) => {
   try {
-    const organization = await Organization.findById(req.params.id).populate('ownerId', 'username email');
+    const organization = await Organization.findById(req.params.id).populate('ownerId', 'fullName email');
     if (!organization) {
       return res.status(404).json({ message: 'Organization not found' });
     }
@@ -26,7 +26,7 @@ export const getOrganizationById = async (req, res) => {
 // GET /api/organization/my  — returns the calling Admin's own org with location counts
 export const getMyOrganization = async (req, res) => {
   try {
-    const organization = await Organization.findById(req.user.organizationID).populate('ownerId', 'username email');
+    const organization = await Organization.findById(req.user.organizationID).populate('ownerId', 'fullName email');
     if (!organization) {
       return res.status(404).json({ message: 'Organization not found' });
     }
@@ -75,7 +75,7 @@ export const updateOrganization = async (req, res) => {
       req.params.id,
       req.body,
       { new: true, runValidators: true }
-    ).populate('ownerId', 'username email');
+    ).populate('ownerId', 'fullName email');
     if (!organization) {
       return res.status(404).json({ message: 'Organization not found' });
     }

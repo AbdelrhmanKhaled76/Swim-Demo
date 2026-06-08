@@ -502,7 +502,7 @@ export const getAllTransactions = async (req, res, next) => {
     try {
       transactions = await Transaction.find(filter)
         .sort({ createdAt: -1 })
-        .populate('userId', 'username email name');
+        .populate('userId', 'fullName email');
     } catch (populateError) {
       transactions = await Transaction.find(filter).sort({ createdAt: -1 });
     }
@@ -610,7 +610,7 @@ export const getTransactionHistory = async (req, res, next) => {
     try {
       transactions = await Transaction.find(filter)
         .sort({ createdAt: -1 })
-        .populate('userId', 'username email name');
+        .populate('userId', 'fullName email');
     } catch (populateError) {
       transactions = await Transaction.find(filter).sort({ createdAt: -1 });
     }
@@ -664,7 +664,7 @@ export const getTransactionById = async (req, res, next) => {
     let transaction;
     try {
       transaction = await Transaction.findById(id)
-        .populate('userId', 'username email name');
+        .populate('userId', 'fullName email');
     } catch (populateError) {
       transaction = await Transaction.findById(id);
     }
