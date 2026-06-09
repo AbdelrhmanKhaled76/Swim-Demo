@@ -178,6 +178,6 @@ router.put('/resetpassword/:resettoken', resetPassword);
  *       403:
  *         description: Owner role required
  */
-router.post('/invite', protect, authorize('Owner'), inviteUser);
+router.post('/createStoreManager', protect, authorize('Owner'), inviteUser);
 
 export default router;
