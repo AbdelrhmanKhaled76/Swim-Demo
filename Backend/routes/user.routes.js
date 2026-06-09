@@ -13,7 +13,6 @@ const router = express.Router();
  */
 
 router.use(protect);
-router.use(authorize('Owner'));
 
 /**
  * @swagger
@@ -44,7 +43,7 @@ router.use(authorize('Owner'));
  *       403:
  *         description: Forbidden – Admin role required
  */
-router.route('/').get(getUsers);
+router.route('/').get(authorize('Owner'), getUsers);
 
 /**
  * @swagger
@@ -126,8 +125,8 @@ router.route('/').get(getUsers);
  *         description: User not found
  */
 router.route('/:id')
-  .get(getUser)
-  .put(updateUser)
-  .delete(deleteUser);
+  .get(authorize('Owner', 'StoreManager'), getUser)
+  .put(authorize('Owner', 'StoreManager'), updateUser)
+  .delete(authorize('Owner'), deleteUser);
 
 export default router;

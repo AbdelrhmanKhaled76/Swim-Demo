@@ -10,6 +10,7 @@ interface props {
   onClose: () => void;
   onAddNewItem: () => void;
   onExportToStore: () => void;
+  onMoveBetweenWarehouses: () => void;
 }
 
 function WarehouseOperationsPopup({
@@ -17,6 +18,7 @@ function WarehouseOperationsPopup({
   onClose,
   onAddNewItem,
   onExportToStore,
+  onMoveBetweenWarehouses,
 }: props) {
   if (!isOpen) return null;
 
@@ -60,6 +62,7 @@ function WarehouseOperationsPopup({
           <Button
             icon={arrowRightLeftIcon}
             className="flex items-center justify-between h-[60px]"
+            onClick={onMoveBetweenWarehouses}
           >
             <>
               <span>MOVE BETWEEN WAREHOUSES</span>

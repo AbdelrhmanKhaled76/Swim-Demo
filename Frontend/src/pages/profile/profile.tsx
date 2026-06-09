@@ -135,7 +135,7 @@ function Profile() {
 
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
-  const [role, setRole] = useState("senior-logistics");
+  const [rank, setRank] = useState("inventory-manager");
   const [bio, setBio] = useState("");
 
   useEffect(() => {
@@ -147,7 +147,7 @@ function Profile() {
           const data = response.data.data;
           setFullName(data.fullName || "");
           setEmail(data.email || "");
-          setRole(data.role || "senior-logistics");
+          setRank(data.rank || "inventory-manager");
           setBio(data.bio || "");
         } catch (error) {
           showErrorToast("Failed to fetch user data.");
@@ -182,7 +182,7 @@ function Profile() {
       await apiClient.put(`users/${userId}`, {
         fullName,
         email,
-        role,
+        rank,
         bio,
       });
       showSuccessToast("Profile updated successfully!");
@@ -224,8 +224,8 @@ function Profile() {
             id="profile-role"
             label="Designated Rank / Role"
             as="select"
-            value={role}
-            onChange={setRole}
+            value={rank}
+            onChange={setRank}
             options={ROLE_OPTIONS}
           />
           <div className="flex flex-col gap-1.5 border-t border-neutral-200 pt-5 mt-1">

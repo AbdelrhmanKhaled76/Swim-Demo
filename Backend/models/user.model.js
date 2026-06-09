@@ -25,6 +25,15 @@ const userSchema = new mongoose.Schema(
       enum: [ "Owner", "StoreManager"],
       default: "Owner",
     },
+    rank: {
+      type: String,
+      enum: ["senior-logistics", "inventory-manager", "operations-lead", "system-admin", "analyst"],
+      default: "inventory-manager",
+    },
+    bio: {
+      type: String,
+      default: "",
+    },
     organizationID: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Organization",
