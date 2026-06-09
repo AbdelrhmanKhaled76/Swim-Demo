@@ -1,10 +1,14 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useSelector } from "react-redux";
 import serverRoomImg from "../../assets/images/server-room.png";
 import PageTitle from "../../components/PageTitle/PageTitle";
 import FormSection from "../../components/FormSection/FormSection";
 import FormField from "../../components/FormField/FormField";
 import ToggleSwitch from "../../components/ToggleSwitch/ToggleSwitch";
 import LocationManager from "./LocationManager";
+import type { RootState } from "../../store";
+import apiClient from "../../core/apiClient";
+import { showSuccessToast, showErrorToast } from "../../utils/toast";
 
 function UserIcon() {
   return (
@@ -127,10 +131,31 @@ const ROLE_OPTIONS = [
 ];
 
 function Profile() {
-  const [fullName, setFullName] = useState("Commander Elara Vance");
-  const [email, setEmail] = useState("e.vance@swim-hq.io");
+  const { user } = useSelector((state: RootState) => state.auth);
+
+  const [fullName, setFullName] = useState("");
+  const [email, setEmail] = useState("");
   const [role, setRole] = useState("senior-logistics");
   const [bio, setBio] = useState("");
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      if (user) {
+        const userId = user.id || (user as any)._id;
+        try {
+          const response = await apiClient.get(`users/${userId}`);
+          const data = response.data.data;
+          setFullName(data.fullName || "");
+          setEmail(data.email || "");
+          setRole(data.role || "senior-logistics");
+          setBio(data.bio || "");
+        } catch (error) {
+          showErrorToast("Failed to fetch user data.");
+        }
+      }
+    };
+    fetchUser();
+  }, [user]);
 
   const [showToken, setShowToken] = useState(false);
   const [tokenCopied, setTokenCopied] = useState(false);
@@ -149,9 +174,21 @@ function Profile() {
     setTimeout(() => setTokenCopied(false), 2000);
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    alert(`Profile updated!\nName: ${fullName}\nEmail: ${email}`);
+    if (!user) return;
+    const userId = user.id || (user as any)._id;
+    try {
+      await apiClient.put(`users/${userId}`, {
+        fullName,
+        email,
+        role,
+        bio,
+      });
+      showSuccessToast("Profile updated successfully!");
+    } catch (error) {
+      showErrorToast("Failed to update profile.");
+    }
   };
 
   return (
