@@ -182,6 +182,17 @@ export const inviteUser = async (req, res, next) => {
         typeError.statusCode = 400;
         throw typeError;
       }
+
+      const managerExists = await User.findOne({
+        assignedLocation,
+        role: "StoreManager",
+      });
+
+      if (managerExists) {
+        const dupError = new Error("A StoreManager is already assigned to this store/location.");
+        dupError.statusCode = 400;
+        throw dupError;
+      }
     }
 
     const newUser = await User.create({

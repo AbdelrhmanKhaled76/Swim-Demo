@@ -80,3 +80,22 @@ export const deleteUser = async (req, res, next) => {
     next(error);
   }
 };
+
+export const getStoreManagers = async (req, res, next) => {
+  try {
+    const managers = await User.find({
+      organizationID: req.user.organizationID,
+      role: "StoreManager",
+    })
+      .select("-passwordHash")
+      .populate("assignedLocation");
+
+    res.status(200).json({
+      success: true,
+      count: managers.length,
+      data: managers,
+    });
+  } catch (error) {
+    next(error);
+  }
+};

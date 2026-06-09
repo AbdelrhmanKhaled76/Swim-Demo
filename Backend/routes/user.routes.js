@@ -1,5 +1,5 @@
 import express from 'express';
-import { getUsers, getUser, updateUser, deleteUser } from '../controllers/user.controller.js';
+import { getUsers, getUser, updateUser, deleteUser, getStoreManagers } from '../controllers/user.controller.js';
 import { protect } from '../middlewares/auth.middleware.js';
 import { authorize } from '../middlewares/role.middleware.js';
 
@@ -44,6 +44,7 @@ router.use(protect);
  *         description: Forbidden – Admin role required
  */
 router.route('/').get(authorize('Owner'), getUsers);
+router.route('/store-managers').get(authorize('Owner'), getStoreManagers);
 
 /**
  * @swagger
