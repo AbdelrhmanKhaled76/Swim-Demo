@@ -4,7 +4,7 @@ import crypto from "crypto";
 
 const userSchema = new mongoose.Schema(
   {
-    username: {
+    fullName: {
       type: String,
       required: true,
       trim: true,
@@ -22,12 +22,17 @@ const userSchema = new mongoose.Schema(
     },
     role: {
       type: String,
-      enum: ["Admin", "WarehouseOwner", "StoreManager"],
-      default: "StoreManager",
+      enum: [ "Owner", "StoreManager"],
+      default: "Owner",
     },
     organizationID: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Organization",
+    },
+    assignedLocation: {
+     type: mongoose.Schema.Types.ObjectId,
+     ref: "Location",
+     default: null,
     },
     resetPasswordToken: String,
     resetPasswordExpire: Date,

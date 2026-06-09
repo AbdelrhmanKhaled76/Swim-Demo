@@ -2,7 +2,7 @@ const noiseBg = `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='htt
 
 export default function AuthFooter() {
   return (
-    <footer className="hidden md:block relative w-full bg-neutral-900 overflow-hidden py-8 md:py-12">
+    <footer className="hidden lg:block relative w-full bg-neutral-900 overflow-hidden py-8 md:py-12">
       {/* Background Noise overlay */}
       <div
         className="absolute inset-0 opacity-40 mix-blend-overlay pointer-events-none"
@@ -25,7 +25,7 @@ export default function AuthFooter() {
         </span>
       </div>
 
-      <div className="container mx-auto px-8 md:px-16 relative z-10 flex flex-col md:flex-row justify-between items-start gap-8 md:gap-4">
+      <div className="container mx-auto px-4 md:px-6 lg:px-8 relative z-10 flex flex-col md:flex-row justify-between items-start gap-8 md:gap-4">
         {/* Left Side: Logo & Socials */}
         <div className="flex flex-col gap-4 w-full md:w-1/2">
           {/* Logo Placeholder */}
@@ -144,8 +144,8 @@ export default function AuthFooter() {
               <path
                 d="M30.4431 14.5839V32.5126"
                 stroke="white"
-                stroke-width="2"
-                stroke-miterlimit="10"
+                strokeWidth="2"
+                strokeMiterlimit="10"
               />
             </svg>
           </div>

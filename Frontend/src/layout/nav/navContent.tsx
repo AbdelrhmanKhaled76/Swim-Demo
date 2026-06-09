@@ -4,7 +4,7 @@ import { Link } from "react-router-dom";
 export default function Nav() {
   return (
     <nav className="hidden md:flex w-full h-[90px] bg-white items-center justify-center border-b-2 border-gray-100 sticky top-0 z-[100] shadow-sm">
-      <div className="container mx-auto flex items-center justify-between">
+      <div className="container mx-auto px-4 md:px-6 lg:px-8 flex items-center justify-between">
         {/* Left: Logo Placeholder */}
         <div className="h-[45px] flex items-center justify-center">
           <svg
@@ -170,21 +170,20 @@ export default function Nav() {
 
         {/* Right: Auth Buttons */}
         <div className="flex gap-4">
-          <Link to="/signin">
-            <Button
-              variant="primary"
-              className="!bg-[#051426] hover:!bg-[#0a2342] !px-8"
-            >
-              LOGIN
-            </Button>
-          </Link>
-
           <Link to="/signup">
             <Button
               variant="primary"
-              className="!bg-[#051426] hover:!bg-[#0a2342] !px-8 hidden sm:block"
+              className="!bg-[#051426] hover:!bg-[#0a2342] !px-8 hidden sm:block text-white"
             >
               SIGN UP
+            </Button>
+          </Link>
+          <Link to="/signin">
+            <Button
+              variant="primary"
+              className="!bg-[#051426] hover:!bg-[#0a2342] !px-8 text-white"
+            >
+              LOGIN
             </Button>
           </Link>
         </div>

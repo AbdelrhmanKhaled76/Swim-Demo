@@ -2,7 +2,7 @@ const noiseBg = `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='htt
 
 export default function Footer() {
   return (
-    <footer className="hidden md:block relative w-full bg-[#0a2342] overflow-hidden py-8 md:py-12">
+    <footer className="hidden lg:block relative w-full bg-[#0a2342] overflow-hidden py-8 md:py-12">
       <div
         className="absolute inset-0 opacity-40 mix-blend-overlay pointer-events-none"
         style={{ backgroundImage: noiseBg }}
@@ -24,7 +24,7 @@ export default function Footer() {
         </span>
       </div>
 
-      <div className="container mx-auto px-8 md:px-16 relative z-10 flex flex-col md:flex-row justify-between items-start gap-8 md:gap-4">
+      <div className="container mx-auto px-4 md:px-6 lg:px-8 relative z-10 flex flex-col md:flex-row justify-between items-start gap-8 md:gap-4">
         {/* Left Side: Logo & Socials */}
         <div className="flex flex-col gap-4 w-full md:w-1/2">
           {/* Logo Placeholder */}

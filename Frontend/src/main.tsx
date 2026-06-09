@@ -12,7 +12,6 @@ import SignIn from "./pages/signin/signin";
 import SignUp from "./pages/signup/signup";
 import Statistics from "./pages/statistics/statistics";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
-// import Popups from "./pages/popups/popups";
 import { Provider } from "react-redux";
 import { store } from "./store";
 import { Toaster } from "react-hot-toast";
@@ -78,6 +77,40 @@ createRoot(document.getElementById("root")!).render(
       position="top-center"
       containerStyle={{
         top: 80,
+      }}
+      toastOptions={{
+        success: {
+          duration: 4000,
+          style: {
+            background: "#04162A",
+            color: "#fff",
+            fontFamily: '"Inter", sans-serif',
+            letterSpacing: "0.5px",
+            padding: "20px 40px",
+            fontSize: "18px",
+            fontWeight: "bold",
+            borderRadius: "10px",
+          },
+          iconTheme: {
+            primary: "#22c55e",
+            secondary: "#04162A",
+          },
+        },
+        error: {
+          duration: 4000,
+          style: {
+            background: "#fff",
+            color: "#FF383C",
+            border: "2px solid #FF383C",
+            fontFamily: '"Inter", sans-serif',
+            letterSpacing: "0.5px",
+            padding: "20px 40px",
+            fontSize: "18px",
+            fontWeight: "bold",
+            borderRadius: "10px",
+            boxShadow: "0 10px 25px -5px rgba(255, 56, 60, 0.2)",
+          },
+        },
       }}
     />
   </Provider>,

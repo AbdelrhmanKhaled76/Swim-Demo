@@ -1,14 +1,27 @@
-import { useState } from 'react';
-import serverRoomImg from '../../assets/images/server-room.png';
-import PageTitle from '../../components/PageTitle/PageTitle';
-import FormSection from '../../components/FormSection/FormSection';
-import FormField from '../../components/FormField/FormField';
-import ToggleSwitch from '../../components/ToggleSwitch/ToggleSwitch';
-import LocationManager from './LocationManager';
+import { useState, useEffect } from "react";
+import { useSelector } from "react-redux";
+import serverRoomImg from "../../assets/images/server-room.png";
+import PageTitle from "../../components/PageTitle/PageTitle";
+import FormSection from "../../components/FormSection/FormSection";
+import FormField from "../../components/FormField/FormField";
+import ToggleSwitch from "../../components/ToggleSwitch/ToggleSwitch";
+import LocationManager from "./LocationManager";
+import type { RootState } from "../../store";
+import apiClient from "../../core/apiClient";
+import { showSuccessToast, showErrorToast } from "../../utils/toast";
 
 function UserIcon() {
   return (
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round">
+    <svg
+      width="14"
+      height="14"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={1.8}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
       <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
       <circle cx="12" cy="7" r="4" />
     </svg>
@@ -17,7 +30,16 @@ function UserIcon() {
 
 function ShieldIcon() {
   return (
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round">
+    <svg
+      width="14"
+      height="14"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={1.8}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
       <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
     </svg>
   );
@@ -25,7 +47,16 @@ function ShieldIcon() {
 
 function SlidersIcon() {
   return (
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round">
+    <svg
+      width="14"
+      height="14"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={1.8}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
       <line x1="4" y1="6" x2="20" y2="6" />
       <line x1="8" y1="12" x2="20" y2="12" />
       <line x1="4" y1="18" x2="16" y2="18" />
@@ -38,7 +69,16 @@ function SlidersIcon() {
 
 function SaveIcon() {
   return (
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round">
+    <svg
+      width="18"
+      height="18"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={1.8}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
       <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z" />
       <polyline points="17 21 17 13 7 13 7 21" />
       <polyline points="7 3 7 8 15 8" />
@@ -48,7 +88,16 @@ function SaveIcon() {
 
 function EyeOffIcon() {
   return (
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round">
+    <svg
+      width="14"
+      height="14"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={1.8}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
       <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24" />
       <line x1="1" y1="1" x2="23" y2="23" />
     </svg>
@@ -57,7 +106,16 @@ function EyeOffIcon() {
 
 function CopyIcon() {
   return (
-    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round">
+    <svg
+      width="13"
+      height="13"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={1.8}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
       <rect x="9" y="9" width="13" height="13" rx="2" ry="2" />
       <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
     </svg>
@@ -65,22 +123,43 @@ function CopyIcon() {
 }
 
 const ROLE_OPTIONS = [
-  { value: 'senior-logistics', label: 'Senior Logistics Coordinator' },
-  { value: 'inventory-manager', label: 'Inventory Manager' },
-  { value: 'operations-lead', label: 'Operations Lead' },
-  { value: 'system-admin', label: 'System Administrator' },
-  { value: 'analyst', label: 'Data Analyst' },
+  { value: "senior-logistics", label: "Senior Logistics Coordinator" },
+  { value: "inventory-manager", label: "Inventory Manager" },
+  { value: "operations-lead", label: "Operations Lead" },
+  { value: "system-admin", label: "System Administrator" },
+  { value: "analyst", label: "Data Analyst" },
 ];
 
 function Profile() {
-  const [fullName, setFullName] = useState('Commander Elara Vance');
-  const [email, setEmail] = useState('e.vance@swim-hq.io');
-  const [role, setRole] = useState('senior-logistics');
-  const [bio, setBio] = useState('');
+  const { user } = useSelector((state: RootState) => state.auth);
+
+  const [fullName, setFullName] = useState("");
+  const [email, setEmail] = useState("");
+  const [role, setRole] = useState("senior-logistics");
+  const [bio, setBio] = useState("");
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      if (user) {
+        const userId = user.id || (user as any)._id;
+        try {
+          const response = await apiClient.get(`users/${userId}`);
+          const data = response.data.data;
+          setFullName(data.fullName || "");
+          setEmail(data.email || "");
+          setRole(data.role || "senior-logistics");
+          setBio(data.bio || "");
+        } catch (error) {
+          showErrorToast("Failed to fetch user data.");
+        }
+      }
+    };
+    fetchUser();
+  }, [user]);
 
   const [showToken, setShowToken] = useState(false);
   const [tokenCopied, setTokenCopied] = useState(false);
-  const apiToken = 'SWIM-KEY-7729-LX';
+  const apiToken = "SWIM-KEY-7729-LX";
 
   const [criticalStockAlerts, setCriticalStockAlerts] = useState(true);
   const [orderLateArrivals, setOrderLateArrivals] = useState(true);
@@ -95,13 +174,25 @@ function Profile() {
     setTimeout(() => setTokenCopied(false), 2000);
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    alert(`Profile updated!\nName: ${fullName}\nEmail: ${email}`);
+    if (!user) return;
+    const userId = user.id || (user as any)._id;
+    try {
+      await apiClient.put(`users/${userId}`, {
+        fullName,
+        email,
+        role,
+        bio,
+      });
+      showSuccessToast("Profile updated successfully!");
+    } catch (error) {
+      showErrorToast("Failed to update profile.");
+    }
   };
 
   return (
-    <div className="p-section-mobile md:p-section-desktop">
+    <div className="container mx-auto px-4 md:px-6 lg:px-8 p-section-mobile md:p-section-desktop">
       {/* Page Header */}
       <PageTitle title="Operator Settings" />
 
@@ -113,7 +204,6 @@ function Profile() {
       </div>
 
       <form onSubmit={handleSubmit} className="flex flex-col gap-5">
-
         <FormSection icon={<UserIcon />} title="Operator Profile">
           <FormField
             id="profile-full-name"
@@ -166,9 +256,25 @@ function Profile() {
                 Enforced
               </span>
             </div>
-            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="flex-shrink-0">
-              <path d="M12 2L3 6v6c0 5.25 3.75 10.15 9 11.25C17.25 22.15 21 17.25 21 12V6L12 2z" fill="#0C3E75" />
-              <polyline points="9 12 11 14 15.5 9.5" stroke="white" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+            <svg
+              width="32"
+              height="32"
+              viewBox="0 0 24 24"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+              className="flex-shrink-0"
+            >
+              <path
+                d="M12 2L3 6v6c0 5.25 3.75 10.15 9 11.25C17.25 22.15 21 17.25 21 12V6L12 2z"
+                fill="#0C3E75"
+              />
+              <polyline
+                points="9 12 11 14 15.5 9.5"
+                stroke="white"
+                strokeWidth="1.8"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
             </svg>
           </div>
 
@@ -182,7 +288,7 @@ function Profile() {
             <div className="relative flex items-center border border-neutral-300 bg-white">
               <input
                 id="profile-api-token"
-                type={showToken ? 'text' : 'password'}
+                type={showToken ? "text" : "password"}
                 readOnly
                 value={apiToken}
                 className="regular text-[12px] md:text-[13px] tracking-widest text-neutral-800 bg-transparent px-4 py-3 w-full outline-none pr-20 font-mono"
@@ -191,7 +297,7 @@ function Profile() {
                 <button
                   type="button"
                   onClick={() => setShowToken((v) => !v)}
-                  title={showToken ? 'Hide token' : 'Show token'}
+                  title={showToken ? "Hide token" : "Show token"}
                   className="flex items-center justify-center w-9 h-full text-neutral-500 hover:text-neutral-800 transition-colors cursor-pointer"
                 >
                   <EyeOffIcon />
@@ -203,7 +309,16 @@ function Profile() {
                   className="flex items-center justify-center w-9 h-full text-neutral-500 hover:text-primary-600 transition-colors cursor-pointer"
                 >
                   {tokenCopied ? (
-                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
+                    <svg
+                      width="13"
+                      height="13"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth={2}
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    >
                       <polyline points="20 6 9 17 4 12" />
                     </svg>
                   ) : (
@@ -298,7 +413,10 @@ function Profile() {
 
       <LocationManager />
 
-      <div className="mt-5 relative overflow-hidden" style={{ height: '160px' }}>
+      <div
+        className="mt-5 relative overflow-hidden"
+        style={{ height: "160px" }}
+      >
         <img
           src={serverRoomImg}
           alt="Server room"

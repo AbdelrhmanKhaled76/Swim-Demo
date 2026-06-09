@@ -13,7 +13,7 @@ const router = express.Router();
  */
 
 router.use(protect);
-router.use(authorize('Admin'));
+router.use(authorize('Owner'));
 
 /**
  * @swagger

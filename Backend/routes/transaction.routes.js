@@ -21,11 +21,11 @@ const router = express.Router();
  *   description: Financial transaction management (Sale, Transfer, Restock, Dump) with Stripe integration
  */
 
-router.post('/sale', protect, authorize('Admin', 'WarehouseOwner', 'StoreManager'), createSale);
-router.post('/sale/:id/confirm', protect, authorize('Admin', 'WarehouseOwner', 'StoreManager'), confirmSale);
-router.post('/transfer', protect, authorize('Admin', 'WarehouseOwner'), createTransfer);
-router.post('/restock', protect, authorize('Admin', 'WarehouseOwner'), createRestock);
-router.post('/dump', protect, authorize('Admin', 'WarehouseOwner'), createDump);
+router.post('/sale', protect, authorize('Owner', 'StoreManager'), createSale);
+router.post('/sale/:id/confirm', protect, authorize('Owner', 'StoreManager'), confirmSale);
+router.post('/transfer', protect, authorize('Owner'), createTransfer);
+router.post('/restock', protect, authorize('Owner'), createRestock);
+router.post('/dump', protect, authorize('Owner'), createDump);
 router.get('/', protect, getAllTransactions);
 router.get('/history', protect, getTransactionHistory);
 router.get('/:id', protect, getTransactionById);

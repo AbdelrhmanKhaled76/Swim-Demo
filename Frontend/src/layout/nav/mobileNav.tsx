@@ -1,4 +1,9 @@
 import { Link, useLocation } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { logout } from "../../store/slices/authSlice";
+import type { AppDispatch, RootState } from "../../store";
+import { showSuccessToast } from "../../utils/toast";
 
 export default function MobileNav({
   variant = "public",
@@ -7,10 +12,19 @@ export default function MobileNav({
 }) {
   const location = useLocation();
   const path = location.pathname.toLowerCase();
+  const navigate = useNavigate();
+  const dispatch = useDispatch<AppDispatch>();
+  const { token } = useSelector((state: RootState) => state.auth);
 
-  if (variant === "auth") {
+  const handleLogout = () => {
+    dispatch(logout());
+    showSuccessToast("Logged out securely.", 3000);
+    navigate("/signin");
+  };
+
+  if (token) {
     return (
-      <nav className="flex md:hidden fixed bottom-0 left-0 w-full h-[70px] bg-neutral-900 border-t border-neutral-800 z-[100] shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.3)]">
+      <nav className="flex lg:hidden fixed bottom-0 left-0 w-full h-[70px] bg-neutral-900 border-t border-neutral-800 z-[100] shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.3)]">
         {/* STATISTICS */}
         <Link
           to="/statistics"
@@ -170,7 +184,9 @@ export default function MobileNav({
 
         {/* LOGOUT */}
         <Link
+          tabIndex={-1}
           to="/signin"
+          onClick={handleLogout}
           className="flex-1 flex flex-col items-center justify-center text-red-400 hover:bg-red-900/30 hover:text-red-300 transition-colors"
         >
           <svg

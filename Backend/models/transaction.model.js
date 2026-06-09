@@ -7,7 +7,7 @@ const transactionItemSchema = new mongoose.Schema({
   },
   name: {
     type: String,
-    required: true
+    default: ''
   },
   quantity: {
     type: Number,
@@ -50,6 +50,11 @@ const transactionSchema = new mongoose.Schema({
   userId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
+    default: null
+  },
+  organizationId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Organization',
     default: null
   },
   locationId: {

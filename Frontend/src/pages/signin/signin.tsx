@@ -4,64 +4,32 @@ import { useNavigate } from "react-router-dom";
 import { loginUser } from "../../store/slices/authSlice";
 import type { AppDispatch, RootState } from "../../store";
 import Button from "../../components/button/button";
-import toast from "react-hot-toast"; 
+import { showSuccessToast, showErrorToast } from "../../utils/toast";
 
 function SignIn() {
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
-
   const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
-  
+
   const { isLoading } = useSelector((state: RootState) => state.auth);
 
-  const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
+  const handleLogin = async (e: React.SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
-    
+
     const resultAction = await dispatch(loginUser({ email, password }));
 
     if (loginUser.fulfilled.match(resultAction)) {
-      toast.success("Access Granted! Welcome to SWIM Protocol.", {
-        duration: 4000,
-        style: {
-          background: '#04162A', 
-          color: '#fff',
-          fontFamily: '"Inter", sans-serif',
-          letterSpacing: '0.5px',
-          padding: '20px 40px', 
-          fontSize: '18px',    
-          fontWeight: 'bold',
-          borderRadius: '10px'  
-        },
-        iconTheme: {
-          primary: '#22c55e', 
-          secondary: '#04162A',
-        },
-      });
-      navigate("/home");
-      
+      showSuccessToast("Access Granted! Welcome to SWIM Protocol.");
+      navigate("/statistics");
     } else {
-      toast.error(resultAction.payload as string, {
-        duration: 4000,
-        style: {
-          background: '#fff',
-          color: '#FF383C', 
-          border: '2px solid #FF383C',
-          fontFamily: '"Inter", sans-serif',
-          letterSpacing: '0.5px',
-          padding: '20px 40px', 
-          fontSize: '18px',     
-          fontWeight: 'bold',
-          borderRadius: '10px',
-          boxShadow: '0 10px 25px -5px rgba(255, 56, 60, 0.2)'
-        },
-      });
+      showErrorToast(resultAction.payload as string);
     }
   };
 
   return (
     <div className="min-h-screen flex flex-col bg-white">
-      <main className="flex-grow flex justify-center pt-16 px-6 md:px-12 pb-12">
+      <main className="flex-grow flex justify-center container mx-auto py-12">
         <div className="w-full max-w-5xl flex flex-col">
           <div className="mb-10">
             <h1 className="header text-6xl md:text-8xl text-primary-900 tracking-tight mb-4">
@@ -89,7 +57,6 @@ function SignIn() {
             </div>
 
             <form onSubmit={handleLogin} className="flex flex-col gap-6">
-
               <div className="flex flex-col gap-2">
                 <label className="regular text-xs text-neutral-700 uppercase tracking-widest">
                   Email
@@ -118,9 +85,9 @@ function SignIn() {
                 />
               </div>
 
-              <Button 
-                type="submit" 
-                variant="primary" 
+              <Button
+                type="submit"
+                variant="primary"
                 className={`w-full mt-4 ${isLoading ? "opacity-70 cursor-not-allowed" : ""}`}
                 disabled={isLoading}
               >

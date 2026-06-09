@@ -19,8 +19,27 @@ const orderSchema = new mongoose.Schema(
           ref: "item",
           required: true,
         },
+        quantity: {
+          type: Number,
+          required: true,
+          min: 1,
+        },
       },
     ],
+    totalPrice: {
+      type: Number,
+      min: 0,
+      default: 0,
+    },
+    status: {
+      type: String,
+      enum: ["pending", "confirmed", "shipped", "delivered", "cancelled"],
+      default: "pending",
+    },
+    notes: {
+      type: String,
+      default: "",
+    },
   },
   { timestamps: true },
 );

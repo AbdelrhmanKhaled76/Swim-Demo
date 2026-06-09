@@ -1,20 +1,28 @@
 import express from 'express';
-import { register, login, forgotPassword, resetPassword } from '../controllers/auth.controller.js';
+import { 
+  register, 
+  login, 
+  forgotPassword, 
+  resetPassword, 
+  inviteUser 
+} from '../controllers/auth.controller.js';
+import { protect } from '../middlewares/auth.middleware.js';
+import { authorize } from '../middlewares/role.middleware.js';
 
 const router = express.Router();
 
 /**
  * @swagger
  * tags:
- *   name: Auth
- *   description: Authentication endpoints – register, login, password reset
+ *   - name: Auth
+ *     description: Authentication endpoints – register, login, password reset
  */
 
 /**
  * @swagger
  * /api/auth/register:
  *   post:
- *     summary: Register a new user
+ *     summary: Register a new Owner account (creates org + warehouse automatically)
  *     tags: [Auth]
  *     security: []
  *     requestBody:
@@ -22,20 +30,30 @@ const router = express.Router();
  *       content:
  *         application/json:
  *           schema:
- *             $ref: '#/components/schemas/RegisterRequest'
+ *             type: object
+ *             required: [fullName, email, password, orgName, warehouse]
+ *             properties:
+ *               fullName:
+ *                 type: string
+ *               email:
+ *                 type: string
+ *                 format: email
+ *               password:
+ *                 type: string
+ *                 minLength: 6
+ *               confirmPassword:
+ *                 type: string
+ *               orgName:
+ *                 type: string
+ *               warehouse:
+ *                 type: string
+ *               industry:
+ *                 type: string
  *     responses:
  *       201:
  *         description: User registered successfully
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/AuthResponse'
  *       400:
  *         description: Validation error or email already registered
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/ErrorResponse'
  */
 router.post('/register', register);
 
@@ -51,20 +69,19 @@ router.post('/register', register);
  *       content:
  *         application/json:
  *           schema:
- *             $ref: '#/components/schemas/LoginRequest'
+ *             type: object
+ *             required: [email, password]
+ *             properties:
+ *               email:
+ *                 type: string
+ *                 format: email
+ *               password:
+ *                 type: string
  *     responses:
  *       200:
  *         description: Logged in successfully
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/AuthResponse'
  *       401:
  *         description: Invalid email or password
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/ErrorResponse'
  */
 router.post('/login', login);
 
@@ -86,32 +103,11 @@ router.post('/login', login);
  *               email:
  *                 type: string
  *                 format: email
- *                 example: johndoe@example.com
  *     responses:
  *       200:
- *         description: Reset token generated (pretend this was sent via email)
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 success:
- *                   type: boolean
- *                 message:
- *                   type: string
- *                 data:
- *                   type: object
- *                   properties:
- *                     resetToken:
- *                       type: string
- *                     resetUrl:
- *                       type: string
+ *         description: Reset token generated
  *       404:
  *         description: No user found with that email
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/ErrorResponse'
  */
 router.post('/forgotpassword', forgotPassword);
 
@@ -128,7 +124,6 @@ router.post('/forgotpassword', forgotPassword);
  *         required: true
  *         schema:
  *           type: string
- *         description: The reset token received via forgotPassword
  *     requestBody:
  *       required: true
  *       content:
@@ -140,28 +135,49 @@ router.post('/forgotpassword', forgotPassword);
  *               password:
  *                 type: string
  *                 minLength: 6
- *                 example: newSecret123
  *     responses:
  *       200:
- *         description: Password reset successfully, returns new JWT
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 success:
- *                   type: boolean
- *                 message:
- *                   type: string
- *                 token:
- *                   type: string
+ *         description: Password reset successfully
  *       400:
  *         description: Invalid or expired reset token
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/ErrorResponse'
  */
 router.put('/resetpassword/:resettoken', resetPassword);
+
+/**
+ * @swagger
+ * /api/auth/invite:
+ *   post:
+ *     summary: Owner invites a new StoreManager to their organization
+ *     tags: [Auth]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [fullName, email, password, role]
+ *             properties:
+ *               fullName:
+ *                 type: string
+ *               email:
+ *                 type: string
+ *                 format: email
+ *               password:
+ *                 type: string
+ *                 minLength: 6
+ *               role:
+ *                 type: string
+ *                 enum: [StoreManager]
+ *     responses:
+ *       201:
+ *         description: User invited successfully
+ *       400:
+ *         description: Validation error or email already registered
+ *       403:
+ *         description: Owner role required
+ */
+router.post('/createStoreManager', protect, authorize('Owner'), inviteUser);
 
 export default router;

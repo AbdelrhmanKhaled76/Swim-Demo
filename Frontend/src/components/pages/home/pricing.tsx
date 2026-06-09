@@ -6,7 +6,7 @@ function Pricing() {
   return (
     <div
       id="pricing"
-      className="w-full bg-white py-24 px-4 md:px-8 overflow-hidden"
+      className="w-full bg-white py-24 px-4 md:px-6 lg:px-8 overflow-hidden"
     >
       <div className="container mx-auto max-w-[900px]">
         <h2 className="text-[#051426] text-3xl md:text-4xl lg:text-5xl font-black uppercase mb-16 tracking-wide header">

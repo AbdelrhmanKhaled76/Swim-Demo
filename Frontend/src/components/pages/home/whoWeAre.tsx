@@ -4,7 +4,7 @@ import date from "../../../assets/icons/date-time.svg";
 
 function WhoWeAre() {
   return (
-    <div className="container mx-auto py-16 overflow-hidden">
+    <div className="container mx-auto px-4 md:px-6 lg:px-8 py-16 overflow-hidden">
       <h2 className="text-center text-3xl md:text-4xl lg:text-5xl xl:text-7xl text-primary-900 mb-10 md:mb-[60px] tracking-[1px] header transition-transform hover:scale-105 duration-500">
         Who We Are
       </h2>
