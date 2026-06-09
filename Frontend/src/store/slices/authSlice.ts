@@ -1,4 +1,4 @@
-import {
+ statsimport {
   createAsyncThunk,
   createSlice,
   type PayloadAction,
@@ -6,10 +6,13 @@ import {
 import apiClient from "../../core/apiClient";
 
 interface User {
-  id: string;
+  id?: string;
+  _id?: string;
   email: string;
   fullName: string;
   role: string;
+  organizationID?: string;
+  assignedLocation?: string;
 }
 
 interface AuthState {

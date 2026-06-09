@@ -11,9 +11,7 @@ interface HistoryState {
 export const fetchHistory = createAsyncThunk(
   "history/fetchHistory",
   async () => {
-    const response = await apiClient.get(
-      `order/store/6a21e93f947a50040cd0b361`,
-    );
+    const response = await apiClient.get("order");
     return response.data;
   },
 );
