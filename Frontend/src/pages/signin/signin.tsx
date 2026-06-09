@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { loginUser } from "../../store/slices/authSlice";
 import type { AppDispatch, RootState } from "../../store";
 import Button from "../../components/button/button";
@@ -129,12 +129,13 @@ function SignIn() {
             </form>
 
             <div className="flex justify-between items-center mt-6">
-              <button
-                type="button"
+              <Link
+                to="/forgot-password" 
                 className="regular text-xs text-neutral-600 hover:text-primary-900 underline decoration-neutral-400 hover:decoration-primary-900 underline-offset-4 transition-colors"
               >
                 FORGOT PASSKEY?
-              </button>
+
+              </Link>
               <p className="regular text-xs text-neutral-600">
                 NEW TO SWIM?
                 <a

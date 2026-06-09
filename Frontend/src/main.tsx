@@ -16,6 +16,8 @@ import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import { Provider } from "react-redux";
 import { store } from "./store";
 import { Toaster } from "react-hot-toast";
+import ForgotPassword from "./pages/Auth/ForgotPassword";
+import ResetPassword from "./pages/Auth/ResetPassword";
 
 const router = createBrowserRouter([
   {
@@ -62,6 +64,14 @@ const router = createBrowserRouter([
         path: "statistics",
         element: <Statistics />,
       },
+      {
+  path: "forgot-password",
+  element: <ForgotPassword />, 
+},
+{
+  path: "reset-password/:resettoken", 
+  element: <ResetPassword />, 
+},
       // {
       //   path: "popups",
       //   element: <Popups/>
