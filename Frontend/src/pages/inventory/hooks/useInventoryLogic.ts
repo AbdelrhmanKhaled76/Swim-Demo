@@ -14,7 +14,7 @@ import {
   fetchInventoryForLocation
 } from "../../../store/slices/InventorySclice";
 import type { AppDispatch, RootState } from "../../../store";
-import { showAiToast } from "../../../utils/toast";
+import toast from "react-hot-toast";
 
 const getRoleFromToken = (token: string | null): string | null => {
   if (!token) return null;
@@ -81,9 +81,28 @@ export const useInventoryLogic = () => {
     dispatch(setCurrentView(!currentView));
   };
 
-  const handleRequestStockForItem = (itemName: string) => {
-    showAiToast(itemName);
-    setSearchQuery("");
+  const handleRequestStockForItem = async (
+    itemId: string,
+    itemName: string,
+    sourceWarehouseId: string,
+    sourceWarehouseName: string
+  ) => {
+    const toastId = toast.loading("🤖 Agent processing transfer...");
+    try {
+      await apiClient.post("agent/process-request", {
+        currentStoreId: activeLocationId || selectedLocation?._id || "",
+        currentStoreName: selectedLocation?.name || "",
+        sourceWarehouseId,
+        sourceWarehouseName,
+        itemId,
+        itemName,
+        requestedQuantity: 10,
+      });
+      toast.success("Stock Request Submitted Successfully!", { id: toastId });
+      setSearchQuery("");
+    } catch (err: any) {
+      toast.error("Agent failed to process request", { id: toastId });
+    }
   };
 
   useEffect(() => {

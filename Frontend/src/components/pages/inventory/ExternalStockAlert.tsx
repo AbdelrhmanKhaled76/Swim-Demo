@@ -16,7 +16,12 @@ interface ExternalStockAlertProps {
   searchQuery: string;
   setSearchQuery: (query: string) => void;
   selectedLocation?: Location;
-  handleRequestStockForItem: (itemName: string) => void;
+  handleRequestStockForItem: (
+    itemId: string,
+    itemName: string,
+    sourceWarehouseId: string,
+    sourceWarehouseName: string
+  ) => void;
 }
 
 export default function ExternalStockAlert({
@@ -134,9 +139,20 @@ export default function ExternalStockAlert({
                             </span>
                           </div>
                           <button
-                            onClick={() =>
-                              handleRequestStockForItem(item.name)
-                            }
+                            onClick={() => {
+                              const locationsForItem = otherLocationsInfo.otherLocations.filter(
+                                (loc) => loc.itemId === item._id
+                              );
+                              const primarySource = locationsForItem[0];
+                              if (primarySource) {
+                                handleRequestStockForItem(
+                                  item._id,
+                                  item.name,
+                                  primarySource.location._id,
+                                  primarySource.location.name
+                                );
+                              }
+                            }}
                             className="flex-shrink-0 self-start sm:self-center bg-secondary-500 hover:bg-neutral-900 text-white font-bold tracking-widest text-[9px] md:text-[10px] px-3.5 py-2 uppercase transition-all duration-200 cursor-pointer focus:outline-none"
                           >
                             Request

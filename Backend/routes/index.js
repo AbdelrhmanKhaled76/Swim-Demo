@@ -9,6 +9,7 @@ import itemRoutes from "./item.routes.js";
 import customerRoutes from "./customer.routes.js";
 import orderRoutes from "./order.routes.js";
 import stockRequestRoutes from "./stockRequest.routes.js";
+import agentRoutes from "./agent.routes.js";
 
 const router = express.Router();
 
@@ -24,5 +25,7 @@ router.use("/item", itemRoutes);
 router.use("/customer", customerRoutes);
 router.use("/order", orderRoutes);
 router.use("/stock-requests", stockRequestRoutes);
+router.use("/agent", agentRoutes);
+
 
 export default router;
