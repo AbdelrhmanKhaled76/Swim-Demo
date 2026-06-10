@@ -4,6 +4,8 @@ import qrCodeIcon from "../../assets/icons/qr-code-icon.svg";
 import printerIcon from "../../assets/icons/printer-icon.svg";
 import boltIcon from "../../assets/icons/bolt-icon.svg";
 import Sign from "../sign/sign";
+import { useState } from "react";
+import apiClient from "../../core/apiClient";
 
 interface props {
   isOpen: boolean;
@@ -12,8 +14,32 @@ interface props {
 
 function AddNewItemPopup({ isOpen, onClose }: props) {
   if (!isOpen) return null;
+
+  const [itemName, setItemName] = useState("");
+  const [category, setCategory] = useState("");
+  const [description, setDescription] = useState("");
+  const [price, setPrice] = useState("");
+
+  const addNewItem = async () => {
+    try {
+      const itemData = {
+        name: itemName,
+        category,
+        description,
+        price: Number(price),
+      };
+
+      await apiClient.post("/item", itemData);
+    } catch (error: any) {
+      console.log("STATUS:", error.response?.status);
+      console.log("DATA:", error.response?.data);
+      console.log("FULL ERROR:", error);
+    }
+  };
+
   return (
     <>
+      
       <div className="fixed inset-0 z-9999 flex items-center justify-center bg-neutral-900/40">
         <div className="`w-140 bg-neutral-900 shadow-2xl rounded-t-[30px] max-h-[80vh] overflow-y-auto">
           <div className="flex h-[52px] items-center justify-between bg-light-800 px-[18px] text-[14px] tracking-[1.5px] regular text-light-100 rounded-t-[30px]">
@@ -29,36 +55,41 @@ function AddNewItemPopup({ isOpen, onClose }: props) {
           </div>
           <div className="flex flex-col gap-[18px] p-[36px]">
             <label className="regular text-xs text-light-100 uppercase tracking-widest">
-              sku identifier
+              item name
             </label>
             <input
               type="text"
-              placeholder="e.g., SWIM-9982-AX"
+              onChange={(e) => setItemName(e.target.value)}
+              value={itemName}
+              placeholder="item name"
               className="regular w-full border border-neutral-200 p-4 text-light-100 placeholder-neutral-400 focus:outline-none focus:border-primary-400 transition-colors"
             />
             <label className="regular text-xs text-light-100 uppercase tracking-widest">
-              storage zone
+              category
             </label>
-            <select className="regular appearance-none w-full border border-neutral-200 p-4 text-light-100 bg-neutral-900 focus:outline-none uppercase focus:border-primary-400 transition-colors cursor-pointer">
-              <option value="alpha-01" className="uppercase">
-                alpha 01
-              </option>
-              <option value="alpha-02" className="uppercase">
-                alpha 02
-              </option>
-            </select>
+            <input
+              type="text"
+              value={category}
+              onChange={(e) => setCategory(e.target.value)}
+              placeholder="item category"
+              className="regular w-full border border-neutral-200 p-4 text-light-100 placeholder-neutral-400 focus:outline-none focus:border-primary-400 transition-colors"
+            />
             <label className="regular text-xs text-light-100 uppercase tracking-widest">
               item description
             </label>
             <textarea
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
               className="regular w-full border border-neutral-200 p-4 text-light-100 placeholder-neutral-400 focus:outline-none focus:border-primary-400 transition-colors"
               placeholder="Enter technical specifications and physical properties..."
             ></textarea>
             <label className="regular text-xs text-light-100 uppercase tracking-widest">
-              quantity
+              price
             </label>
             <input
               type="number"
+              value={price}
+              onChange={(e) => setPrice(e.target.value)}
               placeholder="0"
               className="regular w-full border border-neutral-200 p-4 text-light-100 placeholder-neutral-400 focus:outline-none focus:border-primary-400 transition-colors"
             />
@@ -74,7 +105,11 @@ function AddNewItemPopup({ isOpen, onClose }: props) {
               </Button>
             </div>
             <div className="w-full border my-1 border-light-100"></div>
-            <Button icon={boltIcon} className="bg-secondary-500">
+            <Button
+              icon={boltIcon}
+              className="bg-secondary-500"
+              onClick={addNewItem}
+            >
               initialize entry
             </Button>
           </div>

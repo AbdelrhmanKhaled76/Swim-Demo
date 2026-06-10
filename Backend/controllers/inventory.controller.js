@@ -1,5 +1,7 @@
+import mongoose from 'mongoose';
 import Inventory from '../models/inventory.model.js';
 import Location from '../models/location.model.js';
+import itemModel from '../models/item.model.js';
 
 export const getStoreInventory = async (req, res) => {
   try {
@@ -111,6 +113,77 @@ export const checkItemAvailability = async (req, res) => {
   }
 };
 
+export const checkItemAvailabilityBySearch = async (req, res) => {
+  try {
+    const { locationId } = req.params;
+    const { q } = req.query;
+
+    if (!q) {
+      return res.status(400).json({ message: 'Search query parameter q is required' });
+    }
+
+    const currentLocation = await Location.findById(locationId);
+    if (!currentLocation) {
+      return res.status(404).json({ message: 'Location not found' });
+    }
+
+    const queryConditions = [
+      { name: { $regex: q, $options: 'i' } },
+      { category: { $regex: q, $options: 'i' } },
+    ];
+
+    if (mongoose.Types.ObjectId.isValid(q)) {
+      queryConditions.push({ _id: q });
+    }
+
+    const matchingItems = await itemModel.find({
+      isActive: true,
+      $or: queryConditions,
+    });
+
+    if (matchingItems.length === 0) {
+      return res.status(200).json({
+        matchingItems: [],
+        otherLocations: [],
+      });
+    }
+
+    const itemIds = matchingItems.map((item) => item._id);
+
+    const orgLocations = await Location.find({
+      organizationId: currentLocation.organizationId,
+      _id: { $ne: locationId },
+    });
+
+    const orgLocationIds = orgLocations.map((loc) => loc._id);
+
+    const otherInventories = await Inventory.find({
+      locationId: { $in: orgLocationIds },
+      itemId: { $in: itemIds },
+      quantity: { $gt: 0 },
+    })
+      .populate('itemId')
+      .populate('locationId');
+
+    const otherLocations = otherInventories.map((inv) => ({
+      itemId: inv.itemId?._id,
+      itemName: inv.itemId?.name,
+      location: inv.locationId,
+      quantity: inv.quantity,
+    }));
+
+    res.status(200).json({
+      matchingItems: matchingItems.map(item => ({
+        _id: item._id,
+        name: item.name,
+        category: item.category,
+      })),
+      otherLocations: otherLocations,
+    });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
 
 export const updateStock = async (req, res) => {
   try {

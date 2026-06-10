@@ -3,6 +3,7 @@ import {
   getStoreInventory,
   addInventory,
   checkItemAvailability,
+  checkItemAvailabilityBySearch,
   updateStock,
   transferStock,
   getLowStockReport,
@@ -71,6 +72,7 @@ router.post('/:locationId', protect, authorize('Owner'), addInventory);
  *       - bearerAuth: []
  */
 router.get('/:locationId/check/:itemId', protect, checkItemAvailability);
+router.get('/:locationId/check-search', protect, checkItemAvailabilityBySearch);
 
 /**
  * @swagger

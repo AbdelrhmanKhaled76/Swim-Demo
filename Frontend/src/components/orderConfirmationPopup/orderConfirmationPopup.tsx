@@ -1,3 +1,4 @@
+import { useNavigate } from "react-router-dom";
 import Button from "../button/button";
 import cancelIcon from "../../assets/icons/cancel-02.svg";
 import printerIcon from "../../assets/icons/printer-icon.svg";
@@ -10,6 +11,9 @@ interface props {
   idNum: string;
   customerName: string;
   itemCount: number;
+  totalAmount: number; // value in DOLLARS, not cents
+  orderId?: string;       // full MongoDB _id of the order
+  transactionId?: string; // full MongoDB _id of the confirmed transaction
 }
 
 function OrderConfirmationPopup({
@@ -19,10 +23,21 @@ function OrderConfirmationPopup({
   idNum,
   customerName,
   itemCount,
+  totalAmount,
+  orderId,
+  transactionId,
 }: props) {
+  const navigate = useNavigate();
+
   if (!isOpen) return null;
 
-  const totalAmount = 14229;
+  const handlePrintReceipt = () => {
+    const params = new URLSearchParams();
+    if (orderId) params.set("orderId", orderId);
+    if (transactionId) params.set("transactionId", transactionId);
+    navigate(`/reciept?${params.toString()}`);
+    onClose();
+  };
 
   return (
     <>
@@ -46,8 +61,10 @@ function OrderConfirmationPopup({
             <label className="regular text-xs text-light-100 uppercase tracking-widest">
               {idPrefix}-{idNum}
             </label>
-            <Button icon={printerIcon}>print reciept</Button>
-            <Button variant="outline" onClick={onClose} className="text-white">
+            <Button icon={printerIcon} onClick={handlePrintReceipt}>
+              print reciept
+            </Button>
+            <Button variant="outline" onClick={() => { navigate('/history'); onClose(); }} className="text-white">
               return to history
             </Button>
             <div className="bg-black w-auto rounded-md px-4 py-2">

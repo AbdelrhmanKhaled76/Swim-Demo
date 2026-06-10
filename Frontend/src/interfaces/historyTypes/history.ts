@@ -37,8 +37,9 @@ export interface FetchedOrder {
   customerId: FetchedCustomer | null;
   storeId: FetchedStore | null;
   items: FetchedOrderItem[];
+  status?: OrderStatus | string;
   createdAt: string;
   updatedAt: string;
 }
 
-export type OrderStatus = "PENDING" | "COMPLETED";
+export type OrderStatus = "PENDING" | "COMPLETED" | "CONFIRMED";

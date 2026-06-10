@@ -4,6 +4,7 @@ import inventoryReducer from "./slices/InventorySclice";
 import HistoryReducer from "./slices/historySclice";
 import storeManagersReducer from "./slices/storeManagerSlice";
 import requestsReducer from "./slices/requestsSlice";
+import orderReducer from "./slices/orderSlice";
 
 export const store = configureStore({
   reducer: {
@@ -12,6 +13,7 @@ export const store = configureStore({
     history: HistoryReducer,
     storeManagers: storeManagersReducer,
     requests: requestsReducer,
+    order: orderReducer,
   },
 });
 

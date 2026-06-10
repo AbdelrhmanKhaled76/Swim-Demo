@@ -1,5 +1,6 @@
 import Stripe from 'stripe';
 import Transaction from '../models/transaction.model.js';
+import Inventory from '../models/inventory.model.js';
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 
@@ -220,6 +221,35 @@ export const confirmSale = async (req, res, next) => {
 
     transaction.status = 'completed';
     await transaction.save();
+
+    // ── Also mark the related order as confirmed ──────────────────────────────
+    if (transaction.relatedOrderId) {
+      try {
+        const orderModel = (await import('../models/order.model.js')).default;
+        await orderModel.findByIdAndUpdate(
+          transaction.relatedOrderId,
+          { status: 'confirmed' }
+        );
+      } catch (_) {
+        // Non-fatal: transaction is confirmed even if order update fails
+      }
+    }
+
+    // ── Deduct inventory for the completed sale ───────────────────────────────
+    if (transaction.locationId && transaction.items && transaction.items.length > 0) {
+      try {
+        for (const item of transaction.items) {
+          if (item.itemId && item.quantity > 0) {
+            await Inventory.findOneAndUpdate(
+              { locationId: transaction.locationId, itemId: item.itemId },
+              { $inc: { quantity: -item.quantity } }
+            );
+          }
+        }
+      } catch (_) {
+        // Non-fatal
+      }
+    }
 
     return res.status(200).json({
       success: true,

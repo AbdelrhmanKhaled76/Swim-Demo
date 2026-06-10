@@ -108,5 +108,5 @@ export const createOrderValidator = Joi.object({
   status: Joi.string()
     .valid("pending", "confirmed", "shipped", "delivered", "cancelled")
     .optional(),
-  notes: Joi.string().max(500).optional(),
+  notes: Joi.string().max(500).allow("").optional(),
 });

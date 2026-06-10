@@ -3,14 +3,72 @@ import cancelIcon from "../../assets/icons/cancel-02.svg";
 import stockIcon from "../../assets/icons/stock-icon.svg";
 import transitIcon from "../../assets/icons/transit-icon.svg";
 import arrowRightLong from "../../assets/icons/arrow-right-long.svg";
+import { useSelector } from "react-redux";
+import { selectTotalStores } from "../../store/slices/InventorySclice";
+import { useEffect, useState } from "react";
+import {
+  type InventoryItem,
+  type Location,
+} from "../../interfaces/InventoryTypes/inventory";
+import apiClient from "../../core/apiClient";
 
 interface props {
   isOpen: boolean;
   onClose: () => void;
+  warehouseId: string;
 }
 
-function ExportToStorePopup({ isOpen, onClose }: props) {
+function ExportToStorePopup({ isOpen, onClose, warehouseId }: props) {
   if (!isOpen) return null;
+
+  const stores = useSelector(selectTotalStores);
+
+  const [items, setItems] = useState<InventoryItem[]>([]);
+
+  const [selectedItemId, setSelectedItemId] = useState("");
+  const [selectedStoreId, setSelectedStoreId] = useState("");
+  const [quantity, setQuantitiy] = useState("");
+
+  useEffect(() => {
+    if (!isOpen || !warehouseId) return;
+    const fetchWarehouseInventory = async () => {
+      try {
+        const response = await apiClient.get<{
+          inventory: InventoryItem[];
+        }>(`inventory/${warehouseId}`);
+
+        setItems(response.data.inventory);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+
+    fetchWarehouseInventory();
+  }, [isOpen, warehouseId]);
+
+  useEffect(() => {
+    if (stores.length > 0 && !selectedStoreId) {
+      setSelectedStoreId(stores[0]._id);
+    }
+  }, [stores, selectedStoreId]);
+
+  useEffect(() => {
+    if (items.length > 0 && !selectedItemId) {
+      setSelectedItemId(items[0].itemId!._id);
+    }
+  }, [items, selectedItemId]);
+
+  const exportToStore = async () => {
+    try {
+      await apiClient.post(`/inventory/${selectedStoreId}/transfer`, {
+        fromLocationId: warehouseId,
+        itemId: selectedItemId,
+        quantity: Number(quantity),
+      });
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   return (
     <>
@@ -31,30 +89,42 @@ function ExportToStorePopup({ isOpen, onClose }: props) {
             <label className="regular text-xs text-light-100 uppercase tracking-widest">
               choose item
             </label>
-            <select className="regular appearance-none w-full border border-neutral-200 p-4 text-light-100 bg-neutral-900 focus:outline-none uppercase focus:border-primary-400 transition-colors cursor-pointer">
-              <option value="item-01" className="uppercase">
-                item 01
-              </option>
-              <option value="item-02" className="uppercase">
-                item 02
-              </option>
+            <select
+              value={selectedItemId}
+              onChange={(e) => setSelectedItemId(e.target.value)}
+              className="regular appearance-none w-full border border-neutral-200 p-4 text-light-100 bg-neutral-900 focus:outline-none uppercase focus:border-primary-400 transition-colors cursor-pointer"
+            >
+              {items.map((inventory) => (
+                <option
+                  key={inventory.itemId!._id}
+                  value={inventory.itemId!._id}
+                  className="uppercase"
+                >
+                  {inventory.itemId!.name}
+                </option>
+              ))}
             </select>
             <label className="regular text-xs text-light-100 uppercase tracking-widest">
               destination store
             </label>
-            <select className="regular appearance-none w-full border border-neutral-200 p-4 text-light-100 bg-neutral-900 focus:outline-none uppercase focus:border-primary-400 transition-colors cursor-pointer">
-              <option value="store-01" className="uppercase">
-                store 01
-              </option>
-              <option value="store-02" className="uppercase">
-                store 02
-              </option>
+            <select
+              value={selectedStoreId}
+              onChange={(e) => setSelectedStoreId(e.target.value)}
+              className="regular appearance-none w-full border border-neutral-200 p-4 text-light-100 bg-neutral-900 focus:outline-none uppercase focus:border-primary-400 transition-colors cursor-pointer"
+            >
+              {stores.map((store: Location) => (
+                <option key={store._id} value={store._id} className="uppercase">
+                  {store.name}
+                </option>
+              ))}
             </select>
             <label className="regular text-xs text-light-100 uppercase tracking-widest">
               enter quantity
             </label>
             <input
               type="number"
+              value={quantity}
+              onChange={(e) => setQuantitiy(e.target.value)}
               placeholder="0"
               className="regular w-full border border-neutral-200 p-4 text-light-100 placeholder-neutral-400 focus:outline-none focus:border-primary-400 transition-colors"
             />
@@ -75,7 +145,7 @@ function ExportToStorePopup({ isOpen, onClose }: props) {
                 <label className="uppercase text-light-100">48 hours</label>
               </div>
             </div>
-            <Button variant="secondary">
+            <Button variant="secondary" onClick={exportToStore}>
               <div className="flex justify-center gap-5">
                 execute export
                 <img src={arrowRightLong}></img>

@@ -55,3 +55,24 @@ export const showWarningToast = (message: string, duration = 4000) => {
     },
   });
 };
+
+export const showAiToast = (itemName: string, duration = 5000) => {
+  toast.success(
+    `Stock transfer request simulated! Agent will handle the transfer request for "${itemName.toUpperCase()}" dynamically.`,
+    {
+      duration,
+      icon: "🤖",
+      style: {
+        border: "2px solid #FF6B35",
+        padding: "16px",
+        color: "#FF6B35",
+        backgroundColor: "#fffaf8",
+        fontWeight: "bold",
+        textTransform: "uppercase",
+        fontSize: "14px",
+        letterSpacing: "0.05em",
+      },
+    }
+  );
+};
+
