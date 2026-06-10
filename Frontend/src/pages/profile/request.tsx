@@ -1,8 +1,7 @@
 import { useState, useEffect } from "react";
 import apiClient from "../../core/apiClient";
 import FormSection from "../../components/FormSection/FormSection";
-
-// ─── Icons ───────────────────────────────────────────────────────────────────
+import type { RequestStatus } from "../../types/requestStatus";
 
 function InboxIcon() {
   return (
@@ -39,26 +38,22 @@ function FilterIcon() {
   );
 }
 
-// ─── Status Badge ─────────────────────────────────────────────────────────────
-
-type RequestStatus = "pending" | "approved" | "rejected";
-
 function StatusBadge({ status }: { status: RequestStatus }) {
   const config: Record<RequestStatus, { label: string; classes: string }> = {
-    pending: {
+    Pending: {
       label: "Pending",
       classes: "text-amber-700 bg-amber-50 border-amber-200",
     },
-    approved: {
+    Approved: {
       label: "Approved",
       classes: "text-emerald-700 bg-emerald-50 border-emerald-200",
     },
-    rejected: {
+    Rejected: {
       label: "Declined",
       classes: "text-red-700 bg-red-50 border-red-200",
     },
   };
-  const { label, classes } = config[status] || config.pending;
+  const { label, classes } = config[status] || config.Pending;
   return (
     <span
       className={`regular text-[9px] tracking-widest uppercase font-bold border px-2 py-1 ${classes}`}
@@ -67,8 +62,6 @@ function StatusBadge({ status }: { status: RequestStatus }) {
     </span>
   );
 }
-
-// ─── Request Card ─────────────────────────────────────────────────────────────
 
 function RequestCard({ request }: { request: any }) {
   const isPending = request.status === "pending";
@@ -82,9 +75,15 @@ function RequestCard({ request }: { request: any }) {
     });
   };
 
-  const storeName = typeof request.storeId === 'object' ? request.storeId?.name : request.storeName;
-  const itemName = typeof request.items[0]?.itemId === 'object' ? request.items[0].itemId?.name : request.items[0]?.itemId;
-  
+  const storeName =
+    typeof request.storeId === "object"
+      ? request.storeId?.name
+      : request.storeName;
+  const itemName =
+    typeof request.items[0]?.itemId === "object"
+      ? request.items[0].itemId?.name
+      : request.items[0]?.itemId;
+
   return (
     <div
       className={`border bg-white px-4 py-4 flex flex-col gap-3 transition-colors ${
@@ -127,11 +126,17 @@ function RequestCard({ request }: { request: any }) {
           <>
             <div className="text-neutral-300 text-xl">→</div>
             <div className="flex flex-col gap-0.5">
-              <span className={`regular text-[9px] tracking-widest uppercase font-bold ${request.status === "approved" ? "text-emerald-600" : "text-red-600"}`}>
+              <span
+                className={`regular text-[9px] tracking-widest uppercase font-bold ${request.status === "approved" ? "text-emerald-600" : "text-red-600"}`}
+              >
                 {request.status === "approved" ? "Approved" : "Rejected"}
               </span>
-              <span className={`header text-[20px] font-bold leading-none ${request.status === "approved" ? "text-emerald-700" : "text-red-700"}`}>
-                {request.status === "approved" ? (request.items[0]?.quantity ?? 0) : 0}
+              <span
+                className={`header text-[20px] font-bold leading-none ${request.status === "approved" ? "text-emerald-700" : "text-red-700"}`}
+              >
+                {request.status === "approved"
+                  ? (request.items[0]?.quantity ?? 0)
+                  : 0}
               </span>
             </div>
           </>
@@ -145,7 +150,7 @@ function RequestCard({ request }: { request: any }) {
 
       {request.adminNote && (
         <div className="border-t border-neutral-100 pt-3 flex flex-col gap-1">
-           <span className="regular text-[9px] tracking-widest uppercase text-primary-600 font-bold">
+          <span className="regular text-[9px] tracking-widest uppercase text-primary-600 font-bold">
             Admin Note
           </span>
           <p className="regular text-[11px] text-neutral-600 italic">
@@ -163,14 +168,18 @@ type FilterType = "All" | RequestStatus;
 
 export default function MyRequests() {
   const [requests, setRequests] = useState<any[]>([]);
-  const [status, setStatus] = useState<"idle" | "loading" | "succeeded" | "failed">("idle");
+  const [status, setStatus] = useState<
+    "idle" | "loading" | "succeeded" | "failed"
+  >("idle");
   const [filter, setFilter] = useState<FilterType>("All");
 
   useEffect(() => {
     const fetchMyRequests = async () => {
       setStatus("loading");
       try {
-        const response = await apiClient.get<{ success: boolean; data: any }>("/stock-requests/my");
+        const response = await apiClient.get<{ success: boolean; data: any }>(
+          "/stock-requests/my",
+        );
         let data = response.data.data;
         if (!Array.isArray(data)) {
           data = data ? [data] : [];
@@ -186,9 +195,7 @@ export default function MyRequests() {
   }, []);
 
   const filteredRequests =
-    filter === "All"
-      ? requests
-      : requests.filter((r) => r.status === filter);
+    filter === "All" ? requests : requests.filter((r) => r.status === filter);
 
   const counts = {
     All: requests.length,
@@ -197,17 +204,22 @@ export default function MyRequests() {
     rejected: requests.filter((r) => r.status === "rejected").length,
   };
 
-  const filterOptions: FilterType[] = ["All", "pending", "approved", "rejected"];
+  const filterOptions: FilterType[] = [
+    "All",
+    "Pending",
+    "Approved",
+    "Rejected",
+  ];
 
   const filterBtnClass = (f: FilterType) => {
     const base =
       "flex items-center gap-1.5 px-3 py-1.5 regular text-[10px] tracking-widest uppercase font-bold transition-colors cursor-pointer border";
     if (filter === f) {
-      if (f === "pending")
+      if (f === "Pending")
         return `${base} bg-amber-700 text-white border-amber-700`;
-      if (f === "approved")
+      if (f === "Approved")
         return `${base} bg-emerald-700 text-white border-emerald-700`;
-      if (f === "rejected")
+      if (f === "Rejected")
         return `${base} bg-red-700 text-white border-red-700`;
       return `${base} bg-primary-800 text-white border-primary-800`;
     }

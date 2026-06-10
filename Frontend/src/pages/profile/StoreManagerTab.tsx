@@ -1,21 +1,29 @@
-import React, { useState, useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import type { AppDispatch } from '../../store';
+import React, { useState, useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import type { AppDispatch } from "../../store";
 import {
   fetchStoreManagers,
   createStoreManager,
   selectStoreManagers,
   selectStoreManagerStatus,
-} from '../../store/slices/storeManagerSlice';
-import { selectTotalStores } from '../../store/slices/InventorySclice';
-import FormField from '../../components/FormField/FormField';
-import FormSection from '../../components/FormSection/FormSection';
-
-// ─── Icons ───────────────────────────────────────────────────────────────────
+} from "../../store/slices/storeManagerSlice";
+import { selectTotalStores } from "../../store/slices/InventorySclice";
+import FormField from "../../components/FormField/FormField";
+import FormSection from "../../components/FormSection/FormSection";
+import { showSuccessToast } from "../../utils/toast";
 
 function UserPlusIcon() {
   return (
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round">
+    <svg
+      width="14"
+      height="14"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={1.8}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
       <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
       <circle cx="9" cy="7" r="4" />
       <line x1="19" y1="8" x2="19" y2="14" />
@@ -26,55 +34,71 @@ function UserPlusIcon() {
 
 function SaveIcon() {
   return (
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round">
+    <svg
+      width="18"
+      height="18"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={1.8}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
       <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z" />
       <polyline points="17 21 17 13 7 13 7 21" />
       <polyline points="7 3 7 8 15 8" />
     </svg>
   );
 }
-
-// ─── Component ────────────────────────────────────────────────────────────────
-
 export default function StoreManagerTab() {
   const dispatch = useDispatch<AppDispatch>();
   const managers = useSelector(selectStoreManagers);
   const status = useSelector(selectStoreManagerStatus);
   const stores = useSelector(selectTotalStores);
 
-  const [fullName, setFullName] = useState('');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [storeId, setStoreId] = useState('');
+  const [fullName, setFullName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [storeId, setStoreId] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
-    if (status === 'idle') {
+    if (status === "idle") {
       dispatch(fetchStoreManagers());
+      console.log(managers);
     }
   }, [dispatch, status]);
 
   const storeOptions = stores.map((s) => ({ value: s._id, label: s.name }));
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.SubmitEvent) => {
     e.preventDefault();
-    if (!fullName.trim() || !email.trim() || !password.trim() || !storeId) return;
+    if (!fullName.trim() || !email.trim() || !password.trim() || !storeId)
+      return;
 
     setIsSubmitting(true);
     try {
       await dispatch(
-        createStoreManager({ fullName, email, password, storeId, role: 'StoreManager' })
+        createStoreManager({
+          fullName,
+          email,
+          password,
+          assignedLocation: storeId,
+          role: "StoreManager",
+        }),
       ).unwrap();
-      setFullName('');
-      setEmail('');
-      setPassword('');
-      setStoreId('');
+      setFullName("");
+      setEmail("");
+      setPassword("");
+      setStoreId("");
+      showSuccessToast("Store manager is created successfully");
     } finally {
       setIsSubmitting(false);
     }
   };
 
-  const isFormValid = fullName.trim() && email.trim() && password.trim() && storeId;
+  const isFormValid =
+    fullName.trim() && email.trim() && password.trim() && storeId;
 
   return (
     <div className="flex flex-col gap-5">
@@ -85,7 +109,7 @@ export default function StoreManagerTab() {
             Current Managers
           </h3>
 
-          {status === 'loading' ? (
+          {status === "loading" ? (
             <div className="flex items-center gap-2 py-4">
               <div className="w-4 h-4 border-2 border-primary-600 border-t-transparent rounded-full animate-spin" />
               <span className="regular text-[11px] tracking-widest uppercase text-neutral-400">
@@ -114,14 +138,27 @@ export default function StoreManagerTab() {
                   <div className="flex items-center gap-2">
                     {/* Store badge */}
                     <div className="flex items-center gap-1.5 border border-primary-200 bg-primary-50 px-3 py-1">
-                      <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" className="text-primary-700">
+                      <svg
+                        width="10"
+                        height="10"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth={2}
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        className="text-primary-700"
+                      >
                         <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
                         <polyline points="9 22 9 12 15 12 15 22" />
                       </svg>
                       <span className="regular text-[10px] tracking-widest uppercase text-primary-700 font-bold">
                         {mgr.storeName ||
-                          stores.find((s) => s._id === mgr.storeId)?.name ||
-                          'Unknown Store'}
+                          (typeof mgr.assignedLocation === "object"
+                            ? mgr.assignedLocation?.name
+                            : stores.find((s) => s._id === mgr.assignedLocation)
+                                ?.name) ||
+                          "Unknown Store"}
                       </span>
                     </div>
                     {/* Role badge */}

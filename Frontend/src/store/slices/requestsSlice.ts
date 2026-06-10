@@ -28,7 +28,7 @@ const MOCK_REQUESTS: StockRequest[] = [
         quantity: 10,
       },
     ],
-    status: "pending",
+    status: "Pending",
     notes: "Sample request",
     resolvedAt: new Date().toISOString(),
     adminNote: "Request approved",
@@ -121,7 +121,7 @@ const requestsSlice = createSlice({
       .addCase(approveRequest.fulfilled, (state, action) => {
         const req = state.requests.find((r) => r._id === action.payload.id);
         if (req) {
-          req.status = "approved";
+          req.status = "Approved";
           if (action.payload.approvedQuantity !== undefined && req.items[0]) {
             req.items[0].quantity = action.payload.approvedQuantity;
           }
@@ -131,7 +131,7 @@ const requestsSlice = createSlice({
       .addCase(declineRequest.fulfilled, (state, action) => {
         const req = state.requests.find((r) => r._id === action.payload);
         if (req) {
-          req.status = "rejected";
+          req.status = "Rejected";
         }
       });
   },
@@ -140,7 +140,7 @@ const requestsSlice = createSlice({
 // ─── Selectors ────────────────────────────────────────────────────────────────
 export const selectAllRequests = (state: RootState) => state.requests.requests;
 export const selectPendingRequests = (state: RootState) =>
-  state.requests.requests.filter((request) => request.status === "pending");
+  state.requests.requests.filter((request) => request.status === "Pending");
 
 export const selectRequestsStatus = (state: RootState) => state.requests.status;
 export const selectRequestsError = (state: RootState) => state.requests.error;

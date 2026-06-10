@@ -1,6 +1,5 @@
-import type { User } from "../User/user";
-
-export type RequestStatus = "pending" | "approved" | "rejected";
+import type { RequestStatus } from "../../types/requestStatus";
+import type { User } from "../StoreManager/storeManager";
 
 export interface StockRequest {
   _id: string;

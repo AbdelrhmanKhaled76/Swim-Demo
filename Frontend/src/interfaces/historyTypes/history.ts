@@ -1,3 +1,5 @@
+import type { InventoryTypes } from "../../types/InventoryTypes";
+
 export interface FetchedCustomer {
   _id: string;
   name?: string;
@@ -10,7 +12,7 @@ export interface FetchedStore {
   _id: string;
   name: string;
   organizationId: string;
-  type: 'Warehouse' | 'Store';
+  type: InventoryTypes;
   locationDetails?: string;
 }
 
@@ -39,4 +41,4 @@ export interface FetchedOrder {
   updatedAt: string;
 }
 
-export type OrderStatus = 'PENDING' | 'COMPLETED';
+export type OrderStatus = "PENDING" | "COMPLETED";

@@ -1,8 +1,10 @@
+import type { InventoryTypes } from "../../types/InventoryTypes";
+
 export interface Location {
   _id: string;
   name: string;
   organizationId: string;
-  type: 'Warehouse' | 'Store';
+  type: InventoryTypes;
   locationDetails?: string;
 }
 
