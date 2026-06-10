@@ -1,6 +1,7 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import StockRequest from "../models/stockRequest.model.js";
 import Location from "../models/location.model.js";
+import Inventory from "../models/inventory.model.js";
 
 const handleAgentChat = async (req, res, next) => {
   try {
@@ -40,17 +41,21 @@ const handleProcessRequest = async (req, res, next) => {
       return res.status(400).json({ message: "Missing required fields" });
     }
 
-    const qty = requestedQuantity || 0;
+    const warehouseInv = await Inventory.findOne({
+      locationId: sourceWarehouseId,
+      itemId: itemId
+    });
+    const warehouseQuantity = warehouseInv ? warehouseInv.quantity : 0;
 
   const prompt = `
 You are a professional inventory and logistics AI.
 
 Store: ${currentStoreName}
-Warehouse: ${sourceWarehouseName}
+Warehouse: ${sourceWarehouseName} (Available Stock: ${warehouseQuantity})
 Item: ${itemName}
 
 Your tasks:
-1. Estimate the required quantity for this item based on typical store inventory needs.
+1. Estimate the required quantity for this item based on typical store inventory needs. The quantity MUST NOT exceed the available stock of ${warehouseQuantity} in the warehouse. If the available stock is 0, request 0.
 2. Write a logistics note not exceeding 50 words.
 
 Respond ONLY as valid JSON:
@@ -61,7 +66,7 @@ Respond ONLY as valid JSON:
 }
 
 Rules:
-- quantity must be a positive integer.
+- quantity must be a non-negative integer and must not exceed ${warehouseQuantity}.
 - notes must be less than 50 words.
 - No extra text outside JSON.
 `;
@@ -99,7 +104,7 @@ Rules:
       throw lastError || new Error("All Gemini models failed to generate content.");
     }
 
-    let aiParsedData = { notes: "Automated request created by Gemini Agent." };
+    let aiParsedData = { quantity: 10, notes: "Automated request created by Gemini Agent." };
     try {
       const parsed = JSON.parse(textResponse);
       if (parsed && typeof parsed === "object") {
@@ -109,12 +114,19 @@ Rules:
       aiParsedData = { notes: textResponse };
     }
 
+    let quantityToRequest = 10;
+    if (aiParsedData && typeof aiParsedData.quantity === "number") {
+      quantityToRequest = aiParsedData.quantity;
+    } else if (requestedQuantity !== undefined) {
+      quantityToRequest = Number(requestedQuantity);
+    }
+
     const stockRequest = await StockRequest.create({
       storeId: currentStoreId,
       warehouseId: sourceWarehouseId,
       requestedBy: req.user._id,
       organizationId: req.user.organizationID,
-      items: [{ itemId: itemId, quantity: Number(requestedQuantity) || 10 }],
+      items: [{ itemId: itemId, quantity: quantityToRequest }],
       notes: aiParsedData.notes || "Automated request created by Gemini Agent.",
       status: "pending",
     });
@@ -128,7 +140,7 @@ Rules:
 
     return res.status(201).json({
       success: true,
-      message: `Requested 10 units of ${itemName.toUpperCase()}!`,
+      message: `Requested ${quantityToRequest} units of ${itemName.toUpperCase()}!`,
       data: populated
     });
   } catch (error) {
