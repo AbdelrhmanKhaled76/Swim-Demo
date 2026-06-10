@@ -3,9 +3,9 @@ import Button from "../button/button";
 import qrCodeIcon from "../../assets/icons/qr-code-icon.svg";
 import printerIcon from "../../assets/icons/printer-icon.svg";
 import boltIcon from "../../assets/icons/bolt-icon.svg";
-import Sign from "../sign/sign";
 import { useState } from "react";
 import apiClient from "../../core/apiClient";
+import { showSuccessToast } from "../../utils/toast";
 
 interface props {
   isOpen: boolean;
@@ -30,6 +30,8 @@ function AddNewItemPopup({ isOpen, onClose }: props) {
       };
 
       await apiClient.post("/item", itemData);
+      showSuccessToast("item added successfully");
+      onClose();
     } catch (error: any) {
       console.log("STATUS:", error.response?.status);
       console.log("DATA:", error.response?.data);
@@ -39,7 +41,6 @@ function AddNewItemPopup({ isOpen, onClose }: props) {
 
   return (
     <>
-      
       <div className="fixed inset-0 z-9999 flex items-center justify-center bg-neutral-900/40">
         <div className="`w-140 bg-neutral-900 shadow-2xl rounded-t-[30px] max-h-[80vh] overflow-y-auto">
           <div className="flex h-[52px] items-center justify-between bg-light-800 px-[18px] text-[14px] tracking-[1.5px] regular text-light-100 rounded-t-[30px]">

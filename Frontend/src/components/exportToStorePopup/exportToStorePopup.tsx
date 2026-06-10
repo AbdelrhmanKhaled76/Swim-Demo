@@ -11,6 +11,7 @@ import {
   type Location,
 } from "../../interfaces/InventoryTypes/inventory";
 import apiClient from "../../core/apiClient";
+import { showSuccessToast } from "../../utils/toast";
 
 interface props {
   isOpen: boolean;
@@ -65,6 +66,8 @@ function ExportToStorePopup({ isOpen, onClose, warehouseId }: props) {
         itemId: selectedItemId,
         quantity: Number(quantity),
       });
+      showSuccessToast("item moved successfully");
+      onClose();
     } catch (error) {
       console.log(error);
     }

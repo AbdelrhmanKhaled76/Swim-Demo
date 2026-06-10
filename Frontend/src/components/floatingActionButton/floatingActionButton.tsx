@@ -13,7 +13,6 @@ function FloatingActionButton({ onClick }: props) {
       >
         +
       </Button>
-
     </>
   );
 }
