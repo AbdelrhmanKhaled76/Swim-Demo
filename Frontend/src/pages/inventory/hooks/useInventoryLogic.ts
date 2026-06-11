@@ -56,7 +56,9 @@ export const useInventoryLogic = () => {
   const [isWarehousePopupOpen, setIsWarehousePopupOpen] = useState(false);
   const [isAddNewItemPopupOpen, setIsAddNewItemPopupOpen] = useState(false);
   const [isExportToStorePopupOpen, setIsExportToStorePopupOpen] = useState(false);
+  const [isImportFromWarehousePopupOpen, setIsImportFromWarehousePopupOpen] = useState(false);
   const [isMoveBetweenWarehousesPopupOpen, setIsMoveBetweenWarehousesPopupOpen] = useState(false);
+  const [isMoveBetweenStoresPopupOpen, setIsMoveBetweenStoresPopupOpen] = useState(false);
 
   const [otherLocationsInfo, setOtherLocationsInfo] = useState<{
     matchingItems: { _id: string; name: string; category: string }[];
@@ -226,8 +228,12 @@ export const useInventoryLogic = () => {
     setIsAddNewItemPopupOpen,
     isExportToStorePopupOpen,
     setIsExportToStorePopupOpen,
+    isImportFromWarehousePopupOpen,
+    setIsImportFromWarehousePopupOpen,
     isMoveBetweenWarehousesPopupOpen,
     setIsMoveBetweenWarehousesPopupOpen,
+    isMoveBetweenStoresPopupOpen,
+    setIsMoveBetweenStoresPopupOpen,
     otherLocationsInfo,
     isCheckingElsewhere,
     isAlertDismissed,

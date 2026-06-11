@@ -8,10 +8,10 @@ import { showSuccessToast } from "../../utils/toast";
 interface props {
   isOpen: boolean;
   onClose: () => void;
-  warehouseId: string;
+  locationId: string;
 }
 
-function AddNewItemPopup({ isOpen, onClose, warehouseId }: props) {
+function AddNewItemPopup({ isOpen, onClose, locationId }: props) {
   if (!isOpen) return null;
 
   const [itemName, setItemName] = useState("");
@@ -30,7 +30,8 @@ function AddNewItemPopup({ isOpen, onClose, warehouseId }: props) {
       };
 
       const itemResponse = await apiClient.post("/item", itemData);
-      await apiClient.post(`/inventory/${warehouseId}`, {
+      
+      await apiClient.post(`/inventory/${locationId}`, {
         itemId: itemResponse.data.data._id,
         quantity: quantity,
       });

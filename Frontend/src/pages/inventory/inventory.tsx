@@ -10,6 +10,8 @@ import { useInventoryLogic } from "./hooks/useInventoryLogic";
 import LocationSelector from "../../components/pages/inventory/LocationSelector";
 import GlobalSearchFilters from "../../components/pages/inventory/GlobalSearchFilters";
 import ExternalStockAlert from "../../components/pages/inventory/ExternalStockAlert";
+import ImportFromWarehouse from "../../components/importFromWarehouse/importFromWarehouse";
+import MoveBetweenStoresPopup from "../../components/moveBetweenStores/moveBetweenStores";
 
 function Inventory() {
   const {
@@ -35,8 +37,12 @@ function Inventory() {
     setIsAddNewItemPopupOpen,
     isExportToStorePopupOpen,
     setIsExportToStorePopupOpen,
+    isImportFromWarehousePopupOpen,
+    setIsImportFromWarehousePopupOpen,
     isMoveBetweenWarehousesPopupOpen,
     setIsMoveBetweenWarehousesPopupOpen,
+    isMoveBetweenStoresPopupOpen,
+    setIsMoveBetweenStoresPopupOpen,
     otherLocationsInfo,
     isCheckingElsewhere,
     isAlertDismissed,
@@ -123,6 +129,7 @@ function Inventory() {
           <WarehouseOperationsPopup
             isOpen={isWarehousePopupOpen}
             onClose={() => setIsWarehousePopupOpen(false)}
+            isWarehouse={currentView}
             onAddNewItem={() => {
               setIsWarehousePopupOpen(false);
               setIsAddNewItemPopupOpen(true);
@@ -135,12 +142,20 @@ function Inventory() {
               setIsWarehousePopupOpen(false);
               setIsMoveBetweenWarehousesPopupOpen(true);
             }}
+            onImportFromWarehouse={() => {
+              setIsWarehousePopupOpen(false);
+              setIsImportFromWarehousePopupOpen(true);
+            }}
+            onMoveBetweenStores={() => {
+              setIsWarehousePopupOpen(false);
+              setIsMoveBetweenStoresPopupOpen(true);
+            }}
           />
 
           <AddNewItemPopup
             isOpen={isAddNewItemPopupOpen}
             onClose={() => setIsAddNewItemPopupOpen(false)}
-            warehouseId={activeLocationId}
+            locationId={activeLocationId}
           />
 
           <ExportToStorePopup
@@ -149,10 +164,21 @@ function Inventory() {
             warehouseId={activeLocationId}
           />
 
+          <ImportFromWarehouse
+            isOpen={isImportFromWarehousePopupOpen}
+            onClose={() => setIsImportFromWarehousePopupOpen(false)}
+            storeId={activeLocationId}
+          ></ImportFromWarehouse>
+
           <MoveBetweenWarehousesPopup
             isOpen={isMoveBetweenWarehousesPopupOpen}
             onClose={() => setIsMoveBetweenWarehousesPopupOpen(false)}
           />
+
+          <MoveBetweenStoresPopup
+            isOpen={isMoveBetweenStoresPopupOpen}
+            onClose={() => setIsMoveBetweenStoresPopupOpen(false)}
+          ></MoveBetweenStoresPopup>
         </>
       )}
     </div>

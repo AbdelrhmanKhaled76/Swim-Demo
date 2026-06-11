@@ -2,7 +2,7 @@ import Button from "../button/button";
 import cancelIcon from "../../assets/icons/cancel-02.svg";
 import arrowRightLong from "../../assets/icons/arrow-right-long.svg";
 import { useSelector } from "react-redux";
-import { selectTotalStores } from "../../store/slices/InventorySclice";
+import { selectTotalWarehouses } from "../../store/slices/InventorySclice";
 import { useEffect, useState } from "react";
 import {
   type InventoryItem,
@@ -14,27 +14,27 @@ import { showSuccessToast } from "../../utils/toast";
 interface props {
   isOpen: boolean;
   onClose: () => void;
-  warehouseId: string;
+  storeId: string;
 }
 
-function ExportToStorePopup({ isOpen, onClose, warehouseId }: props) {
+function ImportFromWarehouse({ isOpen, onClose, storeId }: props) {
   if (!isOpen) return null;
 
-  const stores = useSelector(selectTotalStores);
+  const warehouses = useSelector(selectTotalWarehouses);
 
   const [items, setItems] = useState<InventoryItem[]>([]);
 
   const [selectedItemId, setSelectedItemId] = useState("");
-  const [selectedStoreId, setSelectedStoreId] = useState("");
+  const [selectedWarehouseId, setSelectedWarehouseId] = useState("");
   const [quantity, setQuantitiy] = useState("");
 
   useEffect(() => {
-    if (!isOpen || !warehouseId) return;
+    if (!isOpen || !selectedWarehouseId) return;
     const fetchWarehouseInventory = async () => {
       try {
         const response = await apiClient.get<{
           inventory: InventoryItem[];
-        }>(`inventory/${warehouseId}`);
+        }>(`inventory/${selectedWarehouseId}`);
 
         setItems(response.data.inventory);
       } catch (error) {
@@ -43,13 +43,13 @@ function ExportToStorePopup({ isOpen, onClose, warehouseId }: props) {
     };
 
     fetchWarehouseInventory();
-  }, [isOpen, warehouseId]);
+  }, [isOpen, selectedWarehouseId]);
 
   useEffect(() => {
-    if (stores.length > 0 && !selectedStoreId) {
-      setSelectedStoreId(stores[0]._id);
+    if (warehouses.length > 0 && !selectedWarehouseId) {
+      setSelectedWarehouseId(warehouses[0]._id);
     }
-  }, [stores, selectedStoreId]);
+  }, [warehouses, selectedWarehouseId]);
 
   useEffect(() => {
     if (items.length > 0 && !selectedItemId) {
@@ -57,10 +57,10 @@ function ExportToStorePopup({ isOpen, onClose, warehouseId }: props) {
     }
   }, [items, selectedItemId]);
 
-  const exportToStore = async () => {
+  const importFromWarehouse = async () => {
     try {
-      await apiClient.post(`/inventory/${selectedStoreId}/transfer`, {
-        fromLocationId: warehouseId,
+      await apiClient.post(`/inventory/${storeId}/transfer`, {
+        fromLocationId: selectedWarehouseId,
         itemId: selectedItemId,
         quantity: Number(quantity),
       });
@@ -106,16 +106,20 @@ function ExportToStorePopup({ isOpen, onClose, warehouseId }: props) {
               ))}
             </select>
             <label className="regular text-xs text-light-100 uppercase tracking-widest">
-              destination store
+              source warehouse
             </label>
             <select
-              value={selectedStoreId}
-              onChange={(e) => setSelectedStoreId(e.target.value)}
+              value={selectedWarehouseId}
+              onChange={(e) => setSelectedWarehouseId(e.target.value)}
               className="regular appearance-none w-full border border-neutral-200 p-4 text-light-100 bg-neutral-900 focus:outline-none uppercase focus:border-primary-400 transition-colors cursor-pointer"
             >
-              {stores.map((store: Location) => (
-                <option key={store._id} value={store._id} className="uppercase">
-                  {store.name}
+              {warehouses.map((warehouse: Location) => (
+                <option
+                  key={warehouse._id}
+                  value={warehouse._id}
+                  className="uppercase"
+                >
+                  {warehouse.name}
                 </option>
               ))}
             </select>
@@ -130,7 +134,7 @@ function ExportToStorePopup({ isOpen, onClose, warehouseId }: props) {
               className="regular w-full border border-neutral-200 p-4 text-light-100 placeholder-neutral-400 focus:outline-none focus:border-primary-400 transition-colors"
             />
             <div className="w-full border my-1 border-light-100"></div>
-            <Button variant="secondary" onClick={exportToStore}>
+            <Button variant="secondary" onClick={importFromWarehouse}>
               <div className="flex justify-center gap-5">
                 execute export
                 <img src={arrowRightLong}></img>
@@ -146,4 +150,4 @@ function ExportToStorePopup({ isOpen, onClose, warehouseId }: props) {
   );
 }
 
-export default ExportToStorePopup;
+export default ImportFromWarehouse;

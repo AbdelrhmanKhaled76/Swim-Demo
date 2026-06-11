@@ -8,17 +8,23 @@ import rightArrowIcon from "../../assets/icons/right-arrow-icon.svg";
 interface props {
   isOpen: boolean;
   onClose: () => void;
+  isWarehouse: boolean;
   onAddNewItem: () => void;
   onExportToStore: () => void;
   onMoveBetweenWarehouses: () => void;
+  onImportFromWarehouse: () => void;
+  onMoveBetweenStores: () => void;
 }
 
 function WarehouseOperationsPopup({
   isOpen,
   onClose,
+  isWarehouse,
   onAddNewItem,
   onExportToStore,
   onMoveBetweenWarehouses,
+  onImportFromWarehouse,
+  onMoveBetweenStores,
 }: props) {
   if (!isOpen) return null;
 
@@ -26,7 +32,9 @@ function WarehouseOperationsPopup({
     <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-neutral-900/40">
       <div className="w-[560px] bg-neutral-900 shadow-2xl rounded-t-[30px]">
         <div className="flex h-[52px] items-center justify-between bg-light-800 px-[18px] text-[14px] tracking-[1.5px] regular text-light-100 rounded-t-[30px]">
-          <span className="font-semibold">WAREHOUSE OPERATIONS</span>
+          <span className="regular uppercase">
+            {isWarehouse ? "warehouse operations" : "store operations"}
+          </span>
           <Button
             variant="outline"
             className="border-none"
@@ -51,10 +59,12 @@ function WarehouseOperationsPopup({
           <Button
             icon={uploadIcon}
             className="flex items-center justify-between h-[60px]"
-            onClick={onExportToStore}
+            onClick={isWarehouse ? onExportToStore : onImportFromWarehouse}
           >
             <>
-              <span>EXPORT TO STORE</span>
+              <span className="uppercase">
+                {isWarehouse ? "export to store" : "import from warehouse"}
+              </span>
               <img src={rightArrowIcon} className="w-4 h-4" />
             </>
           </Button>
@@ -62,10 +72,16 @@ function WarehouseOperationsPopup({
           <Button
             icon={arrowRightLeftIcon}
             className="flex items-center justify-between h-[60px]"
-            onClick={onMoveBetweenWarehouses}
+            onClick={
+              isWarehouse ? onMoveBetweenWarehouses : onMoveBetweenStores
+            }
           >
             <>
-              <span>MOVE BETWEEN WAREHOUSES</span>
+              <span className="uppercase">
+                {isWarehouse
+                  ? "move between warehouses"
+                  : "move between stores"}
+              </span>
               <img src={rightArrowIcon} className="w-4 h-4" />
             </>
           </Button>
