@@ -98,17 +98,18 @@ function ExportToStorePopup({ isOpen, onClose, warehouseId }: props) {
                 export to<br />store
               </h2>
 
-              <div className="border-2 border-[#0099FF] p-[1px] flex flex-col gap-[1px] bg-primary-800">
+              <div className="flex flex-col gap-5">
                 {/* Choose Item */}
-                <div className="bg-[#1A2332] p-3 flex flex-col gap-1 relative">
+                <div className="flex flex-col gap-2 relative z-10">
                   <label className="regular text-[10px] text-primary-200 uppercase tracking-[0.1em]">
                     choose item
                   </label>
                   <select
                     value={selectedItemId}
                     onChange={(e) => setSelectedItemId(e.target.value)}
-                    className="regular w-full bg-transparent text-white focus:outline-none appearance-none text-sm cursor-pointer uppercase"
+                    className="regular w-full bg-[#131C2A] border border-white/20 rounded-[4px] p-4 text-white focus:outline-none appearance-none text-sm cursor-pointer uppercase transition-colors hover:border-white/40"
                   >
+                    <option value="" disabled hidden>CHOOSE ITEM</option>
                     {items.map((inventory) => (
                       <option
                         key={inventory.itemId!._id}
@@ -119,46 +120,49 @@ function ExportToStorePopup({ isOpen, onClose, warehouseId }: props) {
                       </option>
                     ))}
                   </select>
-                  <div className="absolute right-3 bottom-3 pointer-events-none text-primary-400">
+                  <div className="absolute right-4 bottom-4 pointer-events-none text-primary-400">
                     <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M6 9l6 6 6-6"/></svg>
                   </div>
                 </div>
 
                 {/* Destination Store */}
-                <div className="bg-[#1A2332] p-3 flex flex-col gap-1 relative">
+                <div className="flex flex-col gap-2 relative z-10">
                   <label className="regular text-[10px] text-primary-200 uppercase tracking-[0.1em]">
                     destination store
                   </label>
                   <select
                     value={selectedStoreId}
                     onChange={(e) => setSelectedStoreId(e.target.value)}
-                    className="regular w-full bg-transparent text-white focus:outline-none appearance-none text-sm cursor-pointer uppercase"
+                    className="regular w-full bg-[#131C2A] border border-white/20 rounded-[4px] p-4 text-white focus:outline-none appearance-none text-sm cursor-pointer uppercase transition-colors hover:border-white/40"
                   >
+                    <option value="" disabled hidden>CHOOSE DESTINATION</option>
                     {stores.map((store: Location) => (
                       <option key={store._id} value={store._id} className="uppercase bg-primary-900">
                         {store.name}
                       </option>
                     ))}
                   </select>
-                  <div className="absolute right-3 bottom-3 pointer-events-none text-primary-400">
+                  <div className="absolute right-4 bottom-4 pointer-events-none text-primary-400">
                     <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M6 9l6 6 6-6"/></svg>
                   </div>
                 </div>
 
                 {/* Enter Quantity */}
-                <div className="bg-[#1A2332] p-3 flex flex-col gap-1 relative">
+                <div className="flex flex-col gap-2 relative z-10">
                   <label className="regular text-[10px] text-primary-200 uppercase tracking-[0.1em]">
                     enter quantity
                   </label>
-                  <div className="flex items-center justify-between mt-1">
+                  <div className="relative">
                     <input
                       type="number"
                       value={quantity}
                       onChange={(e) => setQuantitiy(e.target.value)}
                       placeholder="0000"
-                      className="regular w-full bg-transparent text-white placeholder-primary-600 focus:outline-none text-sm"
+                      className="regular w-full bg-[#131C2A] border border-white/20 rounded-[4px] p-4 text-white placeholder-primary-600 focus:outline-none focus:border-white/40 transition-colors text-sm"
                     />
-                    <span className="regular text-[10px] text-secondary-500 uppercase tracking-wider ml-2 font-bold">units</span>
+                    <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-secondary-500 uppercase tracking-wider font-bold text-[10px]">
+                      units
+                    </div>
                   </div>
                 </div>
               </div>
