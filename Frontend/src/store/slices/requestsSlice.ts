@@ -1,4 +1,4 @@
-import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+import { createSlice, createAsyncThunk, createSelector } from "@reduxjs/toolkit";
 import type { StockRequest } from "../../interfaces/RequestTypes/request";
 import type { RootState } from "../index";
 import apiClient from "../../core/apiClient";
@@ -141,8 +141,10 @@ const requestsSlice = createSlice({
 
 // ─── Selectors ────────────────────────────────────────────────────────────────
 export const selectAllRequests = (state: RootState) => state.requests.requests;
-export const selectPendingRequests = (state: RootState) =>
-  state.requests.requests.filter((request) => request.status === "pending");
+export const selectPendingRequests = createSelector(
+  [selectAllRequests],
+  (requests) => requests.filter((request) => request.status === "pending")
+);
 
 export const selectRequestsStatus = (state: RootState) => state.requests.status;
 export const selectRequestsError = (state: RootState) => state.requests.error;

@@ -2,6 +2,7 @@ import {
   createSlice,
   createAsyncThunk,
   type PayloadAction,
+  createSelector,
 } from "@reduxjs/toolkit";
 import apiClient from "../../core/apiClient";
 import {
@@ -216,17 +217,17 @@ const inventorySlice = createSlice({
 export const { setCurrentView, inventoryItemAdded, inventoryTransferred } =
   inventorySlice.actions;
 
-export const selectTotalWarehouses = (state: RootState) => {
-  return state.inventory.locations.filter(
-    (loc: Location) => loc.type === "Warehouse",
-  );
-};
+export const selectLocations = (state: RootState) => state.inventory.locations;
 
-export const selectTotalStores = (state: RootState) => {
-  return state.inventory.locations.filter(
-    (loc: Location) => loc.type === "Store",
-  );
-};
+export const selectTotalWarehouses = createSelector(
+  [selectLocations],
+  (locations) => locations.filter((loc: Location) => loc.type === "Warehouse")
+);
+
+export const selectTotalStores = createSelector(
+  [selectLocations],
+  (locations) => locations.filter((loc: Location) => loc.type === "Store")
+);
 
 export const selectCurrentView = (state: RootState) => {
   return state.inventory.currentView;

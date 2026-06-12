@@ -143,8 +143,8 @@ export default function Footer() {
               <path
                 d="M30.4431 14.5839V32.5126"
                 stroke="white"
-                stroke-width="2"
-                stroke-miterlimit="10"
+                strokeWidth="2"
+                strokeMiterlimit="10"
               />
             </svg>
           </div>
