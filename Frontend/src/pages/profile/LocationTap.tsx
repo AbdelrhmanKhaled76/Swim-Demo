@@ -107,7 +107,11 @@ function LocationTab({ activeTab }: { activeTab: "store" | "warehouse" }) {
         showSuccessToast(`${label} created successfully!`);
       })
       .catch((err: any) => {
-        showErrorToast(err || `Failed to create ${label.toLowerCase()}`);
+        const errorMsg =
+          typeof err === "string"
+            ? err
+            : err?.message || `Failed to create ${label.toLowerCase()}`;
+        showErrorToast(errorMsg);
       });
   };
 
