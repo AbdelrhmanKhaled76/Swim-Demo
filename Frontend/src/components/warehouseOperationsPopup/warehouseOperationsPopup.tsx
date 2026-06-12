@@ -26,8 +26,8 @@ function WarehouseOperationsPopup({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-neutral-900/60 backdrop-blur-sm">
-      <div className="relative w-[90%] sm:w-[560px] max-w-[560px] bg-primary-900 shadow-2xl rounded-t-[16px] overflow-hidden">
+    <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-neutral-900/60 backdrop-blur-sm" onClick={onClose}>
+      <div className="relative w-[90%] sm:w-[560px] max-w-[560px] bg-primary-900 shadow-2xl rounded-t-[16px] max-h-[90vh] overflow-y-auto no-scrollbar" onClick={(e) => e.stopPropagation()}>
         
         {/* Header */}
         <div className="relative z-20 flex h-[64px] items-center justify-between bg-light-800 px-6 text-[16px] tracking-[2px] regular text-white">

@@ -75,8 +75,8 @@ function MoveBetweenWarehousesPopup({ isOpen, onClose }: props) {
 
   return (
     <>
-      <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-neutral-900/60 backdrop-blur-sm">
-        <div className="relative w-[90%] sm:w-[380px] max-w-[380px] bg-primary-900 border border-primary-800 shadow-2xl overflow-hidden">
+      <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-neutral-900/60 backdrop-blur-sm" onClick={onClose}>
+        <div className="relative w-[90%] sm:w-[380px] max-w-[380px] bg-primary-900 border border-primary-800 shadow-2xl max-h-[90vh] overflow-y-auto no-scrollbar" onClick={(e) => e.stopPropagation()}>
           {/* Watermarks */}
           <div className="absolute top-10 -left-4 text-[200px] font-bold text-white/[0.03] leading-none select-none pointer-events-none z-0 header">
             S

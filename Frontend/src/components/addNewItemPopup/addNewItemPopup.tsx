@@ -46,8 +46,8 @@ function AddNewItemPopup({ isOpen, onClose, locationId }: props) {
 
   return (
     <>
-      <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-neutral-900/60 backdrop-blur-sm">
-        <div className="relative w-[90%] sm:w-[420px] max-w-[420px] bg-primary-900 border border-primary-800 border-l-[4px] border-l-secondary-500 shadow-2xl max-h-[90vh] overflow-y-auto no-scrollbar">
+      <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-neutral-900/60 backdrop-blur-sm" onClick={onClose}>
+        <div className="relative w-[90%] sm:w-[420px] max-w-[420px] bg-primary-900 border border-primary-800 border-l-[4px] border-l-secondary-500 shadow-2xl max-h-[90vh] overflow-y-auto no-scrollbar" onClick={(e) => e.stopPropagation()}>
           {/* Watermarks */}
           <div className="absolute top-10 -left-4 text-[200px] font-bold text-white/[0.03] leading-none select-none pointer-events-none z-0 header">
             S
