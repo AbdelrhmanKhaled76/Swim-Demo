@@ -44,55 +44,78 @@ function OrderConfirmationPopup({
   return (
     <>
       <div className="fixed inset-0 z-9999 flex items-center justify-center bg-neutral-900/40">
-        <div className="w-140 bg-neutral-900 shadow-2xl rounded-t-[30px] max-h-[80vh] overflow-y-auto">
-          <div className="flex h-[52px] items-center justify-between bg-light-800 px-[18px] text-[14px] tracking-[1.5px] regular text-light-100 rounded-t-[30px]">
-            <span className="font-semibold uppercase">{t("popups.orderConfirmation.title")}</span>
+        <div className="w-140 max-h-[80vh] overflow-y-auto bg-[#F3F3F3] shadow-2xl">
+          <div className="flex h-[52px] items-center border-b border-neutral-200 bg-white px-[18px]">
             <Button
               variant="outline"
-              className="border-none"
+              className="rounded-none border-none bg-transparent hover:bg-transparent [&_img]:brightness-0 [&_img]:saturate-100 [&_img]:invert-[35%] [&_img]:sepia [&_img]:hue-rotate-[-10deg] [&_img]:saturate-[5000%]"
               icon={cancelIcon}
               onClick={onClose}
             >
               {""}
             </Button>
           </div>
-          <div className="flex flex-col gap-[18px] p-[36px]">
-            <label className="regular text-xs text-light-100 uppercase tracking-widest rtl:text-right">
-              {t("popups.orderConfirmation.orderId")}
-            </label>
-            <label className="regular text-xs text-light-100 uppercase tracking-widest rtl:text-right">
-              {idPrefix}-{idNum}
-            </label>
-            <Button icon={printerIcon} onClick={handlePrintReceipt}>
+          <div className="flex flex-col gap-[18px] bg-[#F3F3F3] p-[36px]">
+            <div className="flex h-8 w-8 items-center justify-center border border-black bg-white">
+              <span className="text-base font-bold leading-none text-black">✓</span>
+            </div>
+            <h2 className="header text-xl uppercase text-black">
+              {t("popups.orderConfirmation.title")}
+            </h2>
+            <div className="flex flex-col gap-1">
+              <label className="regular text-xs uppercase tracking-widest text-neutral-600">
+                {t("popups.orderConfirmation.orderId")}
+              </label>
+              <p className="regular text-sm font-semibold uppercase tracking-widest text-black">
+                {idPrefix}-{idNum}
+              </p>
+            </div>
+            <p className="inter text-sm leading-relaxed text-neutral-600">
+              {t("popups.orderConfirmation.description")}
+            </p>
+            <Button
+              icon={printerIcon}
+              onClick={handlePrintReceipt}
+              className="w-full rounded-none border-none bg-primary-500 text-white hover:bg-primary-600"
+            >
               {t("popups.orderConfirmation.printReceipt")}
             </Button>
-            <Button variant="outline" onClick={() => { navigate('/history'); onClose(); }} className="text-white">
+            <Button
+              variant="outline"
+              onClick={() => {
+                navigate("/history");
+                onClose();
+              }}
+              className="w-full rounded-none border-2 border-black bg-white text-black hover:bg-neutral-100"
+            >
               {t("popups.orderConfirmation.returnToHistory")}
             </Button>
-            <div className="bg-black w-auto rounded-md px-4 py-2">
-              <div className="flex justify-between items-center">
-                <label className="uppercase regular text-sm text-white">
+            <div className="w-auto bg-black px-4 py-4 text-center">
+              <div className="flex items-center justify-center gap-2">
+                <label className="regular text-sm uppercase text-neutral-500">
                   {t("popups.orderConfirmation.summaryDetails")}
                 </label>
-                <img src={stockIcon} alt="stock icon"></img>
+                <img src={stockIcon} alt="stock icon" />
               </div>
-              <div className="w-full border my-2 border-light-100"></div>
-              <label className="uppercase regular text-sm text-white flex rtl:justify-end">
+              <div className="my-2 w-full border border-neutral-700"></div>
+              <label className="regular block text-sm uppercase text-neutral-500">
                 {t("popups.orderConfirmation.customerName")}
               </label>
-              <label className="text-white flex mb-5 rtl:justify-end">{customerName}</label>
-              <label className="uppercase text-white text-sm flex rtl:justify-end">{t("popups.orderConfirmation.itemCount")}</label>
-              <label className="text-white flex mb-5 rtl:justify-end">{itemCount}</label>
-              <div className="w-full mb-5 bg-blue-900 p-2">
-                <label className="text-white uppercase regular text-sm flex rtl:justify-end">
+              <p className="mb-5 font-semibold uppercase text-white">{customerName}</p>
+              <label className="block text-sm uppercase text-neutral-500">
+                {t("popups.orderConfirmation.itemCount")}
+              </label>
+              <p className="mb-5 text-white">{itemCount}</p>
+              <div className="mb-5 w-full bg-primary-500 p-3 text-center">
+                <label className="regular block text-sm uppercase text-white">
                   {t("popups.orderConfirmation.totalAmount")}
                 </label>
-                <label className="flex text-white text-lg mt-1 rtl:justify-end">
+                <p className="mt-1 text-lg font-semibold text-white">
                   {totalAmount.toLocaleString(language === "ar" ? "ar-EG" : "en-US", {
                     style: "currency",
                     currency: "USD",
                   })}
-                </label>
+                </p>
               </div>
             </div>
           </div>

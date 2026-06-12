@@ -120,14 +120,15 @@
       "successToast": "تم نقل العنصر بنجاح"
     },
     "orderConfirmation": {
-      "title": "تأكيد الطلب",
+      "title": "تم تسجيل الطلب",
       "orderId": "رقم الطلب",
+      "description": "اكتمل إدخال تعليمات سحب المخزون يدوياً. تم تعديل مستويات المخزون في Sector 7G accordingly. جميع العناصر الآن جاهزة للاستلام من DOCK.",
       "printReceipt": "طباعة الفاتورة",
       "returnToHistory": "العودة إلى السجل",
       "summaryDetails": "تفاصيل الملخص",
       "customerName": "اسم العميل",
       "itemCount": "عدد العناصر",
-      "totalAmount": "المبلغ الإجمالي"
+      "totalAmount": "المبلغ الإجمالي (بدون ضريبة)"
     }
   }
 }

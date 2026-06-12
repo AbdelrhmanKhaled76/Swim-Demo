@@ -120,14 +120,15 @@
       "successToast": "item moved successfully"
     },
     "orderConfirmation": {
-      "title": "order confirmation",
+      "title": "order registered",
       "orderId": "order id",
+      "description": "Stock withdrawal instruction manual entry completed. Inventory levels for Sector 7G have been adjusted accordingly. All items are now staged for DOCK pickup.",
       "printReceipt": "print receipt",
       "returnToHistory": "return to history",
       "summaryDetails": "summary details",
       "customerName": "customer name",
       "itemCount": "item count",
-      "totalAmount": "total amount"
+      "totalAmount": "total amount (excl. tax)"
     }
   }
 }
