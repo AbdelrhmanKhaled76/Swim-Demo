@@ -240,10 +240,14 @@ export const confirmSale = async (req, res, next) => {
       try {
         for (const item of transaction.items) {
           if (item.itemId && item.quantity > 0) {
-            await Inventory.findOneAndUpdate(
+            const updatedInv = await Inventory.findOneAndUpdate(
               { locationId: transaction.locationId, itemId: item.itemId },
-              { $inc: { quantity: -item.quantity } }
+              { $inc: { quantity: -item.quantity } },
+              { new: true }
             );
+            if (updatedInv && updatedInv.quantity <= 0) {
+              await Inventory.deleteOne({ _id: updatedInv._id });
+            }
           }
         }
       } catch (_) {

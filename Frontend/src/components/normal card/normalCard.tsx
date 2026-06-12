@@ -1,6 +1,6 @@
-import type { NormalCard } from "../../interfaces/Cards/normal";
+import type { NormalCard as NormalCardType } from "../../interfaces/Cards/normal";
 
-function NormalCard(props: NormalCard) {
+function NormalCard(props: NormalCardType) {
   return (
     <div className="w-full p-6  lg:max-w-lg bg-white hover:shadow-lg  rounded-sm border border-gray-400">
       <div className="flex items-center justify-between mb-4">

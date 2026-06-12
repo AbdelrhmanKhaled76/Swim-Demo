@@ -10,6 +10,7 @@ export default function MobileNav({
 }: {
   variant?: "public" | "auth";
 }) {
+  void variant;
   const location = useLocation();
   const path = location.pathname.toLowerCase();
   const navigate = useNavigate();

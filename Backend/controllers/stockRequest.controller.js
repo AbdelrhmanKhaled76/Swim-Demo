@@ -52,6 +52,12 @@ export const createStockRequest = async (req, res) => {
       { path: 'items.itemId', select: 'name category price' },
     ]);
 
+    // Emit real-time notification via Socket.io
+    const io = req.app.get('socketio');
+    if (io) {
+      io.to(`org_${req.user.organizationID}`).emit('new_stock_request', populated);
+    }
+
     res.status(201).json({
       success: true,
       data: populated,
@@ -182,6 +188,19 @@ export const approveStockRequest = async (req, res) => {
       });
     }
 
+    const { adminNote, approvedQuantity } = req.body;
+
+    if (approvedQuantity !== undefined) {
+      const parsedQty = parseInt(approvedQuantity);
+      if (isNaN(parsedQty) || parsedQty < 1) {
+        return res.status(400).json({ message: 'approvedQuantity must be a positive integer >= 1' });
+      }
+      if (stockRequest.items[0]) {
+        stockRequest.items[0].quantity = parsedQty;
+        stockRequest.markModified('items');
+      }
+    }
+
     // Verify warehouse has enough stock for all items
     const insufficientItems = [];
     for (const reqItem of stockRequest.items) {
@@ -209,10 +228,14 @@ export const approveStockRequest = async (req, res) => {
     const transactionItems = [];
     for (const reqItem of stockRequest.items) {
       // Deduct from warehouse
-      await Inventory.findOneAndUpdate(
+      const updatedWarehouseInv = await Inventory.findOneAndUpdate(
         { locationId: stockRequest.warehouseId, itemId: reqItem.itemId },
-        { $inc: { quantity: -reqItem.quantity } }
+        { $inc: { quantity: -reqItem.quantity } },
+        { new: true }
       );
+      if (updatedWarehouseInv && updatedWarehouseInv.quantity <= 0) {
+        await Inventory.deleteOne({ _id: updatedWarehouseInv._id });
+      }
 
       // Add to store (upsert)
       await Inventory.findOneAndUpdate(

@@ -138,6 +138,12 @@ Rules:
       { path: "items.itemId", select: "name category price" }
     ]);
 
+    // Emit real-time notification via Socket.io
+    const io = req.app.get('socketio');
+    if (io) {
+      io.to(`org_${req.user.organizationID}`).emit('new_stock_request', populated);
+    }
+
     return res.status(201).json({
       success: true,
       message: `Requested ${quantityToRequest} units of ${itemName.toUpperCase()}!`,

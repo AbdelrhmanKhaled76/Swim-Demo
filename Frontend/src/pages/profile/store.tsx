@@ -76,18 +76,6 @@ export default function StoreRequestForm() {
           setStoreId(orgStores[0]._id);
         }
 
-        // Fetch inventory
-        if (assignedLoc) {
-          const invRes = await apiClient.get(`/inventory/${assignedLoc}`);
-          const invData =
-            invRes.data.data?.inventory || invRes.data.inventory || [];
-          
-          const availableItems = invData
-            .map((inv: any) => inv.itemId)
-            .filter(Boolean);
-            
-          setItems(availableItems);
-        }
       } catch (err) {
         console.error("Failed to load form data", err);
       } finally {
@@ -97,6 +85,34 @@ export default function StoreRequestForm() {
 
     fetchData();
   }, [user]);
+
+  useEffect(() => {
+    const fetchWarehouseInventory = async () => {
+      setItemId(""); // Reset selected item when warehouse changes
+      if (!warehouseId) {
+        setItems([]);
+        return;
+      }
+      try {
+        const invRes = await apiClient.get(`/inventory/${warehouseId}`);
+        const invData =
+          invRes.data.data?.inventory || invRes.data.inventory || [];
+        
+        // Only include items that are in stock in the warehouse
+        const availableItems = invData
+          .filter((inv: any) => inv.quantity > 0)
+          .map((inv: any) => inv.itemId)
+          .filter(Boolean);
+          
+        setItems(availableItems);
+      } catch (err) {
+        console.error("Failed to load warehouse inventory", err);
+        setItems([]);
+      }
+    };
+
+    fetchWarehouseInventory();
+  }, [warehouseId]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

@@ -65,7 +65,7 @@ function Inventory() {
             switch to {currentView ? "store" : "WareHouse"} →
           </span>
           <button
-            className="regular text-[14px] w-full md:w-auto tracking-widest bg-primary-700 text-white px-16 py-1.5 uppercase"
+            className="regular text-[14px] w-full md:w-auto tracking-widest bg-primary-700 text-white px-16 py-1.5 uppercase hover:bg-primary-800 active:bg-primary-900 transition-colors cursor-pointer"
             onClick={changeCurrentView}
           >
             {currentView ? "Store" : "WareHouse"}
@@ -94,12 +94,14 @@ function Inventory() {
         />
       )}
 
-      <GlobalSearchFilters
-        searchQuery={searchQuery}
-        setSearchQuery={setSearchQuery}
-        sortBy={sortBy}
-        setSortBy={setSortBy}
-      />
+      {(totalWarehouses.length > 0 || totalStores.length > 0) && (
+        <GlobalSearchFilters
+          searchQuery={searchQuery}
+          setSearchQuery={setSearchQuery}
+          sortBy={sortBy}
+          setSortBy={setSortBy}
+        />
+      )}
 
       <ExternalStockAlert
         isCheckingElsewhere={isCheckingElsewhere}

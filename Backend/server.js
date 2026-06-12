@@ -3,6 +3,8 @@ import express from "express";
 import cors from "cors";
 import dns from "node:dns/promises";
 import swaggerUi from "swagger-ui-express";
+import { createServer } from "http";
+import { Server } from "socket.io";
 import { connectDB } from "./config/dbConfig.js";
 import routes from "./routes/index.js";
 import swaggerSpec from "./config/swagger.js";
@@ -44,7 +46,33 @@ app.use((err, req, res, next) => {
 });
 
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
+
+const httpServer = createServer(app);
+const io = new Server(httpServer, {
+  cors: {
+    origin: "*",
+    methods: ["GET", "POST", "PATCH", "PUT", "DELETE"]
+  }
+});
+
+io.on("connection", (socket) => {
+  console.log(`Socket connected: ${socket.id}`);
+
+  socket.on("join_org", (orgId) => {
+    if (orgId) {
+      socket.join(`org_${orgId}`);
+      console.log(`Socket ${socket.id} joined room org_${orgId}`);
+    }
+  });
+
+  socket.on("disconnect", () => {
+    console.log(`Socket disconnected: ${socket.id}`);
+  });
+});
+
+app.set("socketio", io);
+
+httpServer.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
   console.log(`API Docs available at http://localhost:${PORT}/api-docs`);
 });

@@ -1,10 +1,10 @@
-import type { IntroductionCard } from "../../interfaces/Cards/introduction";
+import type { IntroductionCard as IntroductionCardType } from "../../interfaces/Cards/introduction";
 
 const variants: Record<"primary" | "secondary", string> = {
   primary: "bg-primary-800 text-white",
   secondary: "bg-white text-primary-800 border border-gray-500",
 };
-function IntroductionCard(Props: IntroductionCard) {
+function IntroductionCard(Props: IntroductionCardType) {
   return (
     <div
       className={`mx-4 p-6 md:w-full h-96 ${variants[Props.type]} flex flex-col items-center justify-center transition-transform hover:-translate-y-2 duration-300 rounded-sm`}

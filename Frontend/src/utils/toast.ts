@@ -76,3 +76,19 @@ export const showAiToast = (itemName: string, duration = 5000) => {
   );
 };
 
+export const showRequestNotificationToast = (message: string, duration = 6000) => {
+  toast(message, {
+    duration,
+    icon: "🔔",
+    style: {
+      background: "#04162A",
+      color: "#fff",
+      fontFamily: '"Inter", sans-serif',
+      letterSpacing: "0.5px",
+      padding: "20px 40px",
+      fontSize: "18px",
+      fontWeight: "bold",
+      borderRadius: "10px",
+    },
+  });
+};

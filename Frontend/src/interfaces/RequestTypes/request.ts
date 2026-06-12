@@ -24,6 +24,7 @@ export interface StockRequest {
   items: ApproveRequestPayload[];
   status: RequestStatus;
   notes?: string;
+  createdAt: string;
   resolvedAt: string;
   adminNote?: string;
   requestedBy: RequestUser;

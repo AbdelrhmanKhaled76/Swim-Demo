@@ -1,4 +1,4 @@
-import React from "react";
+
 import PriceCard from "../../pricingCards/priceCard";
 import FeatureCard from "../../pricingCards/featureCard";
 
