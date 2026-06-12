@@ -1,9 +1,7 @@
-import Button from "../button/button";
 import cancelIcon from "../../assets/icons/cancel-02.svg";
 import plusIcon from "../../assets/icons/plus-icon.svg";
 import uploadIcon from "../../assets/icons/upload-icon.svg";
 import arrowRightLeftIcon from "../../assets/icons/arrow-right-left-icon.svg";
-import rightArrowIcon from "../../assets/icons/right-arrow-icon.svg";
 
 interface props {
   isOpen: boolean;
@@ -29,62 +27,70 @@ function WarehouseOperationsPopup({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-neutral-900/40">
-      <div className="w-[560px] bg-neutral-900 shadow-2xl rounded-t-[30px]">
-        <div className="flex h-[52px] items-center justify-between bg-light-800 px-[18px] text-[14px] tracking-[1.5px] regular text-light-100 rounded-t-[30px]">
-          <span className="regular uppercase">
+    <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-neutral-900/60 backdrop-blur-sm">
+      <div className="relative w-[560px] bg-primary-900 shadow-2xl rounded-[16px] overflow-hidden">
+        
+        {/* Header */}
+        <div className="relative z-20 flex h-[64px] items-center justify-between bg-light-800 px-6 text-[16px] tracking-[2px] regular text-white">
+          <span className="uppercase font-bold">
             {isWarehouse ? "warehouse operations" : "store operations"}
           </span>
-          <Button
-            variant="outline"
-            className="border-none"
-            icon={cancelIcon}
-            onClick={onClose}
-          >
-            {""}
-          </Button>
+          <button onClick={onClose} className="text-white hover:text-neutral-200 transition-colors">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+          </button>
         </div>
-        <div className="flex flex-col gap-[18px] p-[36px]">
-          <Button
-            icon={plusIcon}
-            className="flex items-center justify-between h-[60px]"
+
+        {/* Watermarks */}
+        <div className="absolute top-[64px] left-4 text-[160px] font-bold text-light-800/40 leading-none select-none pointer-events-none z-0 header">
+          S
+        </div>
+        <div className="absolute top-[64px] right-4 text-[160px] font-bold text-light-800/40 leading-none select-none pointer-events-none z-0 header">
+          M
+        </div>
+        <div className="absolute bottom-[-30px] left-4 text-[160px] font-bold text-light-800/40 leading-none select-none pointer-events-none z-0 header">
+          W
+        </div>
+        <div className="absolute bottom-[-30px] right-8 text-[160px] font-bold text-light-800/40 leading-none select-none pointer-events-none z-0 header">
+          i
+        </div>
+
+        <div className="relative z-10 flex flex-col gap-4 p-8">
+          <button
+            className="w-full flex items-center justify-between h-[80px] px-8 bg-[#2A2B2A] border border-neutral-400 rounded-[4px] hover:bg-[#333] transition-colors"
             onClick={onAddNewItem}
           >
-            <>
-              <span>ADD NEW ITEM</span>
-              <img src={rightArrowIcon} className="w-4 h-4" />
-            </>
-          </Button>
+            <div className="flex items-center gap-8">
+              <img src={plusIcon} alt="add" className="w-6 h-6 filter brightness-0 invert" />
+              <span className="regular text-white tracking-[0.15em] uppercase text-[14px]">ADD NEW ITEM</span>
+            </div>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+          </button>
 
-          <Button
-            icon={uploadIcon}
-            className="flex items-center justify-between h-[60px]"
+          <button
+            className="w-full flex items-center justify-between h-[80px] px-8 bg-[#2A2B2A] border border-neutral-400 rounded-[4px] hover:bg-[#333] transition-colors"
             onClick={isWarehouse ? onExportToStore : onImportFromWarehouse}
           >
-            <>
-              <span className="uppercase">
+            <div className="flex items-center gap-8">
+              <img src={uploadIcon} alt="export/import" className="w-6 h-6 filter brightness-0 invert" />
+              <span className="regular text-white tracking-[0.15em] uppercase text-[14px]">
                 {isWarehouse ? "export to store" : "import from warehouse"}
               </span>
-              <img src={rightArrowIcon} className="w-4 h-4" />
-            </>
-          </Button>
+            </div>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+          </button>
 
-          <Button
-            icon={arrowRightLeftIcon}
-            className="flex items-center justify-between h-[60px]"
-            onClick={
-              isWarehouse ? onMoveBetweenWarehouses : onMoveBetweenStores
-            }
+          <button
+            className="w-full flex items-center justify-between h-[80px] px-8 bg-[#2A2B2A] border border-neutral-400 rounded-[4px] hover:bg-[#333] transition-colors"
+            onClick={isWarehouse ? onMoveBetweenWarehouses : onMoveBetweenStores}
           >
-            <>
-              <span className="uppercase">
-                {isWarehouse
-                  ? "move between warehouses"
-                  : "move between stores"}
+            <div className="flex items-center gap-8">
+              <img src={arrowRightLeftIcon} alt="move" className="w-6 h-6 filter brightness-0 invert" />
+              <span className="regular text-white tracking-[0.15em] uppercase text-[14px]">
+                {isWarehouse ? "move between warehouses" : "move between stores"}
               </span>
-              <img src={rightArrowIcon} className="w-4 h-4" />
-            </>
-          </Button>
+            </div>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+          </button>
         </div>
       </div>
     </div>
