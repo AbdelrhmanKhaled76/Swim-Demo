@@ -112,6 +112,7 @@ function Inventory() {
         setSearchQuery={setSearchQuery}
         selectedLocation={selectedLocation}
         handleRequestStockForItem={handleRequestStockForItem}
+        isOwner={isOwner}
       />
 
       <InventoryTable
