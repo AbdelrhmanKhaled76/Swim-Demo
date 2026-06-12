@@ -124,12 +124,12 @@ function SignUp() {
         <div className="w-full max-w-6xl flex flex-col">
           {step === 1 && (
             <div className="w-full flex flex-col animate-fade-in">
-              <div className="flex flex-col md:flex-row md:justify-between md:items-end mb-6 border-b border-transparent">
+              <div className="flex flex-col md:flex-row md:justify-between md:items-end mb-4 border-b border-transparent">
                 <div>
-                  <h1 className="header text-6xl md:text-8xl text-primary-900 tracking-tight mb-2 uppercase">
+                  <h1 className="header text-6xl md:text-8xl text-primary-900 tracking-tight mb-0 uppercase">
                     Join The Core
                   </h1>
-                  <h2 className="inter text-xl md:text-2xl text-primary-900 uppercase tracking-widest">
+                  <h2 className="inter text-xl md:text-2xl text-primary-900 uppercase tracking-widest mt-1">
                     Personal Information
                   </h2>
                 </div>
@@ -142,8 +142,8 @@ function SignUp() {
                 </div>
               </div>
 
-              <form onSubmit={handleNextStep} className="flex flex-col gap-5">
-                <div className="flex flex-col md:flex-row gap-4 md:gap-6">
+              <form onSubmit={handleNextStep} className="flex flex-col gap-3">
+                <div className="flex flex-col md:flex-row gap-3 md:gap-6">
                   <div className="flex flex-col gap-2 w-full">
                     <label className="regular text-xs text-neutral-700 uppercase tracking-widest">
                       Full Name
@@ -190,7 +190,7 @@ function SignUp() {
                   </div>
                 </div>
 
-                <div className="flex flex-col md:flex-row gap-4 md:gap-6">
+                <div className="flex flex-col md:flex-row gap-3 md:gap-6">
                   <div className="flex flex-col gap-2 w-full">
                     <label className="regular text-xs text-neutral-700 uppercase tracking-widest">
                       Password
@@ -266,7 +266,7 @@ function SignUp() {
                   </div>
                 </div>
 
-                <Button type="submit" variant="primary" className="w-full mt-4">
+                <Button type="submit" variant="primary" className="w-full mt-2">
                   Next Step
                 </Button>
               </form>
@@ -295,20 +295,20 @@ function SignUp() {
                 BACK TO PERSONAL INFO
               </button>
 
-              <div className="flex justify-center mb-4 mt-6 md:mt-0">
+              <div className="flex justify-center mb-2 mt-4 md:mt-0">
                 <img
                   src={octopusImg}
                   alt="Octopus Logo"
-                  className="w-32 h-32 md:w-40 md:h-40 object-contain"
+                  className="w-24 h-24 md:w-32 md:h-32 object-contain"
                 />
               </div>
 
-              <div className="flex flex-col md:flex-row md:justify-between md:items-end mb-6 border-b border-transparent">
+              <div className="flex flex-col md:flex-row md:justify-between md:items-end mb-4 border-b border-transparent">
                 <div>
-                  <h1 className="header text-6xl md:text-8xl text-primary-900 tracking-tight mb-2 uppercase">
+                  <h1 className="header text-6xl md:text-8xl text-primary-900 tracking-tight mb-0 uppercase">
                     Set Up Your Dock
                   </h1>
-                  <h2 className="inter text-xl md:text-2xl text-primary-900 uppercase tracking-widest">
+                  <h2 className="inter text-xl md:text-2xl text-primary-900 uppercase tracking-widest mt-1">
                     Organization Information
                   </h2>
                 </div>
@@ -323,9 +323,9 @@ function SignUp() {
 
               <form
                 onSubmit={handleCreateAccount}
-                className="flex flex-col gap-5"
+                className="flex flex-col gap-3"
               >
-                <div className="flex flex-col md:flex-row gap-4 md:gap-6">
+                <div className="flex flex-col md:flex-row gap-3 md:gap-6">
                   <div className="flex flex-col gap-2 w-full">
                     <label className="regular text-xs text-neutral-700 uppercase tracking-widest">
                       Company/Organization Name
@@ -410,7 +410,7 @@ function SignUp() {
                 <Button
                   type="submit"
                   variant="primary"
-                  className={`w-full mt-4 ${isLoading ? "opacity-70 cursor-not-allowed" : ""}`}
+                  className={`w-full mt-2 ${isLoading ? "opacity-70 cursor-not-allowed" : ""}`}
                   disabled={isLoading}
                 >
                   {isLoading ? "Creating Account..." : "Create Account"}
