@@ -34,7 +34,7 @@ function SignIn() {
 
   return (
     <div className="min-h-screen flex flex-col bg-white">
-      <main className="flex-grow flex justify-center container mx-auto py-12">
+      <main className="flex-grow flex flex-col justify-center items-center container mx-auto py-12 px-4 sm:px-6 lg:px-8">
         <div className="w-full max-w-5xl flex flex-col">
           <div className="mb-10">
             <h1 className="header text-6xl md:text-8xl text-primary-900 tracking-tight mb-4">
