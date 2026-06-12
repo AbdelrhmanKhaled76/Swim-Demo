@@ -74,7 +74,7 @@ function ImportFromWarehouse({ isOpen, onClose, storeId }: props) {
   return (
     <>
       <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-neutral-900/60 backdrop-blur-sm">
-        <div className="relative w-[380px] bg-primary-900 border border-primary-800 shadow-2xl overflow-hidden">
+        <div className="relative w-[90%] sm:w-[380px] max-w-[380px] bg-primary-900 border border-primary-800 shadow-2xl overflow-hidden">
           {/* Watermarks */}
           <div className="absolute top-10 -left-4 text-[200px] font-bold text-white/[0.03] leading-none select-none pointer-events-none z-0 header">
             S
@@ -97,7 +97,7 @@ function ImportFromWarehouse({ isOpen, onClose, storeId }: props) {
                   warehouse operation v4.2
                 </span>
               </div>
-              <button onClick={onClose} className="text-Accents-red hover:text-red-400 transition-colors">
+              <button onClick={onClose} className="text-Accents-red hover:text-red-400 transition-colors cursor-pointer">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
               </button>
             </div>

@@ -27,14 +27,14 @@ function WarehouseOperationsPopup({
 
   return (
     <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-neutral-900/60 backdrop-blur-sm">
-      <div className="relative w-[560px] bg-primary-900 shadow-2xl rounded-t-[16px] overflow-hidden">
+      <div className="relative w-[90%] sm:w-[560px] max-w-[560px] bg-primary-900 shadow-2xl rounded-t-[16px] overflow-hidden">
         
         {/* Header */}
         <div className="relative z-20 flex h-[64px] items-center justify-between bg-light-800 px-6 text-[16px] tracking-[2px] regular text-white">
           <span className="uppercase font-bold">
             {isWarehouse ? "WAREHOUSE OPERATIONS" : "STORES OPERATIONS"}
           </span>
-          <button onClick={onClose} className="text-white hover:text-white-400 transition-colors">
+          <button onClick={onClose} className="text-white hover:text-white-400 transition-colors cursor-pointer">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
           </button>
         </div>
