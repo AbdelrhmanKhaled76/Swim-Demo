@@ -120,11 +120,11 @@ function SignUp() {
 
   return (
     <div className="min-h-screen flex flex-col bg-white">
-      <main className="flex-grow flex flex-col justify-center items-center container mx-auto py-12 px-4 sm:px-6 lg:px-8">
+      <main className="flex-grow flex flex-col justify-center items-center container mx-auto py-6 md:py-8 px-4 sm:px-6 lg:px-8">
         <div className="w-full max-w-6xl flex flex-col">
           {step === 1 && (
             <div className="w-full flex flex-col animate-fade-in">
-              <div className="flex flex-col md:flex-row md:justify-between md:items-end mb-12 border-b border-transparent">
+              <div className="flex flex-col md:flex-row md:justify-between md:items-end mb-6 border-b border-transparent">
                 <div>
                   <h1 className="header text-6xl md:text-8xl text-primary-900 tracking-tight mb-2 uppercase">
                     Join The Core
@@ -142,8 +142,8 @@ function SignUp() {
                 </div>
               </div>
 
-              <form onSubmit={handleNextStep} className="flex flex-col gap-8">
-                <div className="flex flex-col md:flex-row gap-6 md:gap-10">
+              <form onSubmit={handleNextStep} className="flex flex-col gap-5">
+                <div className="flex flex-col md:flex-row gap-4 md:gap-6">
                   <div className="flex flex-col gap-2 w-full">
                     <label className="regular text-xs text-neutral-700 uppercase tracking-widest">
                       Full Name
@@ -190,7 +190,7 @@ function SignUp() {
                   </div>
                 </div>
 
-                <div className="flex flex-col md:flex-row gap-6 md:gap-10">
+                <div className="flex flex-col md:flex-row gap-4 md:gap-6">
                   <div className="flex flex-col gap-2 w-full">
                     <label className="regular text-xs text-neutral-700 uppercase tracking-widest">
                       Password
@@ -295,15 +295,15 @@ function SignUp() {
                 BACK TO PERSONAL INFO
               </button>
 
-              <div className="flex justify-center mb-6 mt-8 md:mt-0">
+              <div className="flex justify-center mb-4 mt-6 md:mt-0">
                 <img
                   src={octopusImg}
                   alt="Octopus Logo"
-                  className="w-40 h-40 object-contain"
+                  className="w-32 h-32 md:w-40 md:h-40 object-contain"
                 />
               </div>
 
-              <div className="flex flex-col md:flex-row md:justify-between md:items-end mb-12 border-b border-transparent">
+              <div className="flex flex-col md:flex-row md:justify-between md:items-end mb-6 border-b border-transparent">
                 <div>
                   <h1 className="header text-6xl md:text-8xl text-primary-900 tracking-tight mb-2 uppercase">
                     Set Up Your Dock
@@ -323,9 +323,9 @@ function SignUp() {
 
               <form
                 onSubmit={handleCreateAccount}
-                className="flex flex-col gap-8"
+                className="flex flex-col gap-5"
               >
-                <div className="flex flex-col md:flex-row gap-6 md:gap-10">
+                <div className="flex flex-col md:flex-row gap-4 md:gap-6">
                   <div className="flex flex-col gap-2 w-full">
                     <label className="regular text-xs text-neutral-700 uppercase tracking-widest">
                       Company/Organization Name
