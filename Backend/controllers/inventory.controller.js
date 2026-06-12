@@ -51,6 +51,16 @@ export const addInventory = async (req, res) => {
     const inventory = await Inventory.create({ locationId, itemId, quantity });
     const populated = await inventory.populate(['itemId', 'locationId']);
 
+    // Emit real-time event so all clients in this org see the new item immediately
+    const io = req.app.get('socketio');
+    if (io && location.organizationId) {
+      io.to(`org_${location.organizationId}`).emit('inventory_item_added', {
+        locationId,
+        organizationId: location.organizationId,
+        item: populated,
+      });
+    }
+
     res.status(201).json(populated);
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -274,6 +284,20 @@ export const transferStock = async (req, res) => {
       { $inc: { quantity: quantity } },
       { new: true, upsert: true }
     );
+
+    // Emit real-time event so all clients in this org update both locations instantly
+    const io = req.app.get('socketio');
+    const orgId = fromLocation.organizationId;
+    if (io && orgId) {
+      io.to(`org_${orgId}`).emit('inventory_transferred', {
+        organizationId: orgId,
+        fromLocationId,
+        toLocationId: locationId,
+        itemId,
+        fromQuantity: sourceInventory.quantity,
+        toQuantity: destInventory.quantity,
+      });
+    }
 
     res.status(200).json({
       message: 'Stock transferred successfully',

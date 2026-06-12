@@ -96,16 +96,16 @@ const authSlice = createSlice({
         state.isLoading = true;
         state.error = null;
       })
-      .addCase(
-        registerUser.fulfilled,
-        (state, action: PayloadAction<{ user: User; token: string }>) => {
-          state.isLoading = false;
-          state.user = action.payload.user;
-          state.token = action.payload.token;
+      .addCase(registerUser.fulfilled, (state, action: PayloadAction<any>) => {
+        state.isLoading = false;
+        // backend returns { token, data: { ...user } }
+        state.token = action.payload.token;
+        const userData = action.payload.data ?? action.payload.user ?? null;
+        state.user = userData;
+        if (action.payload.token)
           localStorage.setItem("token", action.payload.token);
-          localStorage.setItem("user", JSON.stringify(action.payload.user));
-        },
-      )
+        if (userData) localStorage.setItem("user", JSON.stringify(userData));
+      })
       .addCase(registerUser.rejected, (state, action) => {
         state.isLoading = false;
         state.error = action.payload as string;

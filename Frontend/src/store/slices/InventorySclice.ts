@@ -27,6 +27,8 @@ export interface InventoryState {
   inventoryItems: InventoryItem[];
   inventoryStatus: "idle" | "loading" | "succeeded" | "failed";
   inventoryError: string | null;
+  /** The locationId currently loaded into inventoryItems (used for socket matching) */
+  activeLocationId: string;
 }
 
 export const fetchAllLocations = createAsyncThunk<
@@ -105,6 +107,7 @@ const initialState: InventoryState = {
   inventoryItems: [],
   inventoryStatus: "idle",
   inventoryError: null,
+  activeLocationId: "",
 };
 
 const inventorySlice = createSlice({
@@ -113,6 +116,67 @@ const inventorySlice = createSlice({
   reducers: {
     setCurrentView(state, action: PayloadAction<boolean>) {
       state.currentView = action.payload;
+    },
+
+    // Called by the useSocket hook when the backend emits 'inventory_item_added'
+    inventoryItemAdded(
+      state,
+      action: PayloadAction<{ locationId: string; item: InventoryItem }>
+    ) {
+      const { locationId, item } = action.payload;
+      // Only update if the emitted locationId matches the currently active location
+      if (state.activeLocationId !== locationId) return;
+
+      const existingIndex = state.inventoryItems.findIndex(
+        (inv) => inv._id === item._id
+      );
+      if (existingIndex >= 0) {
+        state.inventoryItems[existingIndex] = item;
+      } else {
+        state.inventoryItems.push(item);
+      }
+    },
+
+    // Called by the useSocket hook when the backend emits 'inventory_transferred'
+    inventoryTransferred(
+      state,
+      action: PayloadAction<{
+        fromLocationId: string;
+        toLocationId: string;
+        itemId: string;
+        fromQuantity: number;
+        toQuantity: number;
+      }>
+    ) {
+      const { fromLocationId, toLocationId, itemId, fromQuantity, toQuantity } =
+        action.payload;
+
+      // Determine the locationId currently reflected in inventoryItems
+      const currentLocationId = state.activeLocationId;
+
+      if (currentLocationId === fromLocationId) {
+        // Current view is the source — decrease qty or remove the item
+        const idx = state.inventoryItems.findIndex(
+          (inv) => inv.itemId?._id === itemId || (inv.itemId as any) === itemId
+        );
+        if (idx >= 0) {
+          if (fromQuantity <= 0) {
+            state.inventoryItems.splice(idx, 1);
+          } else {
+            state.inventoryItems[idx].quantity = fromQuantity;
+          }
+        }
+      } else if (currentLocationId === toLocationId) {
+        // Current view is the destination — increase qty or add item placeholder
+        const idx = state.inventoryItems.findIndex(
+          (inv) => inv.itemId?._id === itemId || (inv.itemId as any) === itemId
+        );
+        if (idx >= 0) {
+          state.inventoryItems[idx].quantity = toQuantity;
+        }
+        // If the item wasn't in the destination before, a re-fetch will handle it
+        // (the socket event for 'transfer to new destination' is best-effort)
+      }
     },
   },
   extraReducers: (builder) => {
@@ -133,6 +197,8 @@ const inventorySlice = createSlice({
       .addCase(fetchInventoryForLocation.fulfilled, (state, action) => {
         state.inventoryStatus = "succeeded";
         state.inventoryItems = action.payload;
+        // Track which location's data is now in state (used by socket reducers)
+        state.activeLocationId = action.meta.arg;
       })
       .addCase(fetchInventoryForLocation.rejected, (state, action) => {
         state.inventoryStatus = "failed";
@@ -147,7 +213,8 @@ const inventorySlice = createSlice({
   },
 });
 
-export const { setCurrentView } = inventorySlice.actions;
+export const { setCurrentView, inventoryItemAdded, inventoryTransferred } =
+  inventorySlice.actions;
 
 export const selectTotalWarehouses = (state: RootState) => {
   return state.inventory.locations.filter(

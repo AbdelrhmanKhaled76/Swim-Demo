@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import apiClient from "../../../core/apiClient";
+import { useSocket } from "../../../core/useSocket";
 import { type InventoryItem, type Location } from "../../../interfaces/InventoryTypes/inventory";
 import {
   fetchAllLocations,
@@ -36,6 +37,9 @@ const getRoleFromToken = (token: string | null): string | null => {
 
 export const useInventoryLogic = () => {
   const dispatch = useDispatch<AppDispatch>();
+
+  // Activate real-time socket updates for inventory events
+  useSocket();
 
   const token = useSelector((state: RootState) => state.auth.token);
   const userRole = getRoleFromToken(token);
