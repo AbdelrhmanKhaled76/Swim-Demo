@@ -14,7 +14,6 @@ import type { InventoryItem } from "../interfaces/InventoryTypes/inventory";
 export const useSocket = () => {
   const dispatch = useDispatch<AppDispatch>();
 
-  // Read the organization ID from Redux auth state or fall back to localStorage
   const orgId = useSelector((state: RootState) => {
     if (state.auth?.user?.organizationID) return state.auth.user.organizationID;
     try {
@@ -30,13 +29,16 @@ export const useSocket = () => {
     if (!orgId) return;
 
     // ── Connect & join org room ─────────────────────────────────────────────
-    socket.connect();
+    // (App.tsx already connects and joins join_org / join_user on login;
+    //  we reconnect here in case the user navigates directly to /inventory)
+    if (!socket.connected) {
+      socket.connect();
+    }
 
     const handleConnect = () => {
       socket.emit("join_org", orgId);
     };
 
-    // If already connected (e.g. hot-reload), join immediately
     if (socket.connected) {
       socket.emit("join_org", orgId);
     } else {
@@ -77,6 +79,7 @@ export const useSocket = () => {
         })
       );
 
+      // If the item is brand-new at the destination, re-fetch to get full details
       const state = store.getState();
       const activeLocationId = state.inventory.activeLocationId;
 
@@ -87,9 +90,7 @@ export const useSocket = () => {
             inv.itemId?._id === payload.itemId ||
             (inv.itemId as unknown as string) === payload.itemId
         );
-
         if (!itemAlreadyInView) {
-          // New item arriving — re-fetch the location's inventory to get full details
           dispatch(fetchInventoryForLocation(activeLocationId));
         }
       }
@@ -98,12 +99,12 @@ export const useSocket = () => {
     socket.on("inventory_item_added", handleItemAdded);
     socket.on("inventory_transferred", handleTransferred);
 
-    // ── Cleanup on unmount ──────────────────────────────────────────────────
+    // ── Cleanup ─────────────────────────────────────────────────────────────
     return () => {
       socket.off("connect", handleConnect);
       socket.off("inventory_item_added", handleItemAdded);
       socket.off("inventory_transferred", handleTransferred);
-      socket.disconnect();
+      // Do NOT disconnect here — App.tsx manages the connection lifecycle
     };
   }, [orgId, dispatch]);
 };

@@ -58,10 +58,19 @@ const io = new Server(httpServer, {
 io.on("connection", (socket) => {
   console.log(`Socket connected: ${socket.id}`);
 
+  // Join the organisation-wide room (for owner broadcast notifications)
   socket.on("join_org", (orgId) => {
     if (orgId) {
       socket.join(`org_${orgId}`);
       console.log(`Socket ${socket.id} joined room org_${orgId}`);
+    }
+  });
+
+  // Join a personal user room (for direct notifications, e.g. approve/reject → manager)
+  socket.on("join_user", (userId) => {
+    if (userId) {
+      socket.join(`user_${userId}`);
+      console.log(`Socket ${socket.id} joined room user_${userId}`);
     }
   });
 

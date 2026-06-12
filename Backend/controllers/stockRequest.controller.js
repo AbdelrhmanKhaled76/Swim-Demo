@@ -279,6 +279,20 @@ export const approveStockRequest = async (req, res) => {
       .populate('resolvedBy', 'fullName email')
       .populate('items.itemId', 'name category price');
 
+    // Notify the store manager who made the request in their personal room
+    const io = req.app.get('socketio');
+    if (io && populated.requestedBy) {
+      const managerId = populated.requestedBy._id.toString();
+      const itemNames = populated.items.map(i => i.itemId?.name || 'item').join(', ');
+      io.to(`user_${managerId}`).emit('stock_request_resolved', {
+        status: 'approved',
+        storeName: populated.storeId?.name || 'your store',
+        itemNames,
+        adminNote: stockRequest.adminNote,
+        requestId: populated._id,
+      });
+    }
+
     res.status(200).json({
       success: true,
       data: populated,
@@ -320,6 +334,20 @@ export const rejectStockRequest = async (req, res) => {
       .populate('requestedBy', 'fullName email')
       .populate('resolvedBy', 'fullName email')
       .populate('items.itemId', 'name category price');
+
+    // Notify the store manager who made the request in their personal room
+    const io = req.app.get('socketio');
+    if (io && populated.requestedBy) {
+      const managerId = populated.requestedBy._id.toString();
+      const itemNames = populated.items.map(i => i.itemId?.name || 'item').join(', ');
+      io.to(`user_${managerId}`).emit('stock_request_resolved', {
+        status: 'rejected',
+        storeName: populated.storeId?.name || 'your store',
+        itemNames,
+        adminNote: stockRequest.adminNote,
+        requestId: populated._id,
+      });
+    }
 
     res.status(200).json({
       success: true,
