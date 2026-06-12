@@ -299,14 +299,16 @@ function RequestCard({ request }: { request: StockRequest }) {
             </span>
             <span className="text-neutral-300">·</span>
             <span className="regular text-[10px] tracking-widest text-neutral-400 uppercase">
-              {request.storeName || "Unknown Store"}
+              {typeof request.storeId === "object"
+                ? request.storeId?.name
+                : request.storeName || "Unknown Store"}
             </span>
           </div>
         </div>
         <div className="flex items-center gap-2">
           <StatusBadge status={request.status} />
           <span className="regular text-[9px] tracking-widest text-neutral-400 uppercase">
-            {formatDate(request.resolvedAt)}
+            {formatDate(request.status === "pending" ? request.createdAt : (request.resolvedAt || request.createdAt))}
           </span>
         </div>
       </div>
@@ -321,15 +323,21 @@ function RequestCard({ request }: { request: StockRequest }) {
             {request.items[0]?.quantity ?? 0}
           </span>
         </div>
-        {request !== undefined && (
+        {request.status !== "pending" && (
           <>
             <div className="text-neutral-300 text-xl">→</div>
             <div className="flex flex-col gap-0.5">
-              <span className="regular text-[9px] tracking-widest uppercase text-emerald-600 font-bold">
-                Approved
+              <span
+                className={`regular text-[9px] tracking-widest uppercase font-bold ${request.status === "approved" ? "text-emerald-600" : "text-red-600"}`}
+              >
+                {request.status === "approved" ? "Approved" : "Rejected"}
               </span>
-              <span className="header text-[20px] font-bold text-emerald-700 leading-none">
-                {request.items[0]?.quantity ?? 0}
+              <span
+                className={`header text-[20px] font-bold leading-none ${request.status === "approved" ? "text-emerald-700" : "text-red-700"}`}
+              >
+                {request.status === "approved"
+                  ? (request.items[0]?.quantity ?? 0)
+                  : 0}
               </span>
             </div>
           </>

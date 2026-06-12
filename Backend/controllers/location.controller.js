@@ -29,6 +29,18 @@ export const createLocation = async (req, res) => {
     // organizationId always comes from the verified JWT — not from the request body
     const organizationId = req.user.organizationID;
 
+    const duplicate = await Location.findOne({
+      organizationId,
+      type,
+      name: { $regex: new RegExp(`^${name.trim()}$`, 'i') },
+    });
+
+    if (duplicate) {
+      return res.status(400).json({
+        message: `A ${type.toLowerCase()} with the name "${name.trim()}" already exists.`,
+      });
+    }
+
     // Fetch org to check tier
     const organization = await Organization.findById(organizationId);
     if (!organization) {
@@ -75,13 +87,26 @@ export const updateLocation = async (req, res) => {
   try {
     const { name, type, locationDetails } = req.body;
 
-    // Find first to check ownership
     const existing = await Location.findById(req.params.id);
     if (!existing) {
       return res.status(404).json({ message: 'Location not found' });
     }
     if (existing.organizationId.toString() !== req.user.organizationID.toString()) {
       return res.status(403).json({ message: 'Access denied' });
+    }
+
+    if (name) {
+      const duplicate = await Location.findOne({
+        organizationId: existing.organizationId,
+        type: type || existing.type,
+        name: { $regex: new RegExp(`^${name.trim()}$`, 'i') },
+        _id: { $ne: req.params.id }
+      });
+      if (duplicate) {
+        return res.status(400).json({
+          message: `A ${(type || existing.type).toLowerCase()} with the name "${name.trim()}" already exists.`,
+        });
+      }
     }
 
     const location = await Location.findByIdAndUpdate(

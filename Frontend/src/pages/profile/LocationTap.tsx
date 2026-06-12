@@ -83,16 +83,32 @@ function LocationTab({ activeTab }: { activeTab: "store" | "warehouse" }) {
     e.preventDefault();
     if (!name.trim()) return;
 
+    const trimmedName = name.trim();
+    const isDuplicate = locationsList.some(
+      (loc) => loc.name.trim().toLowerCase() === trimmedName.toLowerCase()
+    );
+
+    if (isDuplicate) {
+      showErrorToast(`A ${label.toLowerCase()} with the name "${trimmedName}" already exists.`);
+      return;
+    }
+
     dispatch(
       createLocation({
-        name,
+        name: trimmedName,
         type: activeTab === "store" ? "Store" : "Warehouse",
-        locationDetails: details,
+        locationDetails: details.trim(),
       }),
-    ).then(() => {
-      setName("");
-      setDetails("");
-    });
+    )
+      .unwrap()
+      .then(() => {
+        setName("");
+        setDetails("");
+        showSuccessToast(`${label} created successfully!`);
+      })
+      .catch((err: any) => {
+        showErrorToast(err || `Failed to create ${label.toLowerCase()}`);
+      });
   };
 
   const locationsList = activeTab === "store" ? stores : warehouses;

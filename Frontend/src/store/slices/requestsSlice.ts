@@ -55,6 +55,7 @@ export const approveRequest = createAsyncThunk<
         {
           adminNote:
             adminNote || "Approved — stock transferred from Main Warehouse",
+          approvedQuantity,
         },
       );
       return {

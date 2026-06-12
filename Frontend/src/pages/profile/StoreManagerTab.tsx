@@ -68,7 +68,18 @@ export default function StoreManagerTab() {
     }
   }, [dispatch, status]);
 
-  const storeOptions = stores.map((s) => ({ value: s._id, label: s.name }));
+  // Find store IDs that already have a manager assigned
+  const assignedStoreIds = managers.map((mgr) =>
+    typeof mgr.assignedLocation === "object"
+      ? mgr.assignedLocation?._id
+      : mgr.assignedLocation
+  );
+
+  const availableStores = stores.filter(
+    (s) => !assignedStoreIds.includes(s._id) && !s.name.toLowerCase().includes("downtown")
+  );
+
+  const storeOptions = availableStores.map((s) => ({ value: s._id, label: s.name }));
 
   const handleSubmit = async (e: React.SubmitEvent) => {
     e.preventDefault();

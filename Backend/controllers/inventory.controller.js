@@ -209,6 +209,10 @@ export const updateStock = async (req, res) => {
       return res.status(404).json({ message: 'Inventory record not found for this item at this location. Please use addInventory first.' });
     }
 
+    if (inventory.quantity <= 0) {
+      await Inventory.deleteOne({ _id: inventory._id });
+    }
+
     res.status(200).json({
       message: 'Stock updated successfully',
       inventory,
@@ -259,7 +263,11 @@ export const transferStock = async (req, res) => {
     }
 
     sourceInventory.quantity -= quantity;
-    await sourceInventory.save();
+    if (sourceInventory.quantity <= 0) {
+      await Inventory.deleteOne({ _id: sourceInventory._id });
+    } else {
+      await sourceInventory.save();
+    }
 
     const destInventory = await Inventory.findOneAndUpdate(
       { locationId, itemId },
