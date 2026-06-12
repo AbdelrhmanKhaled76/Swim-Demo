@@ -1,6 +1,7 @@
 import { type Location } from "../../../interfaces/InventoryTypes/inventory";
 
 interface ExternalStockAlertProps {
+  isOwner: boolean;
   isCheckingElsewhere: boolean;
   otherLocationsInfo: {
     matchingItems: { _id: string; name: string; category: string }[];
@@ -25,6 +26,7 @@ interface ExternalStockAlertProps {
 }
 
 export default function ExternalStockAlert({
+  isOwner,
   isCheckingElsewhere,
   otherLocationsInfo,
   isAlertDismissed,
@@ -34,6 +36,7 @@ export default function ExternalStockAlert({
   selectedLocation,
   handleRequestStockForItem,
 }: ExternalStockAlertProps) {
+
   return (
     <>
       {isCheckingElsewhere && (
@@ -138,7 +141,7 @@ export default function ExternalStockAlert({
                               AVAILABLE ON: {locsText.toUpperCase()}
                             </span>
                           </div>
-                          <button
+                           { ! isOwner && (<button
                             onClick={() => {
                               const locationsForItem = otherLocationsInfo.otherLocations.filter(
                                 (loc) => loc.itemId === item._id
@@ -156,7 +159,7 @@ export default function ExternalStockAlert({
                             className="flex-shrink-0 self-start sm:self-center bg-secondary-500 hover:bg-neutral-900 text-white font-bold tracking-widest text-[9px] md:text-[10px] px-3.5 py-2 uppercase transition-all duration-200 cursor-pointer focus:outline-none"
                           >
                             Request
-                          </button>
+                          </button> )}
                         </div>
                       );
                     })}
