@@ -4,7 +4,11 @@ import { useDispatch, useSelector } from "react-redux";
 import type { AppDispatch, RootState } from "./store";
 import { socket } from "./core/socket";
 import { fetchRequests } from "./store/slices/requestsSlice";
-import { showRequestNotificationToast } from "./utils/toast";
+import {
+  showRequestNotificationToast,
+  showApprovedToast,
+  showRejectedToast,
+} from "./utils/toast";
 import Nav from "./layout/nav/nav";
 import MobileNav from "./layout/nav/mobileNav";
 import Footer from "./layout/footer/footer";
@@ -16,10 +20,15 @@ function App() {
   useEffect(() => {
     if (user && token) {
       const orgId = user.organizationID || (user as any).organizationId;
+      const userId = user._id || user.id;
       if (orgId) {
         socket.connect();
         socket.emit("join_org", orgId);
         console.log(`Socket joined organization: ${orgId}`);
+      }
+      if (userId) {
+        socket.emit("join_user", userId);
+        console.log(`Socket joined personal room: user_${userId}`);
       }
     } else {
       socket.disconnect();
@@ -52,6 +61,34 @@ function App() {
       };
     }
   }, [user, token, dispatch]);
+
+  // ── Store manager: notified when owner approves or rejects their request ──
+  useEffect(() => {
+    if (user && token && user.role === "StoreManager") {
+      const handleResolved = (payload: {
+        status: "approved" | "rejected";
+        storeName: string;
+        itemNames: string;
+        adminNote?: string;
+      }) => {
+        if (payload.status === "approved") {
+          showApprovedToast(
+            `✅ Request approved! "${payload.itemNames}" is on its way to ${payload.storeName}.`
+          );
+        } else {
+          showRejectedToast(
+            `❌ Request rejected for ${payload.storeName}.${payload.adminNote ? ` Reason: ${payload.adminNote}` : ""}`
+          );
+        }
+      };
+
+      socket.on("stock_request_resolved", handleResolved);
+
+      return () => {
+        socket.off("stock_request_resolved", handleResolved);
+      };
+    }
+  }, [user, token]);
 
   return (
     <div className="app-layout min-h-screen flex flex-col relative pb-[80px] md:pb-0">
